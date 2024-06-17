@@ -1,0 +1,43 @@
+
+---
+title: "Analisi house price"
+output: html_document
+---
+
+# Importazione delle librerie
+
+# Distribuzione dei Prezzi delle Case
+
+# Analisi dell'Età delle Case
+<!-- a) Trasformazione dell'età in variabili categoriche#
+b) Esiste una relazione tra l'area e l'età della casa?
+c) Confronto delle variabili indipendenti con ANOVA
+d) Chi ha pagato di più in media per età -->
+
+
+# Stato delle Condizioni della Casa
+<!-- a) Trasformazione dello stato della casa in variabili categoriche
+b) Condizioni della casa vs Prezzi
+c) Impatto delle Ristrutturazioni sul Prezzo
+d) Distribuzione dei Prezzi (Ristrutturata vs Non Ristrutturata) -->
+
+# Analisi Regionale:
+<!-- a) Costruzione di una tabella di contingenza
+b) Prezzo medio della casa per regione
+c) Prezzo medio per regione in base alle condizioni della casa -->
+
+# Algoritmi di Apprendimento Non Supervisionato:
+<!-- a) Esecuzione di Cluster Manualmente
+b) Clustering con K-Means
+c) Clustering Gerarchico -->
+
+# Correlazioni
+<!-- a) Correlazioni e Analisi Bivariata
+b) Pre-elaborazione dei dati e utilizzo dei Pipeline -->
+
+# Statistiche
+<!-- a) Modelli Lineari e Termini
+b) Gestione della Collinearità
+c) Importanza dell'aggiunta dello stato di ristrutturazione al nostro modello
+d) Gestione della Asimmetria
+e) Utilizzo del nostro modello in una distribuzione simmetrica -->
