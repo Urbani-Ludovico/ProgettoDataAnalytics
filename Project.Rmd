@@ -35,7 +35,8 @@ attach(HP)
 ```{r echo=False}
 ggplot(HP, aes(x = SalePrice)) +
     geom_density() +
-    xlab("Prezzo di vendita")
+    xlab("Prezzo di vendita") +
+    ylab("Densità")
 ```
 
 # Analisi dell'Età delle Case
