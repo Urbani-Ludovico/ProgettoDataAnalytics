@@ -6,6 +6,30 @@ output: html_document
 
 # Importazione delle librerie
 
+``` {r, echo=False}
+library(ggplot2)
+
+plot_theme = theme_minimal() +
+    theme(
+        plot.title = element_text(face = "bold", hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        axis.line = element_line(color = "darkgrey", size = 0.4),
+        axis.ticks = element_line(color = "black"))
+theme_set(plot_theme)
+```
+
+# Importazione dei dati
+
+``` {r, echo=False}
+HP <- read.csv2(
+    "./dataset.csv",
+    sep = ",", 
+    stringsAsFactors = T,
+    row.names=1)
+
+attach(HP)
+```
+
 # Distribuzione dei Prezzi delle Case
 
 # Analisi dell'Età delle Case
