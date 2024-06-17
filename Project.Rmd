@@ -38,6 +38,11 @@ ggplot(HP, aes(x = SalePrice)) +
     xlab("Prezzo di vendita") +
     ylab("Densità")
 ```
+```{r echo=False}
+ggplot(HP, aes(x = SalePrice)) +
+    geom_boxplot() +
+    xlab("Prezzo di vendita")
+```
 
 # Analisi dell'Età delle Case
 <!-- a) Trasformazione dell'età in variabili categoriche#
