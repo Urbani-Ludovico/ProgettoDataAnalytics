@@ -13,7 +13,7 @@ plot_theme = theme_minimal() +
     theme(
         plot.title = element_text(face = "bold", hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
-        axis.line = element_line(color = "darkgrey", size = 0.4),
+        axis.line = element_line(color = "darkgrey"),
         axis.ticks = element_line(color = "black"))
 theme_set(plot_theme)
 ```
@@ -31,6 +31,12 @@ attach(HP)
 ```
 
 # Distribuzione dei Prezzi delle Case
+
+```{r echo=False}
+ggplot(HP, aes(x = SalePrice)) +
+    geom_density() +
+    xlab("Prezzo di vendita")
+```
 
 # Analisi dell'Età delle Case
 <!-- a) Trasformazione dell'età in variabili categoriche#
