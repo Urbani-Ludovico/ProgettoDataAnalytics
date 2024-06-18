@@ -55,7 +55,7 @@ ggplot(HP, aes(x = SalePrice)) +
     geom_boxplot() +
     xlab("Prezzo di vendita")
 ```
-Possiamo dedurre che la distribuzione è positivamente asimetrica e che la maggior parte del prezzo di vendita è compresa tra 129975 e 214000, essendo rispettivamente il 1° e il 3° quantile e con maggior densita alineati alla retta qq della norma.
+Possiamo dedurre che la distribuzione è positivamente asimetrica e che la maggior parte del prezzo di vendita è compresa tra 129975 e 214000, essendo rispettivamente il 1° e il 3° quantile.
 
 # Analisi dell'Età delle Case
 <!-- a) Trasformazione dell'età in variabili categoriche#
