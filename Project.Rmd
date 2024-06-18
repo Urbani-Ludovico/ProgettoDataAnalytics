@@ -33,7 +33,7 @@ attach(HP)
 # Distribuzione dei Prezzi delle Case
 
 ```{r, echo=F}
-SalePrice.summary = summary(SalePrice)
+SalePrice.summary <- summary(SalePrice)
 
 print(SalePrice.summary)
 ```
@@ -48,7 +48,7 @@ ggplot(HP, aes(x = SalePrice)) +
     geom_vline(aes(xintercept = SalePrice.summary["Median"], colour = "Mediana"), linetype = "dashed") +
     geom_vline(aes(xintercept = SalePrice.summary["3rd Qu."], colour = "3° Quantile"), linetype = "dashed") +
     labs(colour = "Statistiche") +
-    scale_color_manual(labels = c("1° Quantile", "3° Quantile", "Mediana", "Media"), values = c("green", "darkgreen", "blue", "red"))
+    scale_color_manual(labels = c("1° Quantile", "3° Quantile", "Media", "Mediana"), values = c("green", "darkgreen", "red", "blue"))
 ```
 ```{r echo=F}
 ggplot(HP, aes(x = SalePrice)) +
@@ -64,6 +64,8 @@ Sia può dedurre che sono una piccola parte delle case vendute siano ville di lu
 b) Esiste una relazione tra l'area e l'età della casa?
 c) Confronto delle variabili indipendenti con ANOVA
 d) Chi ha pagato di più in media per età -->
+
+current_year <- as.integer(format(Sys.Date(), "%Y"))
 
 
 # Stato delle Condizioni della Casa
