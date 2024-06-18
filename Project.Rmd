@@ -6,7 +6,7 @@ output: html_document
 
 # Importazione delle librerie
 
-``` {r}
+``` {r, message = F}
 library(ggplot2)
 
 plot_theme = theme_minimal() +
@@ -16,6 +16,10 @@ plot_theme = theme_minimal() +
         axis.line = element_line(color = "darkgrey"),
         axis.ticks = element_line(color = "black"))
 theme_set(plot_theme)
+
+library(dplyr)
+library(ggcorrplot)
+library(GGally)
 ```
 
 # Importazione dei dati
@@ -61,9 +65,9 @@ Sia può dedurre che sono una piccola parte delle case vendute siano ville di lu
 
 # Matrice di correlazione
 
-Prima di tutto identifico le variabili su cui ha senso applicare la matrice di correlazione
+Prima di tutto identifico le variabili su cui ha senso fare una correlazione con il prezzo
 ```{r}
-Heapmap.vars <- c("MSSubClass", "MSZoning", "LotFrontage", "LotArea", "LotShape", "LotConfig", "Neighborhood", "BldgType", "HouseStyle", "OverallQual", "OverallCond", "YearBuilt", "YearRemodAdd", "Exterior1st", "ExterQual", "ExterCond", "Foundation", "BsmtQual", "BsmtCond", "BsmtExposure", "BsmtFinSF1", "BsmtFinSF2", "TotalBsmtSF", "HeatingQC", "X1stFlrSF", "X2ndFlrSF", "GrLivArea", "FullBath", "HalfBath", "BedroomAbvGr", "KitchenQual", "TotRmsAbvGrd", "GarageType", "GarageCars", "GarageArea", "GarageQual", "GarageCond", "OpenPorchSF", "EnclosedPorch", "ScreenPorch", "Fence", "MiscFeature", "MiscVal", "MoSold", "YrSold", "SalePrice")
+Heapmap.vars <- c("MSSubClass", "MSZoning", "LotFrontage", "LotArea", "LotShape", "LotConfig", "Neighborhood", "BldgType", "HouseStyle", "OverallQual", "OverallCond", "YearBuilt", "YearRemodAdd", "Exterior1st", "ExterQual", "ExterCond", "Foundation", "BsmtQual", "BsmtCond", "BsmtExposure", "BsmtFinSF1", "BsmtFinSF2", "TotalBsmtSF", "HeatingQC", "X1stFlrSF", "X2ndFlrSF", "GrLivArea", "FullBath", "HalfBath", "BedroomAbvGr", "KitchenQual", "TotRmsAbvGrd", "GarageType", "GarageCars", "GarageArea", "GarageQual", "GarageCond", "OpenPorchSF", "EnclosedPorch", "ScreenPorch", "Fence", "MiscFeature", "MiscVal", "MoSold", "YrSold")
 ```
 
 E trasformo le variabili opportune in factor:
