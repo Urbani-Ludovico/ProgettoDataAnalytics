@@ -57,6 +57,7 @@ ggplot(HP, aes(x = SalePrice)) +
 ```
 
 Possiamo dedurre che la distribuzione è positivamente asimetrica e che la maggior parte del prezzo di vendita è compresa tra 129975 e 214000, essendo rispettivamente il 1° e il 3° quantile.
+Sia può dedurre che sono una piccola parte delle case vendute siano ville di lusso, case lussuose o immobili di alto valore, ma la maggior parte del mercato immobiliare di concentri sulla vendita di piccoli o medi immobili.
 
 # Analisi dell'Età delle Case
 <!-- a) Trasformazione dell'età in variabili categoriche#
