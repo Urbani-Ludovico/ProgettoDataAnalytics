@@ -1,4 +1,3 @@
-
 ---
 title: "Analisi house price"
 output: html_document
@@ -6,7 +5,7 @@ output: html_document
 
 # Importazione delle librerie
 
-``` {r, message = F}
+``` {r, warning = F}
 library(ggplot2)
 
 plot_theme = theme_minimal() +
@@ -24,7 +23,7 @@ library(GGally)
 
 # Importazione dei dati
 
-``` {r}
+``` {r,warning = F}
 HP <- read.csv2(
     "./dataset.csv",
     sep = ",", 
@@ -36,13 +35,13 @@ attach(HP)
 
 # Distribuzione dei Prezzi delle Case
 
-```{r}
+``` {r,warning = F}
 SalePrice.summary <- summary(SalePrice)
 
 print(SalePrice.summary)
 ```
 
-```{r}
+``` {r,warning = F}
 ggplot(HP, aes(x = SalePrice)) +
     geom_density() +
     xlab("Prezzo di vendita") +
@@ -54,24 +53,69 @@ ggplot(HP, aes(x = SalePrice)) +
     labs(colour = "Statistiche") +
     scale_color_manual(labels = c("1° Quantile", "3° Quantile", "Media", "Mediana"), values = c("green", "darkgreen", "red", "blue"))
 ```
-```{r}
+``` {r,warning = F}
 ggplot(HP, aes(x = SalePrice)) +
     geom_boxplot() +
     xlab("Prezzo di vendita")
 ```
 
-Possiamo dedurre che la distribuzione è positivamente asimetrica e che la maggior parte del prezzo di vendita è compresa tra 129975 e 214000, essendo rispettivamente il 1° e il 3° quantile.
-Sia può dedurre che sono una piccola parte delle case vendute siano ville di lusso, case lussuose o immobili di alto valore, ma la maggior parte del mercato immobiliare di concentri sulla vendita di piccoli o medi immobili.
+Possiamo dedurre che la distribuzione è positivamente asimetrica e che la maggior parte del prezzo di vendita è compresa tra 129.975 e 214.000, essendo rispettivamente il 1° e il 3° quantile.
+Si può dedurre che sono una piccola parte delle case vendute siano ville di lusso, case lussuose o immobili di alto valore, ma la maggior parte del mercato immobiliare di concentri sulla vendita di piccoli o medi immobili.
 
 # Matrice di correlazione
 
 Prima di tutto identifico le variabili su cui ha senso fare una correlazione con il prezzo
-```{r}
-Heapmap.vars <- c("MSSubClass", "MSZoning", "LotFrontage", "LotArea", "LotShape", "LotConfig", "Neighborhood", "BldgType", "HouseStyle", "OverallQual", "OverallCond", "YearBuilt", "YearRemodAdd", "Exterior1st", "ExterQual", "ExterCond", "Foundation", "BsmtQual", "BsmtCond", "BsmtExposure", "BsmtFinSF1", "BsmtFinSF2", "TotalBsmtSF", "HeatingQC", "X1stFlrSF", "X2ndFlrSF", "GrLivArea", "FullBath", "HalfBath", "BedroomAbvGr", "KitchenQual", "TotRmsAbvGrd", "GarageType", "GarageCars", "GarageArea", "GarageQual", "GarageCond", "OpenPorchSF", "EnclosedPorch", "ScreenPorch", "Fence", "MiscFeature", "MiscVal", "MoSold", "YrSold")
+``` {r,warning = F}
+library(ggcorrplot)
+
+Heapmap.vars <- c("MSSubClass", "MSZoning", "LotFrontage", "LotArea", "LotShape", "LotConfig", "Neighborhood", "BldgType", "HouseStyle", "OverallQual", "OverallCond", "YearBuilt", "YearRemodAdd", "Exterior1st", "ExterQual", "ExterCond", "Foundation", "BsmtQual", "BsmtCond", "BsmtExposure", "BsmtFinSF1", "BsmtFinSF2", "TotalBsmtSF", "HeatingQC", "X1stFlrSF", "X2ndFlrSF", "GrLivArea", "FullBath", "HalfBath", "BedroomAbvGr", "KitchenQual", "TotRmsAbvGrd", "GarageType", "GarageCars", "GarageArea", "GarageQual", "GarageCond", "OpenPorchSF", "EnclosedPorch", "ScreenPorch", "Fence", "MiscFeature", "MiscVal", "MoSold", "YrSold", "SalePrice")
+selected_vars = HP[Heapmap.vars]
+convert_to_numeric <- function(x) {
+  if (is.factor(x) || is.character(x)) {
+    as.numeric(factor(x, levels = unique(x)))
+  } else {
+    return(x)
+  }
+}
+
+selected_data <- selected_vars %>%
+  mutate(across(everything(), ~ convert_to_numeric(.))
+  )
+
+selected_data_numeric <- selected_data %>%
+  mutate(across(everything(), ~ as.numeric(as.character(.))))
+
+corHeap = as.data.frame(round(cor(selected_data_numeric, HP$SalePrice),2))
+
+names(corHeap) = "SalePrice"
+
+withNA = rownames(corHeap)[is.na(corHeap$SalePrice)]
+
+for (ele in withNA){
+  HP_lotfrontage = selected_data_numeric[[ele]][which(!is.na(selected_data_numeric[[ele]]))]
+  HP_lotfrontageSALE = selected_data_numeric$SalePrice[which(!is.na(selected_data_numeric[[ele]]))]
+  corHeap[ele,"SalePrice"] = cor(HP_lotfrontageSALE,HP_lotfrontage)
+}
 ```
 
-E trasformo le variabili opportune in factor:
-```{r, message = F}
+Si ha che il vettore di correlazione come
+``` {r,warning = F}
+ggcorrplot(corHeap, type = "lower", lab=TRUE, lab_size = 2.5)+
+  theme(
+  axis.text.x = element_text(size = 9),
+  axis.text.y = element_text(size = 9)
+  )
+```
+
+Con quelli con maggior correlazione(>0.6)
+``` {r,warning = F}
+pairs(HP[rownames(corHeap)[corHeap>=0.6 | corHeap<= -0.6]])
+```
+
+# Analisi bivariata
+
+Trasformo le variabili opportune in factor:
+```{r,warning = F}
 for (l in c("OverallQual", "OverallCond")) {
     HP[, l] <- factor(HP[, l], levels = 1:10, labels = 1:10)
 }
@@ -91,7 +135,7 @@ attach(HP)
 c) Confronto delle variabili indipendenti con ANOVA
 d) Chi ha pagato di più in media per età -->
 
-```{r}
+``` {r,warning = F}
 current_year <- as.integer(format(Sys.Date(), "%Y"))
 
 HouseAge <- current_year - YearBuilt
@@ -100,7 +144,7 @@ HP$HouseAge <- HouseAge
 
 Ottenuto il vettore delle età delle case, procedo a metterlo in relazione con il SalePrice trimite uno scatter plot.
 
-```{r}
+``` {r,warning = F}
 mod <- lm(SalePrice ~ HouseAge)
 
 ggplot(HP, aes(x = HouseAge, y = SalePrice)) +
