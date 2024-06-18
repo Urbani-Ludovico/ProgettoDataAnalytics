@@ -59,6 +59,20 @@ ggplot(HP, aes(x = SalePrice)) +
 Possiamo dedurre che la distribuzione è positivamente asimetrica e che la maggior parte del prezzo di vendita è compresa tra 129975 e 214000, essendo rispettivamente il 1° e il 3° quantile.
 Sia può dedurre che sono una piccola parte delle case vendute siano ville di lusso, case lussuose o immobili di alto valore, ma la maggior parte del mercato immobiliare di concentri sulla vendita di piccoli o medi immobili.
 
+# Matrice di correlazione
+
+Prima di tutto identifico le variabili su cui ha senso applicare la matrice di correlazione
+```{r}
+Heapmap.vars <- c("MSSubClass", "MSZoning", "LotFrontage", "LotArea", "LotShape", "LotConfig", "Neighborhood", "BldgType", "HouseStyle", "OverallQual", "OverallCond", "YearBuilt", "YearRemodAdd", "Exterior1st", "ExterQual", "ExterCond", "Foundation", "BsmtQual", "BsmtCond", "BsmtExposure", "BsmtFinSF1", "BsmtFinSF2", "TotalBsmtSF", "HeatingQC", "X1stFlrSF", "X2ndFlrSF", "GrLivArea", "FullBath", "HalfBath", "BedroomAbvGr", "KitchenQual", "TotRmsAbvGrd", "GarageType", "GarageCars", "GarageArea", "GarageQual", "GarageCond", "OpenPorchSF", "EnclosedPorch", "ScreenPorch", "Fence", "MiscFeature", "MiscVal", "MoSold", "YrSold", "SalePrice")
+```
+
+E trasformo le variabili opportune in factor:
+```{r}
+for (l in c("OverallQual", "OverallCond")) {
+    HP[, l] <- factor(HP[, l], levels = 1:10, labels = 1:10)
+}
+```
+
 # Analisi dell'Età delle Case
 <!--b) Esiste una relazione tra l'area e l'età della casa?
 c) Confronto delle variabili indipendenti con ANOVA
