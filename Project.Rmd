@@ -67,10 +67,19 @@ Heapmap.vars <- c("MSSubClass", "MSZoning", "LotFrontage", "LotArea", "LotShape"
 ```
 
 E trasformo le variabili opportune in factor:
-```{r}
+```{r, message = F}
 for (l in c("OverallQual", "OverallCond")) {
     HP[, l] <- factor(HP[, l], levels = 1:10, labels = 1:10)
 }
+
+for (f in c("ExterQual", "ExterCond", "BsmtQual", "BsmtCond", "HeatingQC", "KitchenQual", "GarageQual", "GarageCond")) {
+    HP[, f] <- factor(
+        HP[, f],
+        levels = c("Po", "Fa", "TA", "Gd", "Ex"),
+        labels = c("Poor", "Fair", "Average", "Good", "Excellent"))
+}
+
+attach(HP)
 ```
 
 # Analisi dell'Età delle Case
