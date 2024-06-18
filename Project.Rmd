@@ -32,17 +32,30 @@ attach(HP)
 
 # Distribuzione dei Prezzi delle Case
 
+```{r, echo=False}
+SalePrice.summary = summary(SalePrice)
+
+print(SalePrice.summary)
+```
+
 ```{r echo=False}
 ggplot(HP, aes(x = SalePrice)) +
     geom_density() +
     xlab("Prezzo di vendita") +
-    ylab("Densità")
+    ylab("Densità") +
+    geom_vline(aes(xintercept = SalePrice.summary["1st Qu."], colour = "1° Quantile"), linetype = "dashed") +
+    geom_vline(aes(xintercept = SalePrice.summary["Mean"], colour = "Media"), linetype = "dashed") +
+    geom_vline(aes(xintercept = SalePrice.summary["Median"], colour = "Mediana"), linetype = "dashed") +
+    geom_vline(aes(xintercept = SalePrice.summary["3rd Qu."], colour = "3° Quantile"), linetype = "dashed") +
+    labs(colour = "Statistiche") +
+    scale_color_manual(labels = c("1° Quantile", "3° Quantile", "Mediana", "Media"), values = c("green", "darkgreen", "blue", "red"))
 ```
 ```{r echo=False}
 ggplot(HP, aes(x = SalePrice)) +
     geom_boxplot() +
     xlab("Prezzo di vendita")
 ```
+Possiamo dedurre che la distribuzione è positivamente asimetrica e che la maggior parte del prezzo di vendita è compresa tra 129975 e 214000, essendo rispettivamente il 1° e il 3° quantile e con maggior densita alineati alla retta qq della norma.
 
 # Analisi dell'Età delle Case
 <!-- a) Trasformazione dell'età in variabili categoriche#
