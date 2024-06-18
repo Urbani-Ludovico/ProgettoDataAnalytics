@@ -86,7 +86,7 @@ for (f in c("ExterQual", "ExterCond", "BsmtQual", "BsmtCond", "HeatingQC", "Kitc
 attach(HP)
 ```
 
-# Analisi dell'Età delle Case
+# Analisi dell'età delle case
 <!--b) Esiste una relazione tra l'area e l'età della casa?
 c) Confronto delle variabili indipendenti con ANOVA
 d) Chi ha pagato di più in media per età -->
@@ -95,15 +95,25 @@ d) Chi ha pagato di più in media per età -->
 current_year <- as.integer(format(Sys.Date(), "%Y"))
 
 HouseAge <- current_year - YearBuilt
-
+HP$HouseAge <- HouseAge
 ```
 
 Ottenuto il vettore delle età delle case, procedo a metterlo in relazione con il SalePrice trimite uno scatter plot.
 
 ```{r}
-ggplot(data.frame(HouseAge, SalePrice), aes(x = HouseAge, y = SalePrice)) +
-    geom_point()
+mod <- lm(SalePrice ~ HouseAge)
+
+ggplot(HP, aes(x = HouseAge, y = SalePrice)) +
+    geom_point() +
+    xlab("Età dell'abitazione") +
+    ylab("Prezzo di vendita") +
+    geom_abline(
+        intercept = coef(mod)[1], 
+        slope = coef(mod)[2],
+        color = "red")
 ```
+
+Da cui si deduce che più la casa venduta è vecchia, più il prezzo tende a scendere. È possibile che questo sia dovuto al fatto che quando una casa si deteriora, i proprietari tendano a venderla per poco invece di ristrutturarla.
 
 
 # Stato delle Condizioni della Casa
