@@ -60,15 +60,22 @@ Possiamo dedurre che la distribuzione è positivamente asimetrica e che la maggi
 Sia può dedurre che sono una piccola parte delle case vendute siano ville di lusso, case lussuose o immobili di alto valore, ma la maggior parte del mercato immobiliare di concentri sulla vendita di piccoli o medi immobili.
 
 # Analisi dell'Età delle Case
-<!-- a) Trasformazione dell'età in variabili categoriche
-b) Esiste una relazione tra l'area e l'età della casa?
+<!--b) Esiste una relazione tra l'area e l'età della casa?
 c) Confronto delle variabili indipendenti con ANOVA
 d) Chi ha pagato di più in media per età -->
 
 ```{r}
 current_year <- as.integer(format(Sys.Date(), "%Y"))
 
+HouseAge <- current_year - YearBuilt
 
+```
+
+Ottenuto il vettore delle età delle case, procedo a metterlo in relazione con il SalePrice trimite uno scatter plot.
+
+```{r}
+ggplot(data.frame(HouseAge, SalePrice), aes(x = HouseAge, y = SalePrice)) +
+    geom_point()
 ```
 
 
