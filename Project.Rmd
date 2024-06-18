@@ -6,7 +6,7 @@ output: html_document
 
 # Importazione delle librerie
 
-``` {r, echo=False}
+``` {r, echo=F}
 library(ggplot2)
 
 plot_theme = theme_minimal() +
@@ -20,7 +20,7 @@ theme_set(plot_theme)
 
 # Importazione dei dati
 
-``` {r, echo=False}
+``` {r, echo=F}
 HP <- read.csv2(
     "./dataset.csv",
     sep = ",", 
@@ -32,13 +32,13 @@ attach(HP)
 
 # Distribuzione dei Prezzi delle Case
 
-```{r, echo=False}
+```{r, echo=F}
 SalePrice.summary = summary(SalePrice)
 
 print(SalePrice.summary)
 ```
 
-```{r echo=False}
+```{r echo=F}
 ggplot(HP, aes(x = SalePrice)) +
     geom_density() +
     xlab("Prezzo di vendita") +
@@ -50,11 +50,12 @@ ggplot(HP, aes(x = SalePrice)) +
     labs(colour = "Statistiche") +
     scale_color_manual(labels = c("1° Quantile", "3° Quantile", "Mediana", "Media"), values = c("green", "darkgreen", "blue", "red"))
 ```
-```{r echo=False}
+```{r echo=F}
 ggplot(HP, aes(x = SalePrice)) +
     geom_boxplot() +
     xlab("Prezzo di vendita")
 ```
+
 Possiamo dedurre che la distribuzione è positivamente asimetrica e che la maggior parte del prezzo di vendita è compresa tra 129975 e 214000, essendo rispettivamente il 1° e il 3° quantile.
 
 # Analisi dell'Età delle Case
