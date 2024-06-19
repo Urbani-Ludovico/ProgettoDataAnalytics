@@ -116,7 +116,7 @@ pairs(HP[rownames(corHeap)[corHeap>=0.6 | corHeap<= -0.6]])
 # Analisi bivariata
 
 Trasformo le variabili opportune in factor:
-```{r, warning = F}
+```{r, message = F, warning = F}
 for (l in c("OverallQual", "OverallCond")) {
     HP[, l] <- factor(HP[, l], levels = 1:10, labels = 1:10)
 }
@@ -133,7 +133,7 @@ attach(HP)
 
 # Analisi dell'età delle case
 
-``` {r, message = F, warning = F}
+``` {r, warning = F}
 current_year <- as.integer(format(Sys.Date(), "%Y"))
 
 HouseAge <- current_year - YearBuilt
