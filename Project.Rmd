@@ -122,12 +122,12 @@ second_half_corHeap = as.data.frame(corHeap[length_corHeap:NROW(corHeap),])
 rownames(second_half_corHeap) = rownames(corHeap)[length_corHeap:NROW(corHeap)]
 names(second_half_corHeap) = "SalePrice"
 
-p1 = ggcorrplot(first_half_corHeap, type = "lower", lab=TRUE, lab_size = 2.5)+
+p1 = ggcorrplot(first_half_corHeap, type = "lower", lab = TRUE, lab_size = 2.5) +
   theme(
   axis.text.x = element_text(size = 9),
   axis.text.y = element_text(size = 9)
   )
-p2 = ggcorrplot(second_half_corHeap, type = "lower", lab=TRUE, lab_size = 2.5)+
+p2 = ggcorrplot(second_half_corHeap, type = "lower", lab = TRUE, lab_size = 2.5) +
   theme(
   axis.text.x = element_text(size = 9),
   axis.text.y = element_text(size = 9)
@@ -135,11 +135,11 @@ p2 = ggcorrplot(second_half_corHeap, type = "lower", lab=TRUE, lab_size = 2.5)+
 grid.arrange(p1,p2,nrow=2)
 ```
 
-e filtrarlo per avere solo le variabili che hanno correlazione con SalePrice >=0.5
+e filtrarlo per avere solo le variabili che hanno correlazione con SalePrice >=0.4
 ``` {r,warning = F}
 par(mfrow = c(2, 3))
-for (var in rownames(corHeap)[rownames(corHeap) != "SalePrice" & abs(corHeap)>=0.5]){
-  plot(SalePrice~HP[[var]], xlab=var)
+for (var in rownames(corHeap)[rownames(corHeap) != "SalePrice" & abs(corHeap) >= 0.4]){
+  plot(SalePrice~HP[[var]], xlab = var)
 }
 ```
 
