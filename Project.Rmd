@@ -5,7 +5,7 @@ output: html_document
 
 # Importazione delle librerie
 
-``` {r, warning = F}
+``` {r, message = T, warning = F}
 if (!require("ggplot2", quietly = T))
   install.packages("ggplot2")
 library(ggplot2)
@@ -182,7 +182,7 @@ ggcorrplot(corHeap, type = "lower", lab=TRUE, lab_size = 2.5) +
 # Analisi bivariata
 
 Trasformo le variabili opportune in factor:
-```{r,warning = F}
+```{r, message = F, warning = F}
 
 for (f in c("ExterQual", "ExterCond", "BsmtQual", "BsmtCond", "HeatingQC", "KitchenQual", "GarageQual", "GarageCond")) {
     HP[, f] <- factor(
