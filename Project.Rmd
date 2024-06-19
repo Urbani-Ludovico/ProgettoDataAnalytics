@@ -138,7 +138,7 @@ grid.arrange(p1,p2,nrow=2)
 e filtrarlo per avere solo le variabili che hanno correlazione con SalePrice >=0.6
 ``` {r,warning = F}
 par(mfrow=c(2,3))
-for (var in rownames(corHeap)[corHeap>=0.6 | corHeap<= -0.6]){
+for (var in rownames(corHeap)[rownames(corHeap) != "SalePrice" & (corHeap>=0.6 | corHeap<= -0.6)]){
   plot(SalePrice~HP[[var]], xlab=var)
 }
 ```
