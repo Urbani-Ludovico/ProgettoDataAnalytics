@@ -5,7 +5,7 @@ output: html_document
 
 # Importazione delle librerie
 
-``` {r, warning = F}
+``` {r, message = F, warning = F}
 library(ggplot2)
 
 plot_theme = theme_minimal() +
@@ -98,8 +98,8 @@ for (ele in withNA){
 }
 ```
 
-Si ha che il vettore di correlazione come
-``` {r,warning = F}
+ora si può visualizzare il vettore di correlazione come
+``` {r, warning = F}
 ggcorrplot(corHeap, type = "lower", lab=TRUE, lab_size = 2.5)+
   theme(
   axis.text.x = element_text(size = 9),
@@ -107,15 +107,16 @@ ggcorrplot(corHeap, type = "lower", lab=TRUE, lab_size = 2.5)+
   )
 ```
 
-Con quelli con maggior correlazione(>0.6)
-``` {r,warning = F}
+e filtrarlo per avere solo le variabili che hanno correlazione con SalePrice >=0.6
+``` {r, warning = F}
 pairs(HP[rownames(corHeap)[corHeap>=0.6 | corHeap<= -0.6]])
 ```
+
 
 # Analisi bivariata
 
 Trasformo le variabili opportune in factor:
-```{r,warning = F}
+```{r, warning = F}
 for (l in c("OverallQual", "OverallCond")) {
     HP[, l] <- factor(HP[, l], levels = 1:10, labels = 1:10)
 }
@@ -132,7 +133,7 @@ attach(HP)
 
 # Analisi dell'età delle case
 
-``` {r,warning = F}
+``` {r, message = F, warning = F}
 current_year <- as.integer(format(Sys.Date(), "%Y"))
 
 HouseAge <- current_year - YearBuilt
@@ -141,7 +142,7 @@ HP$HouseAge <- HouseAge
 
 Ottenuto il vettore delle età delle case, procedo a metterlo in relazione con il SalePrice trimite uno scatter plot.
 
-``` {r,warning = F}
+``` {r, warning = F}
 mod <- lm(SalePrice ~ HouseAge)
 
 ggplot(HP, aes(x = HouseAge, y = SalePrice)) +
