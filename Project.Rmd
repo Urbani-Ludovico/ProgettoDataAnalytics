@@ -5,8 +5,25 @@ output: html_document
 
 # Importazione delle librerie
 
-``` {r, message = F, warning = F}
+``` {r, warning = F}
+if (!require("ggplot2", quietly = T))
+  install.packages("ggplot2")
 library(ggplot2)
+if (!require("dplyr", quietly = T))
+  install.packages("dplyr")
+library(dplyr)
+if (!require("ggcorrplot", quietly = T))
+  install.packages("ggcorrplot")
+library(ggcorrplot)
+if (!require("GGally", quietly = T))
+  install.packages("GGally")
+library(GGally)
+if (!require("reshape2", quietly = T))
+  install.packages("reshape2")
+library(reshape2)
+if (!require("gridExtra", quietly = T))
+  install.packages("gridExtra")
+library(gridExtra)
 
 plot_theme = theme_minimal() +
     theme(
@@ -15,15 +32,11 @@ plot_theme = theme_minimal() +
         axis.line = element_line(color = "darkgrey"),
         axis.ticks = element_line(color = "black"))
 theme_set(plot_theme)
-
-library(dplyr)
-library(ggcorrplot)
-library(GGally)
 ```
 
 # Importazione dei dati
 
-``` {r,warning = F}
+```{r, warning = F}
 HP <- read.csv2(
     "./dataset.csv",
     sep = ",", 
@@ -66,7 +79,6 @@ Si può dedurre che sono una piccola parte delle case vendute siano ville di lus
 
 Prima di tutto identifico le variabili su cui ha senso fare una correlazione con il prezzo
 ``` {r,warning = F}
-library(ggcorrplot)
 
 Heapmap.vars <- c("MSSubClass", "MSZoning", "LotFrontage", "LotArea", "LotShape", "LotConfig", "Neighborhood", "BldgType", "HouseStyle", "OverallQual", "OverallCond", "YearBuilt", "YearRemodAdd", "Exterior1st", "ExterQual", "ExterCond", "Foundation", "BsmtQual", "BsmtCond", "BsmtExposure", "BsmtFinSF1", "BsmtFinSF2", "TotalBsmtSF", "HeatingQC", "X1stFlrSF", "X2ndFlrSF", "GrLivArea", "FullBath", "HalfBath", "BedroomAbvGr", "KitchenQual", "TotRmsAbvGrd", "GarageType", "GarageCars", "GarageArea", "GarageQual", "GarageCond", "OpenPorchSF", "EnclosedPorch", "ScreenPorch", "Fence", "MiscFeature", "MiscVal", "MoSold", "YrSold", "SalePrice")
 selected_vars = HP[Heapmap.vars]
@@ -79,7 +91,8 @@ convert_to_numeric <- function(x) {
 }
 
 selected_data <- selected_vars %>%
-  mutate(across(everything(), ~ convert_to_numeric(.)))
+  mutate(across(everything(), ~ convert_to_numeric(.))
+  )
 
 selected_data_numeric <- selected_data %>%
   mutate(across(everything(), ~ as.numeric(as.character(.))))
@@ -98,16 +111,36 @@ for (ele in withNA){
 ```
 
 ora si può visualizzare il vettore di correlazione come
-``` {r, warning = F}
-ggcorrplot(corHeap, type = "lower", lab=TRUE, lab_size = 2.5)+
+``` {r,warning = F}
+length_corHeap = ceiling(NROW(corHeap)/2)
+
+first_half_corHeap = as.data.frame(corHeap[1:length_corHeap,])
+rownames(first_half_corHeap) = rownames(corHeap)[1:length_corHeap]
+names(first_half_corHeap) = "SalePrice"
+length_corHeap = 1 + length_corHeap
+second_half_corHeap = as.data.frame(corHeap[length_corHeap:NROW(corHeap),])
+rownames(second_half_corHeap) = rownames(corHeap)[length_corHeap:NROW(corHeap)]
+names(second_half_corHeap) = "SalePrice"
+
+p1 = ggcorrplot(first_half_corHeap, type = "lower", lab=TRUE, lab_size = 2.5)+
   theme(
   axis.text.x = element_text(size = 9),
-  axis.text.y = element_text(size = 9))
+  axis.text.y = element_text(size = 9)
+  )
+p2 = ggcorrplot(second_half_corHeap, type = "lower", lab=TRUE, lab_size = 2.5)+
+  theme(
+  axis.text.x = element_text(size = 9),
+  axis.text.y = element_text(size = 9)
+  )
+grid.arrange(p1,p2,nrow=2)
 ```
 
 e filtrarlo per avere solo le variabili che hanno correlazione con SalePrice >=0.6
-``` {r, warning = F}
-pairs(HP[rownames(corHeap)[corHeap>=0.6 | corHeap<= -0.6]])
+``` {r,warning = F}
+par(mfrow=c(2,3))
+for (var in rownames(corHeap)[corHeap>=0.6 | corHeap<= -0.6]){
+  plot(SalePrice~HP[[var]], xlab=var)
+}
 ```
 
 ## Variabili calcolate
@@ -127,7 +160,7 @@ HP$ScreenPorchExists <- factor(ScreenPorch != 0, levels = c(F, T), labels = c("n
 attach(HP)
 ```
 
-ora procedo a metterle in correlazione con SalePrice in un heapmap
+ora procedo a metterle in correlazione con SalePrice in un heatmap
 ```{r, warning = F}
 vars <- c("FrontageExists", "HouseAge", "GarageExists", "OpenPorchExists", "EnclosedPorchExists", "ScreenPorchExists")
 
@@ -149,10 +182,7 @@ ggcorrplot(corHeap, type = "lower", lab=TRUE, lab_size = 2.5) +
 # Analisi bivariata
 
 Trasformo le variabili opportune in factor:
-```{r, message = F, warning = F}
-for (l in c("OverallQual", "OverallCond")) {
-    HP[, l] <- factor(HP[, l], levels = 1:10, labels = 1:10)
-}
+```{r,warning = F}
 
 for (f in c("ExterQual", "ExterCond", "BsmtQual", "BsmtCond", "HeatingQC", "KitchenQual", "GarageQual", "GarageCond")) {
     HP[, f] <- factor(
@@ -160,6 +190,19 @@ for (f in c("ExterQual", "ExterCond", "BsmtQual", "BsmtCond", "HeatingQC", "Kitc
         levels = c("Po", "Fa", "TA", "Gd", "Ex"),
         labels = c("Poor", "Fair", "Average", "Good", "Excellent"))
 }
+HP[,"OverallQual"] = factor(HP[,"OverallQual"],
+                            levels = c(1,2,3,4,5,6,7,8,9,10),
+                            labels = c( "Very Poor",
+                                        "Poor",
+                                        "Fair",
+                                        "Below Average",
+                                        "Average",
+                                        "Above Average",
+                                        "Good",
+                                        "Very Good",
+                                        "Excellent",
+                                        "Very Excellent")
+                            )
 
 attach(HP)
 ```
@@ -183,3 +226,29 @@ ggplot(HP, aes(x = HouseAge, y = SalePrice)) +
 
 Con un p-value di `r summary(mod)[[4]][2,4]` si deduce che più la casa venduta è vecchia, più il prezzo tende a scendere. È possibile che questo sia dovuto al fatto che quando una casa si deteriora, i proprietari tendano a venderla per poco invece di ristrutturarla.
 
+
+# Analisi della Qualita' complessiva delle case
+
+``` {r,warning = F}
+
+par(mfrow=c(1,1))
+ggplot(HP, aes(x = OverallQual, y = SalePrice)) +
+    geom_point() +
+    xlab("Qualita' complessiva") +
+    ylab("Prezzo di vendita")
+
+```
+
+Si deduce che più la Qualita' aumenta, più il prezzo tende a aumentare. È possibile che questo sia dovuto al fatto che le persone associano alla qualita', un prezzo superiore. Alla condizione Very Excellent si puo osservare una grande varianza, questo puo essere dovuta al fatto che ci sono pocchi dati ma anche che valutare una casa diventa piu difficile.
+
+# Analisi della Qualita' Esterne delle case
+
+``` {r,warning = F}
+
+par(mfrow=c(1,1))
+ggplot(HP, aes(x = ExterQual, y = SalePrice)) +
+    geom_point() +
+    xlab("Qualita' Esterne") +
+    ylab("Prezzo di vendita")
+
+```
