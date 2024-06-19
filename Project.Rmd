@@ -151,6 +151,7 @@ Ad esempio variabili quantitative o qualitative che hanno valori NA o 0 per indi
 current_year <- as.integer(format(Sys.Date(), "%Y"))
 
 HP$FrontageExists <- factor(!is.na(LotFrontage), levels = c(F, T), labels = c("no", "yes"))
+HP$LotShapeLess <- factor(LotShape == "Reg", levels = c(T, F), labels = c("Regular", "Irregular"))
 HP$HouseAge <- current_year - YearBuilt
 HP$GarageExists <- factor(!is.na(GarageType), levels = c(F, T), labels = c("no", "yes"))
 HP$OpenPorchExists <- factor(OpenPorchSF != 0, levels = c(F, T), labels = c("no", "yes"))
@@ -162,7 +163,7 @@ attach(HP)
 
 ora procedo a metterle in correlazione con SalePrice in un heatmap
 ```{r, warning = F}
-vars <- c("FrontageExists", "HouseAge", "GarageExists", "OpenPorchExists", "EnclosedPorchExists", "ScreenPorchExists")
+vars <- c("SalePrice", "FrontageExists", "LotShapeLess", "HouseAge", "GarageExists", "OpenPorchExists", "EnclosedPorchExists", "ScreenPorchExists")
 
 corHeap <- matrix(
     rep(0, length(vars)), 
@@ -173,7 +174,7 @@ for (v in vars){
     corHeap[v, "SalePrice"] = cor(as.numeric(HP[, v]), SalePrice)
 }
 
-ggcorrplot(corHeap, type = "lower", lab=TRUE, lab_size = 2.5) + 
+ggcorrplot(corHeap, type = "lower", lab = TRUE, lab_size = 2.5) + 
     theme(
         axis.text.x = element_text(size = 9),
         axis.text.y = element_text(size = 9))
