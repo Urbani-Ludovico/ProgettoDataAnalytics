@@ -131,9 +131,6 @@ attach(HP)
 ```
 
 # Analisi dell'età delle case
-<!--b) Esiste una relazione tra l'area e l'età della casa?
-c) Confronto delle variabili indipendenti con ANOVA
-d) Chi ha pagato di più in media per età -->
 
 ``` {r,warning = F}
 current_year <- as.integer(format(Sys.Date(), "%Y"))
@@ -157,5 +154,5 @@ ggplot(HP, aes(x = HouseAge, y = SalePrice)) +
         color = "red")
 ```
 
-Da cui si deduce che più la casa venduta è vecchia, più il prezzo tende a scendere. È possibile che questo sia dovuto al fatto che quando una casa si deteriora, i proprietari tendano a venderla per poco invece di ristrutturarla.
+Con un p-value di `r summary(mod)[[4]][2,4]` si deduce che più la casa venduta è vecchia, più il prezzo tende a scendere. È possibile che questo sia dovuto al fatto che quando una casa si deteriora, i proprietari tendano a venderla per poco invece di ristrutturarla.
 
