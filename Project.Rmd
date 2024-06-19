@@ -79,8 +79,7 @@ convert_to_numeric <- function(x) {
 }
 
 selected_data <- selected_vars %>%
-  mutate(across(everything(), ~ convert_to_numeric(.))
-  )
+  mutate(across(everything(), ~ convert_to_numeric(.)))
 
 selected_data_numeric <- selected_data %>%
   mutate(across(everything(), ~ as.numeric(as.character(.))))
@@ -103,8 +102,7 @@ ora si può visualizzare il vettore di correlazione come
 ggcorrplot(corHeap, type = "lower", lab=TRUE, lab_size = 2.5)+
   theme(
   axis.text.x = element_text(size = 9),
-  axis.text.y = element_text(size = 9)
-  )
+  axis.text.y = element_text(size = 9))
 ```
 
 e filtrarlo per avere solo le variabili che hanno correlazione con SalePrice >=0.6
@@ -125,6 +123,27 @@ HP$GarageExists <- factor(!is.na(GarageType), levels = c(F, T), labels = c("no",
 HP$OpenPorchExists <- factor(OpenPorchSF != 0, levels = c(F, T), labels = c("no", "yes"))
 HP$EnclosedPorchExists <- factor(EnclosedPorch != 0, levels = c(F, T), labels = c("no", "yes"))
 HP$ScreenPorchExists <- factor(ScreenPorch != 0, levels = c(F, T), labels = c("no", "yes"))
+
+attach(HP)
+```
+
+ora procedo a metterle in correlazione con SalePrice in un heapmap
+```{r, warning = F}
+vars <- c("FrontageExists", "HouseAge", "GarageExists", "OpenPorchExists", "EnclosedPorchExists", "ScreenPorchExists")
+
+corHeap <- matrix(
+    rep(0, length(vars)), 
+    ncol = 1, 
+    dimnames = list(vars, c("SalePrice")))
+
+for (v in vars){
+    corHeap[v, "SalePrice"] = cor(as.numeric(HP[, v]), SalePrice)
+}
+
+ggcorrplot(corHeap, type = "lower", lab=TRUE, lab_size = 2.5) + 
+    theme(
+        axis.text.x = element_text(size = 9),
+        axis.text.y = element_text(size = 9))
 ```
 
 # Analisi bivariata
