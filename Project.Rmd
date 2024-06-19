@@ -112,6 +112,20 @@ e filtrarlo per avere solo le variabili che hanno correlazione con SalePrice >=0
 pairs(HP[rownames(corHeap)[corHeap>=0.6 | corHeap<= -0.6]])
 ```
 
+## Variabili calcolate
+
+Prendo le variabili escluse dal pair plot come ad esempio e provo a creare delle variabili calcolate che potrebbero essere correlate a SalePrice. 
+Ad esempio variabili quantitative o qualitative che hanno valori NA o 0 per indicare l'assenza di quella caratteristica le trasformo in variabili booleane.
+```{r, message = F}
+current_year <- as.integer(format(Sys.Date(), "%Y"))
+
+HP$FrontageExists <- factor(!is.na(LotFrontage), levels = c(F, T), labels = c("no", "yes"))
+HP$HouseAge <- current_year - YearBuilt
+HP$GarageExists <- factor(!is.na(GarageType), levels = c(F, T), labels = c("no", "yes"))
+HP$OpenPorchExists <- factor(OpenPorchSF != 0, levels = c(F, T), labels = c("no", "yes"))
+HP$EnclosedPorchExists <- factor(EnclosedPorch != 0, levels = c(F, T), labels = c("no", "yes"))
+HP$ScreenPorchExists <- factor(ScreenPorch != 0, levels = c(F, T), labels = c("no", "yes"))
+```
 
 # Analisi bivariata
 
@@ -132,13 +146,6 @@ attach(HP)
 ```
 
 # Analisi dell'età delle case
-
-``` {r, warning = F}
-current_year <- as.integer(format(Sys.Date(), "%Y"))
-
-HouseAge <- current_year - YearBuilt
-HP$HouseAge <- HouseAge
-```
 
 Ottenuto il vettore delle età delle case, procedo a metterlo in relazione con il SalePrice trimite uno scatter plot.
 
