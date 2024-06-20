@@ -6,24 +6,12 @@ output: html_document
 # Importazione delle librerie
 
 ``` {r, message = F, warning = F}
-if (!require("ggplot2", quietly = T))
-  install.packages("ggplot2")
-library(ggplot2)
-if (!require("dplyr", quietly = T))
-  install.packages("dplyr")
-library(dplyr)
-if (!require("ggcorrplot", quietly = T))
-  install.packages("ggcorrplot")
-library(ggcorrplot)
-if (!require("GGally", quietly = T))
-  install.packages("GGally")
-library(GGally)
-if (!require("reshape2", quietly = T))
-  install.packages("reshape2")
-library(reshape2)
-if (!require("gridExtra", quietly = T))
-  install.packages("gridExtra")
-library(gridExtra)
+for (package in c("ggplot2", "ggcorrplot", "dplyr", "GGally", "reshape2", "gridExtra")) {
+    if (!require(package, character.only = T, quietly = T))
+      install.packages(package, character.only = T)
+    library(package, character.only = T)
+}
+
 
 plot_theme = theme_minimal() +
     theme(
@@ -139,7 +127,7 @@ e filtrarlo per avere solo le variabili che hanno correlazione con SalePrice >=0
 ``` {r, warning = F}
 par(mfrow = c(2, 3))
 for (var in rownames(corHeap)[rownames(corHeap) != "SalePrice" & abs(corHeap) >= 0.4]){
-  plot(SalePrice~HP[[var]], xlab = var)
+    plot(SalePrice~HP[[var]], xlab = var)
 }
 ```
 
