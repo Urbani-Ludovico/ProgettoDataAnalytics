@@ -163,6 +163,8 @@ HP$EnclosedPorchExists <- factor(EnclosedPorch != 0, levels = c(F, T), labels = 
 HP$ScreenPorchExists <- factor(ScreenPorch != 0, levels = c(F, T), labels = c("no", "yes"))
 
 attach(HP)
+
+##Wonderful comment
 ```
 
 ora procedo a metterle in correlazione con SalePrice in un heatmap
