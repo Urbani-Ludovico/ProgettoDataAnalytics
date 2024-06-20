@@ -293,7 +293,7 @@ Con un p-value di `r summary(mod)[[4]][2,4]` si deduce che più la casa venduta 
 ## Analisi della qualità complessiva delle case
 
 ``` {r, message = F, warning = F}
-analysis.qualitative(
+mod <- analysis.qualitative(
     SalePrice, OverallQual,
     horizontal = T,
     second_var.lab = "qualità di costruzione"
@@ -305,8 +305,10 @@ Si deduce che più la qualità di costruzione aumenta, più il prezzo tende a au
 ## Analisi della qualità esterna delle case
 
 ``` {r, message = F, warning = F}
-analysis.qualitative(
+mod <- analysis.qualitative(
     SalePrice, ExterQual,
     second_var.lab = "qualità esterna"
 )
 ```
+
+Come nel punto precedente anche qua si nota che più la qualità esterna aumenta, più il prezzo tende a salire. Però si nota anche che nella classe di qualità più alta, il prezzo tende ad avere una varianza più alta.
