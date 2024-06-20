@@ -6,12 +6,13 @@ output: html_document
 # Importazione delle librerie
 
 ``` {r, message = F, warning = F}
-for (package in c("ggplot2", "ggcorrplot", "dplyr", "GGally", "reshape2", "gridExtra")) {
-    if (!require(package, character.only = T, quietly = T))
+for (package in c("ggplot2", "ggcorrplot", "ggpubr", "dplyr", "GGally", "reshape2", "gridExtra")) {
+    if (!require(package, character.only = T, quietly = T)) {
       install.packages(package, character.only = T)
+    }
+    
     library(package, character.only = T)
 }
-
 
 plot_theme = theme_minimal() +
     theme(
@@ -124,11 +125,26 @@ grid.arrange(p1,p2,nrow=2)
 ```
 
 e filtrarlo per avere solo le variabili che hanno correlazione con SalePrice >=0.4
-``` {r, warning = F}
-par(mfrow = c(2, 3))
-for (var in rownames(corHeap)[rownames(corHeap) != "SalePrice" & abs(corHeap) >= 0.4]){
-    plot(SalePrice~HP[[var]], xlab = var)
-}
+```{r, results = F, message = F, warning = F}
+ggarrange(
+    plotlist = lapply(
+        rownames(corHeap)[rownames(corHeap) != "SalePrice" & abs(corHeap) >= 0.4],
+        function (var) {
+            plt <- ggplot(HP, aes(x = HP[[var]], y = SalePrice)) +
+                xlab(var)
+            
+            if (is.factor(HP[[var]])) {
+                plt <- plt + geom_boxplot()
+            } else {
+                plt <- plt + geom_point()
+            }
+            
+            plot(plt)
+        }),
+    ncol = 2,
+    nrow = 1,
+    widths = c(1, 1)
+)
 ```
 
 ## Variabili calcolate
