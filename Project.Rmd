@@ -1,11 +1,16 @@
 ---
 title: "Analisi house price"
-output: html_document
+author: "Urbani Ludovico, Mohamed Fadhla Mutua, Nicoloò Nava, Nicola Batiston"
+date: "2024-06-14"
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
 ---
 
 # Importazione delle librerie
 
-``` {r, message = F, warning = F}
+```{r, message = F, warning = F}
 for (package in c("ggplot2", "ggcorrplot", "ggpubr", "dplyr", "GGally", "reshape2", "gridExtra", "tidyr")) {
     if (!require(package, character.only = T, quietly = T)) {
       install.packages(package, character.only = T)
@@ -36,13 +41,13 @@ attach(HP)
 
 # Distribuzione dei prezzi delle case
 
-``` {r, warning = F}
+```{r, warning = F}
 SalePrice.summary <- summary(SalePrice)
 
 print(SalePrice.summary)
 ```
 
-``` {r, warning = F}
+```{r, warning = F}
 ggplot(HP, aes(x = SalePrice)) +
     geom_density() +
     xlab("Prezzo di vendita") +
@@ -54,19 +59,20 @@ ggplot(HP, aes(x = SalePrice)) +
     labs(colour = "Statistiche") +
     scale_color_manual(labels = c("1° Quantile", "3° Quantile", "Media", "Mediana"), values = c("green", "darkgreen", "red", "blue"))
 ```
-``` {r, warning = F}
+
+```{r, warning = F}
 ggplot(HP, aes(x = SalePrice)) +
     geom_boxplot() +
     xlab("Prezzo di vendita")
 ```
 
-Possiamo dedurre che la distribuzione è positivamente asimetrica e che la maggior parte del prezzo di vendita è compresa tra 129.975 e 214.000, essendo rispettivamente il 1° e il 3° quantile.
-Si può dedurre che sono una piccola parte delle case vendute siano ville di lusso, case lussuose o immobili di alto valore, ma la maggior parte del mercato immobiliare di concentri sulla vendita di piccoli o medi immobili.
+Possiamo dedurre che la distribuzione è positivamente asimetrica e che la maggior parte del prezzo di vendita è compresa tra 129.975 e 214.000, essendo rispettivamente il 1° e il 3° quantile. Si può dedurre che sono una piccola parte delle case vendute siano ville di lusso, case lussuose o immobili di alto valore, ma la maggior parte del mercato immobiliare di concentri sulla vendita di piccoli o medi immobili.
 
 # Matrice di correlazione
 
 Prima di tutto identifico le variabili su cui ha senso fare una correlazione con il prezzo
-``` {r, warning = F}
+
+```{r, warning = F}
 
 Heapmap.vars <- names(HP)
 selected_vars = HP[Heapmap.vars]
@@ -99,7 +105,8 @@ for (ele in withNA){
 ```
 
 ora si può visualizzare il vettore di correlazione come
-``` {r, warning = F}
+
+```{r, warning = F}
 length_first_corHeap = ceiling(NROW(corHeap)/4)
 
 first_half_corHeap = as.data.frame(corHeap[1:length_first_corHeap,])
@@ -159,7 +166,8 @@ grid.arrange(
 )
 ```
 
-e filtrarlo per avere solo le variabili che hanno correlazione con SalePrice >=0.4
+e filtrarlo per avere solo le variabili che hanno correlazione con SalePrice \>=0.4
+
 ```{r, results = F, message = F, warning = F}
 ggarrange(
     plotlist = lapply(
@@ -186,13 +194,13 @@ ggarrange(
 
 ## Variabili calcolate
 
-Prendo le variabili escluse dal pair plot come ad esempio e provo a creare delle variabili calcolate che potrebbero essere correlate a SalePrice. 
-Ad esempio variabili quantitative o qualitative che hanno valori NA o 0 per indicare l'assenza di quella caratteristica le trasformo in variabili booleane.
+Prendo le variabili escluse corro e provo a creare delle variabili calcolate che potrebbero essere correlate a SalePrice. Ad esempio variabili quantitative o qualitative che hanno valori NA o 0 per indicare l'assenza di quella caratteristica le trasformo in variabili booleane.
 
 Trasformo le variabili opportune in factor
+
 ```{r, message = F}
 HP_Excluded = HP
-#HP$FrontageExists <- factor(!is.na(LotFrontage), levels = c(F, T), labels = c("no", "yes")) # Questo non ha senso
+
 ###' LotShape
 recode_map <- c(
   "Reg" = "Regular",
@@ -307,14 +315,12 @@ HP_Excluded <- HP_Excluded %>%
          MiscFeatureExists = recode(MiscFeature, !!!recode_map),
          MiscFeatureExists = replace_na(MiscFeatureExists, "F"))
 HP_Excluded$FenceExists = factor(HP_Excluded$FenceExists, levels = c("F", "T"))
-#HP$OpenPorchExists <- factor(OpenPorchSF != 0, levels = c(F, T), labels = c("no", "yes")) # Questo non ha senso
-#HP$EnclosedPorchExists <- factor(EnclosedPorch != 0, levels = c(F, T), labels = c("no", "yes")) # Questo non ha senso
-#HP$ScreenPorchExists <- factor(ScreenPorch != 0, levels = c(F, T), labels = c("no", "yes")) # Questo non ha senso
 
 attach(HP_Excluded)
 ```
 
 ora procedo a metterle in correlazione con SalePrice in un heatmap
+
 ```{r, warning = F}
 vars <- c("SalePrice", "LotShapeReduced", "HouseAge", "MSZoningReduced", "GarageExists", "UtilitiesReduced", "OverallCondReduced", "FirePlaceExists", "BsmtExists", "FenceExists", "MiscFeatureExists")
 
@@ -339,11 +345,9 @@ ggcorrplot(corHeap_excluded, type = "lower", lab = TRUE, lab_size = 2.5) +
 
 # Analisi bivariata
 
-
 ## Funzioni di analisi
 
-Visto che la variabile target SalePrice è quantitativa, distinguo due casi:
-1. la seconda variabile è qualitativa:
+Visto che la variabile target SalePrice è quantitativa, distinguo due casi: 1. la seconda variabile è qualitativa:
 
 ```{r, warning = F}
 analysis.qualitative <- function(target, second_var, horizontal = F, target.lab = "prezzo di vendita", second_var.lab = "seconda variabile") {
@@ -379,7 +383,7 @@ analysis.qualitative <- function(target, second_var, horizontal = F, target.lab 
 }
 ```
 
-2. la seconda variabile è quantitativa:
+2.  la seconda variabile è quantitativa:
 
 ```{r, warning = F}
 analysis.quantitative <- function(target, second_var, horizontal = F, target.lab = "prezzo di vendita", second_var.lab = "seconda variabile") {
@@ -412,7 +416,7 @@ analysis.quantitative <- function(target, second_var, horizontal = F, target.lab
 
 Avendo il vettore delle età delle case, procedo a metterlo in relazione con il SalePrice trimite uno scatter plot
 
-``` {r, message = F, warning = F}
+```{r, message = F, warning = F}
 mod <- analysis.quantitative(
     SalePrice, HouseAge,
     second_var.lab = "età della casa"
@@ -421,10 +425,9 @@ mod <- analysis.quantitative(
 
 Con un p-value di `r summary(mod)[[4]][2,4]` si deduce che più la casa venduta è vecchia, più il prezzo tende a scendere. È possibile che questo sia dovuto al fatto che quando una casa si deteriora, i proprietari tendano a venderla per poco invece di ristrutturarla.
 
-
 ## Analisi della qualità complessiva delle case
 
-``` {r, message = F, warning = F}
+```{r, message = F, warning = F}
 mod <- analysis.qualitative(
     SalePrice, OverallQual,
     horizontal = T,
@@ -434,13 +437,83 @@ mod <- analysis.qualitative(
 
 Si deduce che più la qualità di costruzione aumenta, più il prezzo tende a aumentare. È possibile che questo sia dovuto al fatto che le persone associano alla qualità un prezzo superiore. Alla condizione "Very Excellent" si puo osservare una grande varianza, questo puo essere dovuta al fatto che ci sono pocchi dati ma anche che valutare una casa diventa piu difficile.
 
-## Analisi della qualità esterna delle case
+## Analisi della Area del Piano terra
 
-``` {r, message = F, warning = F}
-mod <- analysis.qualitative(
-    SalePrice, ExterQual,
-    second_var.lab = "qualità esterna"
+```{r, message = F, warning = F}
+mod <- analysis.quantitative(
+    SalePrice, GrLivArea,
+    second_var.lab = "Area del Piano terra"
 )
 ```
 
 Come nel punto precedente anche qua si nota che più la qualità esterna aumenta, più il prezzo tende a salire. Però si nota anche che nella classe di qualità più alta, il prezzo tende ad avere una varianza più alta.
+
+## Analisi dei Bagni Sopra il semiterrato
+
+```{r, message = F, warning = F}
+mod <- analysis.qualitative(
+    SalePrice, FullBath,
+    horizontal = T,
+    second_var.lab = "Bagni Sopra il semiterrato"
+)
+```
+
+## Analisi dei Numeri di Stanze sopra il semiterrato
+
+```{r, message = F, warning = F}
+mod <- analysis.qualitative(
+    SalePrice, TotRmsAbvGrd,
+    horizontal = T,
+    second_var.lab = "N Stanze sopra il semiterrato"
+)
+```
+
+## Analisi dei Numeri di camini
+
+```{r, message = F, warning = F}
+mod <- analysis.qualitative(
+    SalePrice, Fireplaces,
+    horizontal = T,
+    second_var.lab = "N di camini"
+)
+```
+
+## Analisi dei Anno di costruzione dei garage
+
+```{r, message = F, warning = F}
+mod <- analysis.quantitative(
+    SalePrice, GarageYrBlt,
+    horizontal = F,
+    second_var.lab = "Garage Year Built"
+)
+```
+
+## Analisi dei Numeri di Auto
+
+```{r, message = F, warning = F}
+mod <- analysis.qualitative(
+    SalePrice, GarageCars,
+    horizontal = T,
+    second_var.lab = "N di Auto"
+)
+```
+
+## Analisi dei Area del Garage
+
+```{r, message = F, warning = F}
+mod <- analysis.quantitative(
+    SalePrice, GarageArea,
+    horizontal = F,
+    second_var.lab = "Area del Garage"
+)
+```
+
+## Analisi della Qualità delle piscine
+
+```{r, message = F, warning = F}
+mod <- analysis.qualitative(
+    SalePrice, PoolQC,
+    horizontal = F,
+    second_var.lab = "Area del Garage"
+)
+```
