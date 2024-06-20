@@ -208,7 +208,75 @@ HP[,"OverallQual"] = factor(HP[,"OverallQual"],
 attach(HP)
 ```
 
-# Analisi dell'età delle case
+## Funzioni di analisi
+
+Visto che la variabile target SalePrice è quantitativa, distinguo due casi:
+1. la seconda variabile è qualitativa:
+
+```{r, warning = F}
+analysis.qualitative <- function(target, second_var, horizontal = F, target.lab = "prezzo di vendita", second_var.lab = "seconda variabile") {
+    df <- subset(data.frame(target, second_var), !is.na(second_var))
+    
+    test <- aov(target ~ second_var)
+    p <- summary(test)[[1]][["Pr(>F)"]][1]
+    
+    plt <- ggplot(
+        df,
+        aes(
+            x = if (horizontal) target else second_var, 
+            y = if (horizontal) second_var else target)) +
+    geom_violin(
+        trim = F, 
+        draw_quantiles = c(0.25, 0.5, 0.75)) +
+    stat_summary(
+        fun = "mean",
+        geom = "point",
+        color = "red",
+        fill = "red",
+        shape = 20,
+        size = 2) +
+    labs(
+        title = paste(target.lab, "VS", second_var.lab, sep = " "),
+        subtitle = paste("Anova p-value = ", signif(p, 3), sep = ""),
+        x = if (horizontal) target.lab else second_var.lab,
+        y = if (horizontal) second_var.lab else target.lab)
+    
+    plot(plt)
+    
+    return(test)
+}
+```
+
+2. la seconda variabile è quantitativa:
+
+```{r, warning = F}
+analysis.quantitative <- function(target, second_var, horizontal = F, target.lab = "prezzo di vendita", second_var.lab = "seconda variabile") {
+    mod <- lm(target ~ second_var)
+    p <- summary(mod)$coefficients[2,4]
+    
+    plt <- ggplot(
+        data.frame(target, second_var),
+        aes(
+            x = if (horizontal) target else second_var, 
+            y = if (horizontal) second_var else target)) +
+    geom_point(size = 1) +
+    geom_abline(
+        intercept = coef(mod)[1], 
+        slope = coef(mod)[2],
+        color = "red") +
+    labs(
+        title = paste(target.lab, "VS", second_var.lab, sep = " "),
+        subtitle = paste("Linear model p-value = ", signif(p, 3), sep = ""),
+        x = if (horizontal) target.lab else second_var.lab,
+        y = if (horizontal) second_var.lab else target.lab)
+    
+    plot(plt)
+    
+    return (mod)
+}
+```
+
+## Analisi dell'età delle case
 
 Avendo il vettore delle età delle case, procedo a metterlo in relazione con il SalePrice trimite uno scatter plot
 
@@ -228,7 +296,7 @@ ggplot(HP, aes(x = HouseAge, y = SalePrice)) +
 Con un p-value di `r summary(mod)[[4]][2,4]` si deduce che più la casa venduta è vecchia, più il prezzo tende a scendere. È possibile che questo sia dovuto al fatto che quando una casa si deteriora, i proprietari tendano a venderla per poco invece di ristrutturarla.
 
 
-# Analisi della qualità complessiva delle case
+## Analisi della qualità complessiva delle case
 
 ``` {r,warning = F}
 
@@ -242,7 +310,7 @@ ggplot(HP, aes(x = OverallQual, y = SalePrice)) +
 
 Si deduce che più la qualità aumenta, più il prezzo tende a aumentare. È possibile che questo sia dovuto al fatto che le persone associano alla qualità un prezzo superiore. Alla condizione "Very Excellent" si puo osservare una grande varianza, questo puo essere dovuta al fatto che ci sono pocchi dati ma anche che valutare una casa diventa piu difficile.
 
-# Analisi della qualità esterna delle case
+## Analisi della qualità esterna delle case
 
 ``` {r,warning = F}
 
