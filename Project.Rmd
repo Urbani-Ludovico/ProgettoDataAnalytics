@@ -5,7 +5,7 @@ output: html_document
 
 # Importazione delle librerie
 
-``` {r, message = T, warning = F}
+``` {r, message = F, warning = F}
 if (!require("ggplot2", quietly = T))
   install.packages("ggplot2")
 library(ggplot2)
@@ -48,13 +48,13 @@ attach(HP)
 
 # Distribuzione dei prezzi delle case
 
-``` {r,warning = F}
+``` {r, warning = F}
 SalePrice.summary <- summary(SalePrice)
 
 print(SalePrice.summary)
 ```
 
-``` {r,warning = F}
+``` {r, warning = F}
 ggplot(HP, aes(x = SalePrice)) +
     geom_density() +
     xlab("Prezzo di vendita") +
@@ -66,7 +66,7 @@ ggplot(HP, aes(x = SalePrice)) +
     labs(colour = "Statistiche") +
     scale_color_manual(labels = c("1° Quantile", "3° Quantile", "Media", "Mediana"), values = c("green", "darkgreen", "red", "blue"))
 ```
-``` {r,warning = F}
+``` {r, warning = F}
 ggplot(HP, aes(x = SalePrice)) +
     geom_boxplot() +
     xlab("Prezzo di vendita")
@@ -78,7 +78,7 @@ Si può dedurre che sono una piccola parte delle case vendute siano ville di lus
 # Matrice di correlazione
 
 Prima di tutto identifico le variabili su cui ha senso fare una correlazione con il prezzo
-``` {r,warning = F}
+``` {r, warning = F}
 
 Heapmap.vars <- c("MSSubClass", "MSZoning", "LotFrontage", "LotArea", "LotShape", "LotConfig", "Neighborhood", "BldgType", "HouseStyle", "OverallQual", "OverallCond", "YearBuilt", "YearRemodAdd", "Exterior1st", "ExterQual", "ExterCond", "Foundation", "BsmtQual", "BsmtCond", "BsmtExposure", "BsmtFinSF1", "BsmtFinSF2", "TotalBsmtSF", "HeatingQC", "X1stFlrSF", "X2ndFlrSF", "GrLivArea", "FullBath", "HalfBath", "BedroomAbvGr", "KitchenQual", "TotRmsAbvGrd", "GarageType", "GarageCars", "GarageArea", "GarageQual", "GarageCond", "OpenPorchSF", "EnclosedPorch", "ScreenPorch", "Fence", "MiscFeature", "MiscVal", "MoSold", "YrSold", "SalePrice")
 selected_vars = HP[Heapmap.vars]
@@ -111,7 +111,7 @@ for (ele in withNA){
 ```
 
 ora si può visualizzare il vettore di correlazione come
-``` {r,warning = F}
+``` {r, warning = F}
 length_corHeap = ceiling(NROW(corHeap)/2)
 
 first_half_corHeap = as.data.frame(corHeap[1:length_corHeap,])
@@ -136,7 +136,7 @@ grid.arrange(p1,p2,nrow=2)
 ```
 
 e filtrarlo per avere solo le variabili che hanno correlazione con SalePrice >=0.4
-``` {r,warning = F}
+``` {r, warning = F}
 par(mfrow = c(2, 3))
 for (var in rownames(corHeap)[rownames(corHeap) != "SalePrice" & abs(corHeap) >= 0.4]){
   plot(SalePrice~HP[[var]], xlab = var)
@@ -280,17 +280,11 @@ analysis.quantitative <- function(target, second_var, horizontal = F, target.lab
 
 Avendo il vettore delle età delle case, procedo a metterlo in relazione con il SalePrice trimite uno scatter plot
 
-``` {r, warning = F}
-mod <- lm(SalePrice ~ HouseAge)
-
-ggplot(HP, aes(x = HouseAge, y = SalePrice)) +
-    geom_point() +
-    xlab("Età dell'abitazione") +
-    ylab("Prezzo di vendita") +
-    geom_abline(
-        intercept = coef(mod)[1], 
-        slope = coef(mod)[2],
-        color = "red")
+``` {r, message = F, warning = F}
+mod <- analysis.quantitative(
+    SalePrice, HouseAge,
+    second_var.lab = "età della casa"
+)
 ```
 
 Con un p-value di `r summary(mod)[[4]][2,4]` si deduce che più la casa venduta è vecchia, più il prezzo tende a scendere. È possibile che questo sia dovuto al fatto che quando una casa si deteriora, i proprietari tendano a venderla per poco invece di ristrutturarla.
@@ -298,26 +292,21 @@ Con un p-value di `r summary(mod)[[4]][2,4]` si deduce che più la casa venduta 
 
 ## Analisi della qualità complessiva delle case
 
-``` {r,warning = F}
-
-par(mfrow=c(1,1))
-ggplot(HP, aes(x = OverallQual, y = SalePrice)) +
-    geom_point() +
-    xlab("Qualità complessiva") +
-    ylab("Prezzo di vendita")
-
+``` {r, message = F, warning = F}
+analysis.qualitative(
+    SalePrice, OverallQual,
+    horizontal = T,
+    second_var.lab = "qualità di costruzione"
+)
 ```
 
-Si deduce che più la qualità aumenta, più il prezzo tende a aumentare. È possibile che questo sia dovuto al fatto che le persone associano alla qualità un prezzo superiore. Alla condizione "Very Excellent" si puo osservare una grande varianza, questo puo essere dovuta al fatto che ci sono pocchi dati ma anche che valutare una casa diventa piu difficile.
+Si deduce che più la qualità di costruzione aumenta, più il prezzo tende a aumentare. È possibile che questo sia dovuto al fatto che le persone associano alla qualità un prezzo superiore. Alla condizione "Very Excellent" si puo osservare una grande varianza, questo puo essere dovuta al fatto che ci sono pocchi dati ma anche che valutare una casa diventa piu difficile.
 
 ## Analisi della qualità esterna delle case
 
-``` {r,warning = F}
-
-par(mfrow=c(1,1))
-ggplot(HP, aes(x = ExterQual, y = SalePrice)) +
-    geom_point() +
-    xlab("Qualità esterna") +
-    ylab("Prezzo di vendita")
-
+``` {r, message = F, warning = F}
+analysis.qualitative(
+    SalePrice, ExterQual,
+    second_var.lab = "qualità esterna"
+)
 ```
