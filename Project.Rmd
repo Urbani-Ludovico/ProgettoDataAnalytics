@@ -69,7 +69,7 @@ Si può dedurre che sono una piccola parte delle case vendute siano ville di lus
 Prima di tutto identifico le variabili su cui ha senso fare una correlazione con il prezzo
 ``` {r, warning = F}
 
-Heapmap.vars <- c("MSSubClass", "MSZoning", "LotFrontage", "LotArea", "LotShape", "LotConfig", "Neighborhood", "BldgType", "HouseStyle", "OverallQual", "OverallCond", "YearBuilt", "YearRemodAdd", "Exterior1st", "ExterQual", "ExterCond", "Foundation", "BsmtQual", "BsmtCond", "BsmtExposure", "BsmtFinSF1", "BsmtFinSF2", "TotalBsmtSF", "HeatingQC", "X1stFlrSF", "X2ndFlrSF", "GrLivArea", "FullBath", "HalfBath", "BedroomAbvGr", "KitchenQual", "TotRmsAbvGrd", "GarageType", "GarageCars", "GarageArea", "GarageQual", "GarageCond", "OpenPorchSF", "EnclosedPorch", "ScreenPorch", "Fence", "MiscFeature", "MiscVal", "MoSold", "YrSold", "SalePrice")
+Heapmap.vars <- names(HP)
 selected_vars = HP[Heapmap.vars]
 convert_to_numeric <- function(x) {
   if (is.factor(x) || is.character(x)) {
@@ -101,27 +101,49 @@ for (ele in withNA){
 
 ora si può visualizzare il vettore di correlazione come
 ``` {r, warning = F}
-length_corHeap = ceiling(NROW(corHeap)/2)
+length_first_corHeap = ceiling(NROW(corHeap)/4)
 
-first_half_corHeap = as.data.frame(corHeap[1:length_corHeap,])
-rownames(first_half_corHeap) = rownames(corHeap)[1:length_corHeap]
+first_half_corHeap = as.data.frame(corHeap[1:length_first_corHeap,])
+rownames(first_half_corHeap) = rownames(corHeap)[1:length_first_corHeap]
 names(first_half_corHeap) = "SalePrice"
-length_corHeap = 1 + length_corHeap
-second_half_corHeap = as.data.frame(corHeap[length_corHeap:NROW(corHeap),])
-rownames(second_half_corHeap) = rownames(corHeap)[length_corHeap:NROW(corHeap)]
+
+length_second_corHeap = length_first_corHeap*2
+second_half_corHeap = as.data.frame(corHeap[(length_first_corHeap+1):length_second_corHeap,])
+rownames(second_half_corHeap) = rownames(corHeap)[(length_first_corHeap+1):length_second_corHeap]
 names(second_half_corHeap) = "SalePrice"
 
-p1 = ggcorrplot(first_half_corHeap, type = "lower", lab = TRUE, lab_size = 2.5) +
+length_third_corHeap = length_first_corHeap*3
+third_half_corHeap = as.data.frame(corHeap[(length_second_corHeap+1):length_third_corHeap,])
+rownames(third_half_corHeap) = rownames(corHeap)[(length_second_corHeap+1):length_third_corHeap]
+names(third_half_corHeap) = "SalePrice"
+
+length_fourth_corHeap = (length_first_corHeap*4)-1
+fourth_half_corHeap = as.data.frame(corHeap[(length_third_corHeap+1):length_fourth_corHeap,])
+rownames(fourth_half_corHeap) = rownames(corHeap)[(length_third_corHeap+1):length_fourth_corHeap]
+names(fourth_half_corHeap) = "SalePrice"
+
+p1 = ggcorrplot(first_half_corHeap, type = "lower", lab = TRUE, lab_size = 2.3, show.legend = F) +
   theme(
-  axis.text.x = element_text(size = 9),
-  axis.text.y = element_text(size = 9)
+  axis.text.x = element_text(size = 7),
+  axis.text.y = element_text(size = 7)
   )
-p2 = ggcorrplot(second_half_corHeap, type = "lower", lab = TRUE, lab_size = 2.5) +
+p2 = ggcorrplot(second_half_corHeap, type = "lower", lab = TRUE, lab_size = 2.3, show.legend = F) +
   theme(
-  axis.text.x = element_text(size = 9),
-  axis.text.y = element_text(size = 9)
+  axis.text.x = element_text(size = 7),
+  axis.text.y = element_text(size = 7)
   )
-grid.arrange(p1,p2,nrow=2)
+p3 = ggcorrplot(third_half_corHeap, type = "lower", lab = TRUE, lab_size = 2.3) +
+  theme(
+  axis.text.x = element_text(size = 7),
+  axis.text.y = element_text(size = 7)
+  )
+p4 = ggcorrplot(fourth_half_corHeap, type = "lower", lab = TRUE, lab_size = 2.3, show.legend = F) +
+  theme(
+  axis.text.x = element_text(size = 7),
+  axis.text.y = element_text(size = 7)
+  )
+grid.arrange(p1,p2,p3,p4,nrow=4)
+str(HP)
 ```
 
 e filtrarlo per avere solo le variabili che hanno correlazione con SalePrice >=0.4
@@ -163,8 +185,6 @@ HP$EnclosedPorchExists <- factor(EnclosedPorch != 0, levels = c(F, T), labels = 
 HP$ScreenPorchExists <- factor(ScreenPorch != 0, levels = c(F, T), labels = c("no", "yes"))
 
 attach(HP)
-
-##Wonderful comment
 ```
 
 ora procedo a metterle in correlazione con SalePrice in un heatmap
