@@ -1,8 +1,8 @@
 ---
 title: "Analisi house price"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 # Importazione delle librerie
@@ -550,7 +550,7 @@ Avendo il vettore delle età delle case, procedo a metterlo in relazione con il 
 
 ``` {r, message = F, warning = F}
 mod <- analysis.quantitative(
-    SalePrice, HouseAge,
+    SalePrice, HP_Excluded$HouseAge,
     second_var.lab = "età della casa"
 )
 ```
