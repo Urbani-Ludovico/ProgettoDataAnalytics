@@ -1,12 +1,15 @@
 ---
 title: "Analisi house price"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 # Importazione delle librerie
 
 ``` {r, message = F, warning = F}
-for (package in c("ggplot2", "ggcorrplot", "ggpubr", "dplyr", "GGally", "reshape2", "gridExtra")) {
+for (package in c("ggplot2", "ggcorrplot", "ggpubr", "dplyr", 
+                  "GGally", "reshape2", "gridExtra")) {
     if (!require(package, character.only = T, quietly = T)) {
       install.packages(package, character.only = T)
     }
@@ -48,12 +51,22 @@ ggplot(HP, aes(x = SalePrice)) +
     geom_density() +
     xlab("Prezzo di vendita") +
     ylab("Densità") +
-    geom_vline(aes(xintercept = SalePrice.summary["1st Qu."], colour = "1° Quantile"), linetype = "dashed") +
-    geom_vline(aes(xintercept = SalePrice.summary["Mean"], colour = "Media"), linetype = "dashed") +
-    geom_vline(aes(xintercept = SalePrice.summary["Median"], colour = "Mediana"), linetype = "dashed") +
-    geom_vline(aes(xintercept = SalePrice.summary["3rd Qu."], colour = "3° Quantile"), linetype = "dashed") +
+    geom_vline(
+        aes(xintercept = SalePrice.summary["1st Qu."], colour = "1° Quantile"), 
+        linetype = "dashed") +
+    geom_vline(
+        aes(xintercept = SalePrice.summary["Mean"], colour = "Media"), 
+        linetype = "dashed") +
+    geom_vline(
+        aes(xintercept = SalePrice.summary["Median"], colour = "Mediana"), 
+        linetype = "dashed") +
+    geom_vline(
+        aes(xintercept = SalePrice.summary["3rd Qu."], colour = "3° Quantile"), 
+        linetype = "dashed") +
     labs(colour = "Statistiche") +
-    scale_color_manual(labels = c("1° Quantile", "3° Quantile", "Media", "Mediana"), values = c("green", "darkgreen", "red", "blue"))
+    scale_color_manual(
+        labels = c("1° Quantile", "3° Quantile", "Media", "Mediana"), 
+        values = c("green", "darkgreen", "red", "blue"))
 ```
 ``` {r, warning = F}
 ggplot(HP, aes(x = SalePrice)) +
@@ -69,7 +82,16 @@ Si può dedurre che sono una piccola parte delle case vendute siano ville di lus
 Prima di tutto identifico le variabili su cui ha senso fare una correlazione con il prezzo
 ``` {r, warning = F}
 
-Heapmap.vars <- c("MSSubClass", "MSZoning", "LotFrontage", "LotArea", "LotShape", "LotConfig", "Neighborhood", "BldgType", "HouseStyle", "OverallQual", "OverallCond", "YearBuilt", "YearRemodAdd", "Exterior1st", "ExterQual", "ExterCond", "Foundation", "BsmtQual", "BsmtCond", "BsmtExposure", "BsmtFinSF1", "BsmtFinSF2", "TotalBsmtSF", "HeatingQC", "CentralAir", "X1stFlrSF", "X2ndFlrSF", "GrLivArea", "FullBath", "HalfBath", "BedroomAbvGr", "KitchenQual", "TotRmsAbvGrd", "GarageType", "GarageYrBlt", "GarageCars", "GarageArea", "GarageQual", "GarageCond", "OpenPorchSF", "EnclosedPorch", "ScreenPorch", "Fence", "MiscFeature", "MiscVal", "MoSold", "YrSold", "SalePrice")
+Heapmap.vars <- c(
+    "MSSubClass", "MSZoning", "LotFrontage", "LotArea", "LotShape", "LotConfig", 
+    "Neighborhood", "BldgType", "HouseStyle", "OverallQual", "OverallCond", "YearBuilt", 
+    "YearRemodAdd", "Exterior1st", "ExterQual", "ExterCond", "Foundation", "BsmtQual", 
+    "BsmtCond", "BsmtExposure", "BsmtFinSF1", "BsmtFinSF2", "TotalBsmtSF", "HeatingQC", 
+    "CentralAir", "X1stFlrSF", "X2ndFlrSF", "GrLivArea", "FullBath", "HalfBath", 
+    "BedroomAbvGr", "KitchenQual", "TotRmsAbvGrd", "GarageType", "GarageYrBlt", 
+    "GarageCars", "GarageArea", "GarageQual", "GarageCond", "OpenPorchSF", 
+    "EnclosedPorch", "ScreenPorch", "Fence", "MiscFeature", "MiscVal", "MoSold", 
+    "YrSold", "SalePrice")
 
 selected_vars <- HP[Heapmap.vars]
 
@@ -81,9 +103,11 @@ convert_to_numeric <- function(x) {
     }
 }
 
-selected_data <- selected_vars %>% mutate(across(everything(), ~ convert_to_numeric(.)))
+selected_data <- selected_vars %>% 
+    mutate(across(everything(), ~ convert_to_numeric(.)))
 
-selected_data_numeric <- selected_data %>% mutate(across(everything(), ~ as.numeric(as.character(.))))
+selected_data_numeric <- selected_data %>% 
+    mutate(across(everything(), ~ as.numeric(as.character(.))))
 
 corHeap <- as.data.frame(round(cor(selected_data_numeric, HP$SalePrice),2))
 
@@ -92,8 +116,10 @@ names(corHeap) <- "SalePrice"
 withNA <- rownames(corHeap)[is.na(corHeap$SalePrice)]
 
 for (ele in withNA) {
-    HP_lotfrontage = selected_data_numeric[[ele]][which(!is.na(selected_data_numeric[[ele]]))]
-    HP_lotfrontageSALE = selected_data_numeric$SalePrice[which(!is.na(selected_data_numeric[[ele]]))]
+    HP_lotfrontage <- selected_data_numeric[[ele]][
+        which(!is.na(selected_data_numeric[[ele]]))]
+    HP_lotfrontageSALE <- selected_data_numeric$SalePrice[
+        which(!is.na(selected_data_numeric[[ele]]))]
     corHeap[ele,"SalePrice"] <- cor(HP_lotfrontageSALE,HP_lotfrontage)
 }
 ```
@@ -110,7 +136,8 @@ rownames(first_half_corHeap) <- c("0", rownames(corHeap)[1:length_corHeap])
 second_half_corHeap <- as.data.frame(corHeap[(length_corHeap + 1):NROW(corHeap), ])
 names(second_half_corHeap) <- "SalePrice"
 second_half_corHeap <- rbind.data.frame(data.frame(SalePrice = 0), second_half_corHeap)
-rownames(second_half_corHeap) = c("0", rownames(corHeap)[(length_corHeap + 1):NROW(corHeap)])
+rownames(second_half_corHeap) <- c(
+    "0", rownames(corHeap)[(length_corHeap + 1):NROW(corHeap)])
 
 p1 <- ggcorrplot(first_half_corHeap, type = "lower", lab = TRUE, lab_size = 2.5) +
     theme(
@@ -148,7 +175,10 @@ attach(HP)
 
 ora procedo a metterle in correlazione con SalePrice in un heatmap
 ```{r, warning = F}
-vars <- c("FrontageExists", "AlleyExists", "LotShapeLess", "HouseAge", "TotalBaths", "GarageExists", "OpenPorchExists", "EnclosedPorchExists", "ScreenPorchExists", "FireplacesExists", "FenceExists")
+vars <- c(
+    "FrontageExists", "AlleyExists", "LotShapeLess", "HouseAge", "TotalBaths",
+    "GarageExists", "OpenPorchExists", "EnclosedPorchExists", "ScreenPorchExists", 
+    "FireplacesExists", "FenceExists")
 
 corHeapCalc <- data.frame(
     SalePrice = rep(0, length(vars)))
@@ -159,7 +189,11 @@ for (v in vars){
     corHeapCalc[v, "SalePrice"] = cor(as.numeric(HP[, v]), SalePrice)
 }
 
-ggcorrplot(rbind.data.frame(data.frame(SalePrice = 0), corHeapCalc), type = "lower", lab = TRUE, lab_size = 2.5) + 
+ggcorrplot(
+    rbind.data.frame(data.frame(SalePrice = 0), corHeapCalc), 
+    type = "lower", 
+    lab = TRUE, 
+    lab_size = 2.5) + 
     theme(
         axis.text.x = element_text(size = 9),
         axis.text.y = element_text(size = 9))
@@ -173,7 +207,8 @@ totalCorHeap = rbind.data.frame(corHeap, corHeapCalc)
 
 ggarrange(
     plotlist = lapply(
-        rownames(totalCorHeap)[rownames(totalCorHeap) != "SalePrice" & abs(totalCorHeap) >= 0.4],
+        rownames(totalCorHeap)[
+            rownames(totalCorHeap) != "SalePrice" & abs(totalCorHeap) >= 0.4],
         function (var) {
             plt <- ggplot(HP, aes(x = HP[[var]], y = SalePrice)) +
                 xlab(var)
@@ -199,7 +234,9 @@ ggarrange(
 Trasformo le variabili opportune in factor
 ```{r, message = F, warning = F}
 
-for (f in c("ExterQual", "ExterCond", "BsmtQual", "BsmtCond", "HeatingQC", "KitchenQual", "GarageQual", "GarageCond")) {
+for (f in c(
+    "ExterQual", "ExterCond", "BsmtQual", "BsmtCond", "HeatingQC", "KitchenQual", 
+    "GarageQual", "GarageCond")) {
     HP[, f] <- factor(
         HP[, f],
         levels = c("Po", "Fa", "TA", "Gd", "Ex"),
@@ -228,7 +265,11 @@ Visto che la variabile target SalePrice è quantitativa, distinguo due casi:
 1. la seconda variabile è qualitativa:
 
 ```{r, warning = F}
-analysis.qualitative <- function(target, second_var, horizontal = F, target.lab = "prezzo di vendita", second_var.lab = "seconda variabile") {
+analysis.qualitative <- function(target, 
+                                 second_var, 
+                                 horizontal = F, 
+                                 target.lab = "prezzo di vendita", 
+                                 second_var.lab = "seconda variabile") {
     df <- subset(data.frame(target, second_var), !is.na(second_var))
     
     test <- aov(target ~ second_var)
@@ -264,7 +305,11 @@ analysis.qualitative <- function(target, second_var, horizontal = F, target.lab 
 2. la seconda variabile è quantitativa:
 
 ```{r, warning = F}
-analysis.quantitative <- function(target, second_var, horizontal = F, target.lab = "prezzo di vendita", second_var.lab = "seconda variabile") {
+analysis.quantitative <- function(target, 
+                                  second_var, 
+                                  horizontal = F, 
+                                  target.lab = "prezzo di vendita", 
+                                  second_var.lab = "seconda variabile") {
     mod <- lm(target ~ second_var)
     p <- summary(mod)$coefficients[2,4]
     
