@@ -79,49 +79,47 @@ convert_to_numeric <- function(x) {
   }
 }
 
-selected_data <- selected_vars %>%
-  mutate(across(everything(), ~ convert_to_numeric(.))
-  )
+selected_data <- selected_vars %>% mutate(across(everything(), ~ convert_to_numeric(.)))
 
-selected_data_numeric <- selected_data %>%
-  mutate(across(everything(), ~ as.numeric(as.character(.))))
+selected_data_numeric <- selected_data %>% mutate(across(everything(), ~ as.numeric(as.character(.))))
 
-corHeap = as.data.frame(round(cor(selected_data_numeric, HP$SalePrice),2))
+corHeap <- as.data.frame(round(cor(selected_data_numeric, HP$SalePrice),2))
 
-names(corHeap) = "SalePrice"
+names(corHeap) <- "SalePrice"
 
-withNA = rownames(corHeap)[is.na(corHeap$SalePrice)]
+withNA <- rownames(corHeap)[is.na(corHeap$SalePrice)]
 
-for (ele in withNA){
-  HP_lotfrontage = selected_data_numeric[[ele]][which(!is.na(selected_data_numeric[[ele]]))]
-  HP_lotfrontageSALE = selected_data_numeric$SalePrice[which(!is.na(selected_data_numeric[[ele]]))]
-  corHeap[ele,"SalePrice"] = cor(HP_lotfrontageSALE,HP_lotfrontage)
+for (ele in withNA) {
+    HP_lotfrontage = selected_data_numeric[[ele]][which(!is.na(selected_data_numeric[[ele]]))]
+    HP_lotfrontageSALE = selected_data_numeric$SalePrice[which(!is.na(selected_data_numeric[[ele]]))]
+    corHeap[ele,"SalePrice"] = cor(HP_lotfrontageSALE,HP_lotfrontage)
 }
 ```
 
 ora si può visualizzare il vettore di correlazione come
 ``` {r, warning = F}
-length_corHeap = ceiling(NROW(corHeap)/2)
+length_corHeap <- ceiling(NROW(corHeap)/2)
 
-first_half_corHeap = as.data.frame(corHeap[1:length_corHeap,])
-rownames(first_half_corHeap) = rownames(corHeap)[1:length_corHeap]
-names(first_half_corHeap) = "SalePrice"
-length_corHeap = 1 + length_corHeap
-second_half_corHeap = as.data.frame(corHeap[length_corHeap:NROW(corHeap),])
-rownames(second_half_corHeap) = rownames(corHeap)[length_corHeap:NROW(corHeap)]
-names(second_half_corHeap) = "SalePrice"
+first_half_corHeap <- as.data.frame(corHeap[1:length_corHeap,])
+names(first_half_corHeap) <- "SalePrice"
+first_half_corHeap <- rbind.data.frame(data.frame(SalePrice = 0), first_half_corHeap)
+rownames(first_half_corHeap) <- c("0", rownames(corHeap)[1:length_corHeap])
 
-p1 = ggcorrplot(first_half_corHeap, type = "lower", lab = TRUE, lab_size = 2.5) +
-  theme(
-  axis.text.x = element_text(size = 9),
-  axis.text.y = element_text(size = 9)
-  )
-p2 = ggcorrplot(second_half_corHeap, type = "lower", lab = TRUE, lab_size = 2.5) +
-  theme(
-  axis.text.x = element_text(size = 9),
-  axis.text.y = element_text(size = 9)
-  )
-grid.arrange(p1,p2,nrow=2)
+second_half_corHeap <- as.data.frame(corHeap[(length_corHeap + 1):NROW(corHeap), ])
+names(second_half_corHeap) <- "SalePrice"
+second_half_corHeap <- rbind.data.frame(data.frame(SalePrice = 0), second_half_corHeap)
+rownames(second_half_corHeap) = c("0", rownames(corHeap)[(length_corHeap + 1):NROW(corHeap)])
+
+p1 <- ggcorrplot(first_half_corHeap, type = "lower", lab = TRUE, lab_size = 2.5) +
+    theme(
+        axis.text.x = element_text(size = 9),
+        axis.text.y = element_text(size = 9))
+p2 <- ggcorrplot(second_half_corHeap, type = "lower", lab = TRUE, lab_size = 2.5) +
+    theme(
+        axis.text.x = element_text(size = 9),
+        axis.text.y = element_text(size = 9))
+
+grid.arrange(p1, p2, nrow = 2)
 ```
 
 e filtrarlo per avere solo le variabili che hanno correlazione con SalePrice >=0.4
