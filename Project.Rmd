@@ -69,7 +69,7 @@ Si può dedurre che sono una piccola parte delle case vendute siano ville di lus
 Prima di tutto identifico le variabili su cui ha senso fare una correlazione con il prezzo
 ``` {r, warning = F}
 
-Heapmap.vars <- c("MSSubClass", "MSZoning", "LotFrontage", "LotArea", "LotShape", "LotConfig", "Neighborhood", "BldgType", "HouseStyle", "OverallQual", "OverallCond", "YearBuilt", "YearRemodAdd", "Exterior1st", "ExterQual", "ExterCond", "Foundation", "BsmtQual", "BsmtCond", "BsmtExposure", "BsmtFinSF1", "BsmtFinSF2", "TotalBsmtSF", "HeatingQC", "X1stFlrSF", "X2ndFlrSF", "GrLivArea", "FullBath", "HalfBath", "BedroomAbvGr", "KitchenQual", "TotRmsAbvGrd", "GarageType", "GarageCars", "GarageArea", "GarageQual", "GarageCond", "OpenPorchSF", "EnclosedPorch", "ScreenPorch", "Fence", "MiscFeature", "MiscVal", "MoSold", "YrSold", "SalePrice")
+Heapmap.vars <- c("MSSubClass", "MSZoning", "LotFrontage", "LotArea", "LotShape", "LotConfig", "Neighborhood", "BldgType", "HouseStyle", "OverallQual", "OverallCond", "YearBuilt", "YearRemodAdd", "Exterior1st", "ExterQual", "ExterCond", "Foundation", "BsmtQual", "BsmtCond", "BsmtExposure", "BsmtFinSF1", "BsmtFinSF2", "TotalBsmtSF", "HeatingQC", "CentralAir", "X1stFlrSF", "X2ndFlrSF", "GrLivArea", "FullBath", "HalfBath", "BedroomAbvGr", "KitchenQual", "TotRmsAbvGrd", "GarageType", "GarageYrBlt", "GarageCars", "GarageArea", "GarageQual", "GarageCond", "OpenPorchSF", "EnclosedPorch", "ScreenPorch", "Fence", "MiscFeature", "MiscVal", "MoSold", "YrSold", "SalePrice")
 selected_vars = HP[Heapmap.vars]
 convert_to_numeric <- function(x) {
   if (is.factor(x) || is.character(x)) {
@@ -149,25 +149,29 @@ ggarrange(
 
 ## Variabili calcolate
 
-Prendo le variabili escluse dal pair plot come ad esempio e provo a creare delle variabili calcolate che potrebbero essere correlate a SalePrice. 
+Prendo le variabili escluse dal pair plot come e provo a creare delle variabili calcolate che potrebbero essere correlate a SalePrice. 
 Ad esempio variabili quantitative o qualitative che hanno valori NA o 0 per indicare l'assenza di quella caratteristica le trasformo in variabili booleane.
 ```{r, message = F}
 current_year <- as.integer(format(Sys.Date(), "%Y"))
 
 HP$FrontageExists <- factor(!is.na(LotFrontage), levels = c(F, T), labels = c("no", "yes"))
+HP$AlleyExists <- factor(!is.na(Alley), levels = c(F, T), labels = c("no", "yes"))
 HP$LotShapeLess <- factor(LotShape == "Reg", levels = c(T, F), labels = c("Regular", "Irregular"))
 HP$HouseAge <- current_year - YearBuilt
+HP$TotalBaths <- FullBath + HalfBath
 HP$GarageExists <- factor(!is.na(GarageType), levels = c(F, T), labels = c("no", "yes"))
 HP$OpenPorchExists <- factor(OpenPorchSF != 0, levels = c(F, T), labels = c("no", "yes"))
 HP$EnclosedPorchExists <- factor(EnclosedPorch != 0, levels = c(F, T), labels = c("no", "yes"))
 HP$ScreenPorchExists <- factor(ScreenPorch != 0, levels = c(F, T), labels = c("no", "yes"))
+HP$FireplacesExists <- factor(Fireplaces != 0, levels = c(F, T), labels = c("no", "yes"))
+HP$FenceExists <- factor(!is.na(Fence), levels = c(F, T), labels = c("no", "yes"))
 
 attach(HP)
 ```
 
 ora procedo a metterle in correlazione con SalePrice in un heatmap
 ```{r, warning = F}
-vars <- c("SalePrice", "FrontageExists", "LotShapeLess", "HouseAge", "GarageExists", "OpenPorchExists", "EnclosedPorchExists", "ScreenPorchExists")
+vars <- c("SalePrice", "FrontageExists", "AlleyExists", "LotShapeLess", "HouseAge", "TotalBaths", "GarageExists", "OpenPorchExists", "EnclosedPorchExists", "ScreenPorchExists", "FireplacesExists", "FenceExists")
 
 corHeap <- matrix(
     rep(0, length(vars)), 
