@@ -39,6 +39,94 @@ HP <- read.csv2(
 attach(HP)
 ```
 
+Trasformo le variabili opportune in factor
+```{r, message = F, warning = F}
+# Alley
+HP <- HP %>%
+  mutate(Alley = as.character(Alley),
+         Alley = replace_na(Alley, "F"))
+HP$Alley = factor(HP$Alley, levels = c("Grvl", "Pave", "No Alley"))
+
+# BsmtQual
+HP <- HP %>%
+  mutate(BsmtQual = as.character(BsmtQual),
+         BsmtQual = replace_na(BsmtQual, "F"))
+HP$BsmtQual = factor(HP$BsmtQual, levels = c("Ex", "Gd", "TA", "Fa",	"Po",	"No Bsmt"))
+
+# BsmtCond
+HP <- HP %>%
+  mutate(BsmtCond = as.character(BsmtCond),
+         BsmtCond = replace_na(BsmtCond, "F"))
+HP$BsmtCond = factor(HP$BsmtCond, levels = c("Ex", "Gd", "TA", "Fa",	"Po",	"No Bsmt"))
+
+# BsmtExposure
+HP <- HP %>%
+  mutate(BsmtExposure = as.character(BsmtExposure),
+         BsmtExposure = replace_na(BsmtExposure, "F"))
+HP$BsmtExposure = factor(HP$BsmtExposure, levels = c("Gd", "Av", "Mn",	"No",	"No Bsmt"))
+
+# BsmtFinType1
+HP <- HP %>%
+  mutate(BsmtFinType1 = as.character(BsmtFinType1),
+         BsmtFinType1 = replace_na(BsmtFinType1, "F"))
+HP$BsmtFinType1 = factor(HP$BsmtFinType1, levels = c("GLQ", "ALQ", "BLQ", "Rec", "LwQ",	"Unf", "No Bsmt"))
+
+# BsmtFinType2
+HP <- HP %>%
+  mutate(BsmtFinType2 = as.character(BsmtFinType2),
+         BsmtFinType2 = replace_na(BsmtFinType2, "F"))
+HP$BsmtFinType2 = factor(HP$BsmtFinType2, levels = c("GLQ", "ALQ", "BLQ", "Rec",	"LwQ",	"Unf", "No Bsmt"))
+
+# FireplaceQu
+HP <- HP %>%
+  mutate(FireplaceQu = as.character(FireplaceQu),
+         FireplaceQu = replace_na(FireplaceQu, "F"))
+HP$FireplaceQu = factor(HP$FireplaceQu, levels = c("Ex", "Gd", "TA", "Fa",	"Po",	"No Fireplace"))
+
+# GarageType
+HP <- HP %>%
+  mutate(GarageType = as.character(GarageType),
+         GarageType = replace_na(GarageType, "F"))
+HP$GarageType = factor(HP$GarageType, levels = c("2Types", "Attchd", "Basment", "No Garage",	"CarPort",	"Detchd", "F"))
+
+# GarageFinish
+HP <- HP %>%
+  mutate(GarageFinish = as.character(GarageFinish),
+         GarageFinish = replace_na(GarageFinish, "F"))
+HP$GarageFinish = factor(HP$GarageFinish, levels = c("Fin", "RFn", "Unf", "No Garage"))
+
+# GarageQual
+HP <- HP %>%
+  mutate(GarageQual = as.character(GarageQual),
+         GarageQual = replace_na(GarageQual, "F"))
+HP$GarageQual = factor(HP$GarageQual, levels = c("Ex", "Gd", "TA", "Fa",	"Po",	"No Garage"))
+
+# GarageCond
+HP <- HP %>%
+  mutate(GarageCond = as.character(GarageCond),
+         GarageCond = replace_na(GarageCond, "F"))
+HP$GarageCond = factor(HP$GarageCond, levels = c("Ex", "Gd", "TA", "Fa",	"Po",	"No Garage"))
+
+# PoolQC
+HP <- HP %>%
+  mutate(PoolQC = as.character(PoolQC),
+         PoolQC = replace_na(PoolQC, "F"))
+HP$PoolQC = factor(HP$PoolQC, levels = c("Ex", "Gd", "TA", "No Pool"))
+
+# Fence
+HP <- HP %>%
+  mutate(Fence = as.character(Fence),
+         Fence = replace_na(Fence, "F"))
+HP$Fence = factor(HP$Fence, levels = c("GdPrv", "MnPrv", "GdWo", "MnWw", "No Fence"))
+
+# MiscFeature
+HP <- HP %>%
+  mutate(MiscFeature = as.character(MiscFeature),
+         MiscFeature = replace_na(MiscFeature, "F"))
+HP$MiscFeature = factor(HP$MiscFeature, levels = c("Elev", "Gar2", "Othr", "Shed", "TenC", "No MiscFeature"))
+attach(HP)
+```
+
 # Distribuzione dei prezzi delle case
 
 ``` {r, warning = F}
@@ -69,6 +157,7 @@ ggplot(HP, aes(x = SalePrice)) +
         labels = c("1° Quantile", "3° Quantile", "Media", "Mediana"), 
         values = c("green", "darkgreen", "red", "blue"))
 ```
+
 ``` {r, warning = F}
 ggplot(HP, aes(x = SalePrice)) +
     geom_boxplot() +
