@@ -468,34 +468,6 @@ ggarrange(
 
 # Analisi bivariata
 
-Trasformo le variabili opportune in factor
-```{r, message = F, warning = F}
-
-for (f in c(
-    "ExterQual", "ExterCond", "BsmtQual", "BsmtCond", "HeatingQC", "KitchenQual", 
-    "GarageQual", "GarageCond")) {
-    HP[, f] <- factor(
-        HP[, f],
-        levels = c("Po", "Fa", "TA", "Gd", "Ex"),
-        labels = c("Poor", "Fair", "Average", "Good", "Excellent"))
-}
-HP[,"OverallQual"] = factor(
-    HP[,"OverallQual"],
-    levels = 1:10,
-    labels = c("Very Poor",
-               "Poor",
-               "Fair",
-               "Below Average",
-               "Average",
-               "Above Average",
-               "Good",
-               "Very Good",
-               "Excellent",
-               "Very Excellent"))
-
-attach(HP)
-```
-
 ## Funzioni di analisi
 
 Visto che la variabile target SalePrice è quantitativa, distinguo due casi:
