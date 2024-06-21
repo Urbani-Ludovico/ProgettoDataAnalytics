@@ -562,8 +562,7 @@ Con un p-value di `r summary(mod)[[4]][2,4]` si deduce che più la casa venduta 
 
 ``` {r, message = F, warning = F}
 mod <- analysis.qualitative(
-    SalePrice, OverallQual,
-    horizontal = T,
+    SalePrice, factor(OverallQual, levels = 1:10),
     second_var.lab = "qualità di costruzione"
 )
 ```
