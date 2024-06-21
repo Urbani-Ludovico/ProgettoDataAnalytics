@@ -39,6 +39,96 @@ HP <- read.csv2(
 attach(HP)
 ```
 
+Trasformo le variabili opportune in factor
+
+```{r, message = F}
+
+###' Alley
+HP <- HP %>%
+  mutate(Alley = as.character(Alley),
+         Alley = replace_na(Alley, "No Alley"))
+HP$Alley = factor(HP$Alley, levels = c("Grvl", "Pave", "No Alley"))
+
+###' BsmtQual
+HP <- HP %>%
+  mutate(BsmtQual = as.character(BsmtQual),
+         BsmtQual = replace_na(BsmtQual, "No Bsmt"))
+HP$BsmtQual = factor(HP$BsmtQual, levels = c("Ex", "Gd", "TA", "Fa",	"Po",	"No Bsmt"))
+
+###' BsmtCond
+HP <- HP %>%
+  mutate(BsmtCond = as.character(BsmtCond),
+         BsmtCond = replace_na(BsmtCond, "No Bsmt"))
+HP$BsmtCond = factor(HP$BsmtCond, levels = c("Ex", "Gd", "TA", "Fa",	"Po",	"No Bsmt"))
+
+###' BsmtExposure
+HP <- HP %>%
+  mutate(BsmtExposure = as.character(BsmtExposure),
+         BsmtExposure = replace_na(BsmtExposure, "No Bsmt"))
+HP$BsmtExposure = factor(HP$BsmtExposure, levels = c("Gd", "Av", "Mn",	"No",	"No Bsmt"))
+
+###' BsmtFinType1
+HP <- HP %>%
+  mutate(BsmtFinType1 = as.character(BsmtFinType1),
+         BsmtFinType1 = replace_na(BsmtFinType1, "No Bsmt"))
+HP$BsmtFinType1 = factor(HP$BsmtFinType1, levels = c("GLQ", "ALQ", "BLQ", "Rec",	"LwQ",	"Unf", "No Bsmt"))
+
+###' BsmtFinType2
+HP <- HP %>%
+  mutate(BsmtFinType2 = as.character(BsmtFinType2),
+         BsmtFinType2 = replace_na(BsmtFinType2, "No Bsmt"))
+HP$BsmtFinType2 = factor(HP$BsmtFinType2, levels = c("GLQ", "ALQ", "BLQ", "Rec",	"LwQ",	"Unf", "No Bsmt"))
+
+###' FireplaceQu
+HP <- HP %>%
+  mutate(FireplaceQu = as.character(FireplaceQu),
+         FireplaceQu = replace_na(FireplaceQu, "No Fireplace"))
+HP$FireplaceQu = factor(HP$FireplaceQu, levels = c("Ex", "Gd", "TA", "Fa",	"Po",	"No Fireplace"))
+
+###' GarageType
+HP <- HP %>%
+  mutate(GarageType = as.character(GarageType),
+         GarageType = replace_na(GarageType, "No Bsmt"))
+HP$GarageType = factor(HP$GarageType, levels = c("2Types", "Attchd", "Basment", "BuiltIn",	"CarPort",	"Detchd", "No Bsmt"))
+
+###' GarageFinish
+HP <- HP %>%
+  mutate(GarageFinish = as.character(GarageFinish),
+         GarageFinish = replace_na(GarageFinish, "No Bsmt"))
+HP$GarageFinish = factor(HP$GarageFinish, levels = c("Fin", "RFn", "Unf", "No Garage"))
+
+###' GarageQual
+HP <- HP %>%
+  mutate(GarageQual = as.character(GarageQual),
+         GarageQual = replace_na(GarageQual, "No Bsmt"))
+HP$GarageQual = factor(HP$GarageQual, levels = c("Ex", "Gd", "TA", "Fa",	"Po",	"No Bsmt"))
+
+###' GarageCond
+HP <- HP %>%
+  mutate(GarageCond = as.character(GarageCond),
+         GarageCond = replace_na(GarageCond, "No Garage"))
+HP$GarageCond = factor(HP$GarageCond, levels = c("Ex", "Gd", "TA", "Fa",	"Po",	"No Garage"))
+
+###' PoolQC
+HP <- HP %>%
+  mutate(PoolQC = as.character(PoolQC),
+         PoolQC = replace_na(PoolQC, "No Pool"))
+HP$PoolQC = factor(HP$PoolQC, levels = c("Ex", "Gd", "TA", "No Pool"))
+
+###' Fence
+HP <- HP %>%
+  mutate(Fence = as.character(Fence),
+         Fence = replace_na(Fence, "No Fence"))
+HP$Fence = factor(HP$Fence, levels = c("GdPrv", "MnPrv", "GdWo", "MnWw", "No Fence"))
+
+###' MiscFeature
+HP <- HP %>%
+  mutate(MiscFeature = as.character(MiscFeature),
+         MiscFeature = replace_na(MiscFeature, "No MiscFeature"))
+HP$MiscFeature = factor(HP$MiscFeature, levels = c("Elev", "Gar2", "Othr", "Shed", "TenC", "No MiscFeature"))
+attach(HP)
+```
+
 # Distribuzione dei prezzi delle case
 
 ```{r, warning = F}
@@ -107,26 +197,30 @@ for (ele in withNA){
 ora si può visualizzare il vettore di correlazione come
 
 ```{r, warning = F}
-length_first_corHeap = ceiling(NROW(corHeap)/4)
+length_corHeap = c(ceiling(NROW(corHeap)/4), ceiling(NROW(corHeap)/2), ceiling(3*NROW(corHeap)/4))
 
-first_half_corHeap = as.data.frame(corHeap[1:length_first_corHeap,])
-rownames(first_half_corHeap) = rownames(corHeap)[1:length_first_corHeap]
-names(first_half_corHeap) = "SalePrice"
+first_half_corHeap <- as.data.frame(corHeap[1:length_corHeap[1],])
+names(first_half_corHeap) <- "SalePrice"
+first_half_corHeap <- rbind.data.frame(data.frame(SalePrice = 0), first_half_corHeap)
+rownames(first_half_corHeap) <- c("0", rownames(corHeap)[1:length_corHeap[1]])
 
-length_second_corHeap = length_first_corHeap*2
-second_half_corHeap = as.data.frame(corHeap[(length_first_corHeap+1):length_second_corHeap,])
-rownames(second_half_corHeap) = rownames(corHeap)[(length_first_corHeap+1):length_second_corHeap]
-names(second_half_corHeap) = "SalePrice"
+second_half_corHeap <- as.data.frame(corHeap[(length_corHeap[1]+1):length_corHeap[2], ])
+names(second_half_corHeap) <- "SalePrice"
+second_half_corHeap <- rbind.data.frame(data.frame(SalePrice = 0), second_half_corHeap)
+rownames(second_half_corHeap) <- c(
+    "0", rownames(corHeap)[(length_corHeap[1]+1):length_corHeap[2]])
 
-length_third_corHeap = length_first_corHeap*3
-third_half_corHeap = as.data.frame(corHeap[(length_second_corHeap+1):length_third_corHeap,])
-rownames(third_half_corHeap) = rownames(corHeap)[(length_second_corHeap+1):length_third_corHeap]
+third_half_corHeap = as.data.frame(corHeap[(length_corHeap[2]+1):length_corHeap[3],])
 names(third_half_corHeap) = "SalePrice"
+third_half_corHeap <- rbind.data.frame(data.frame(SalePrice = 0), third_half_corHeap)
+rownames(third_half_corHeap) <- c(
+    "0", rownames(corHeap)[(length_corHeap[2]+1):length_corHeap[3]])
 
-length_fourth_corHeap = (length_first_corHeap*4)-1
-fourth_half_corHeap = as.data.frame(corHeap[(length_third_corHeap+1):length_fourth_corHeap,])
-rownames(fourth_half_corHeap) = rownames(corHeap)[(length_third_corHeap+1):length_fourth_corHeap]
+fourth_half_corHeap = as.data.frame(corHeap[(length_corHeap[3]+1):NROW(corHeap),])
 names(fourth_half_corHeap) = "SalePrice"
+fourth_half_corHeap <- rbind.data.frame(data.frame(SalePrice = 0), fourth_half_corHeap)
+rownames(fourth_half_corHeap) <- c(
+    "0", rownames(corHeap)[(length_corHeap[3]+1):NROW(corHeap)])
 
 p1 = ggcorrplot(first_half_corHeap, type = "lower", lab = TRUE, lab_size = 2.3, show.legend = F) +
   theme(
@@ -201,6 +295,17 @@ Trasformo le variabili opportune in factor
 ```{r, message = F}
 HP_Excluded = HP
 
+###' Alley
+recode_map <- c(
+  "Grvl" = "T",
+  "Pave" = "T",
+  "No Alley" = "F"
+)
+HP_Excluded <- HP_Excluded %>%
+  mutate(Alley = as.character(Alley),
+         AlleyExists = recode(Alley, !!!recode_map))
+HP_Excluded$AlleyExists = factor(HP_Excluded$AlleyExists, levels = c("F", "T"))
+
 ###' LotShape
 recode_map <- c(
   "Reg" = "Regular",
@@ -233,12 +338,12 @@ recode_map <- c(
   "Basment" =	"T",
   "BuiltIn" =	"T",
   "CarPort" =	"T",
-  "Detchd" =	"T"
+  "Detchd" =	"T",
+  "No Garage" = "F"
 )
 HP_Excluded <- HP_Excluded %>%
   mutate(GarageType = as.character(GarageType),
-         GarageExists = recode(GarageType, !!!recode_map),
-         GarageExists = replace_na(GarageExists, "F"))
+         GarageExists = recode(GarageType, !!!recode_map))
 HP_Excluded$GarageExists = factor(HP_Excluded$GarageExists, levels = c("F", "T"))
 ###' Utilities
 recode_map <- c(
@@ -270,12 +375,12 @@ recode_map <- c(
   "Gd" =	"T",
   "TA" =	"T",
   "Fa" =	"T",
-  "Po" =	"T"
+  "Po" =	"T",
+  "No Fireplace" = "F"
 )
 HP_Excluded <- HP_Excluded %>%
   mutate(FireplaceQu = as.character(FireplaceQu),
-         FirePlaceExists = recode(FireplaceQu, !!!recode_map),
-         FirePlaceExists = replace_na(FirePlaceExists, "F"))
+         FirePlaceExists = recode(FireplaceQu, !!!recode_map))
 HP_Excluded$FirePlaceExists = factor(HP_Excluded$FirePlaceExists, levels = c("F", "T"))
 ###' BsmtCond
 recode_map <- c(
@@ -283,24 +388,24 @@ recode_map <- c(
   "Gd" =	"T",
   "TA" =	"T",
   "Fa" =	"T",
-  "Po" =	"T"
+  "Po" =	"T",
+  "No Bsmt" = "F"
 )
 HP_Excluded <- HP_Excluded %>%
   mutate(BsmtCond = as.character(BsmtCond),
-         BsmtExists = recode(BsmtCond, !!!recode_map),
-         BsmtExists = replace_na(BsmtExists, "F"))
+         BsmtExists = recode(BsmtCond, !!!recode_map))
 HP_Excluded$BsmtExists = factor(HP_Excluded$BsmtExists, levels = c("F", "T"))
 ###' Fence
 recode_map <- c(
   "GdPrv" =	"T",
   "MnPrv" =	"T",
   "GdWo" =	"T",
-  "MnWw" =	"T"
+  "MnWw" =	"T",
+  "No Fence" = "F"
 )
 HP_Excluded <- HP_Excluded %>%
   mutate(Fence = as.character(Fence),
-         FenceExists = recode(Fence, !!!recode_map),
-         FenceExists = replace_na(FenceExists, "F"))
+         FenceExists = recode(Fence, !!!recode_map))
 HP_Excluded$FenceExists = factor(HP_Excluded$FenceExists, levels = c("F", "T"))
 ###' MiscFeature
 recode_map <- c(
@@ -308,21 +413,21 @@ recode_map <- c(
   "Gar2" =	"T",
   "Othr" =	"T",
   "Shed" =	"T",
-  "TenC" =	"T"
+  "TenC" =	"T",
+  "No MiscFeature" = "F"
 )
 HP_Excluded <- HP_Excluded %>%
   mutate(MiscFeature = as.character(MiscFeature),
-         MiscFeatureExists = recode(MiscFeature, !!!recode_map),
-         MiscFeatureExists = replace_na(MiscFeatureExists, "F"))
+         MiscFeatureExists = recode(MiscFeature, !!!recode_map))
 HP_Excluded$FenceExists = factor(HP_Excluded$FenceExists, levels = c("F", "T"))
-
-attach(HP_Excluded)
+# total bath
+HP_Excluded$TotalBath = FullBath + HalfBath + BsmtFullBath + BsmtHalfBath
 ```
 
 ora procedo a metterle in correlazione con SalePrice in un heatmap
 
 ```{r, warning = F}
-vars <- c("SalePrice", "LotShapeReduced", "HouseAge", "MSZoningReduced", "GarageExists", "UtilitiesReduced", "OverallCondReduced", "FirePlaceExists", "BsmtExists", "FenceExists", "MiscFeatureExists")
+vars <- c("SalePrice", "AlleyExists", "LotShapeReduced", "HouseAge", "MSZoningReduced", "GarageExists", "UtilitiesReduced", "OverallCondReduced", "FirePlaceExists", "BsmtExists", "FenceExists", "MiscFeatureExists", "TotalBath")
 
 excludevar = HP_Excluded[vars]
 
@@ -333,7 +438,7 @@ selected_data <- excludevar %>%
 selected_data_numeric <- selected_data %>%
   mutate(across(everything(), ~ as.numeric(as.character(.))))
 
-corHeap_excluded = as.data.frame(round(cor(selected_data_numeric, HP$SalePrice),2))
+corHeap_excluded = as.data.frame(round(cor(selected_data_numeric, HP_Excluded$SalePrice),2))
 names(corHeap_excluded) = "SalePrice"
 
 ggcorrplot(corHeap_excluded, type = "lower", lab = TRUE, lab_size = 2.5) + 
@@ -503,16 +608,6 @@ mod <- analysis.qualitative(
 ```{r, message = F, warning = F}
 mod <- analysis.quantitative(
     SalePrice, GarageArea,
-    horizontal = F,
-    second_var.lab = "Area del Garage"
-)
-```
-
-## Analisi della Qualità delle piscine
-
-```{r, message = F, warning = F}
-mod <- analysis.qualitative(
-    SalePrice, PoolQC,
     horizontal = F,
     second_var.lab = "Area del Garage"
 )
