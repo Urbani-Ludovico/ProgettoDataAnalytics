@@ -1,23 +1,23 @@
 ---
 title: "Analisi house price"
-author: "Urbani Ludovico, Mohamed Fadhla Mutua, Nicoloò Nava, Nicola Batiston"
-date: "2024-06-14"
 output:
-  word_document: default
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 # Importazione delle librerie
 
-```{r, message = F, warning = F}
-for (package in c("ggplot2", "ggcorrplot", "ggpubr", "dplyr", "GGally", "reshape2", "gridExtra", "tidyr")) {
+``` {r, message = F, warning = F}
+for (package in c("ggplot2", "ggcorrplot", "ggpubr", "dplyr", "tidyr", 
+                  "GGally", "reshape2", "gridExtra")) {
     if (!require(package, character.only = T, quietly = T)) {
       install.packages(package, character.only = T)
     }
     
     library(package, character.only = T)
 }
+rm(package)
+
 plot_theme = theme_minimal() +
     theme(
         plot.title = element_text(face = "bold", hjust = 0.5),
@@ -29,7 +29,7 @@ theme_set(plot_theme)
 
 # Importazione dei dati
 
-```{r, warning = F}
+```{r, message = F, warning = F}
 HP <- read.csv2(
     "./dataset.csv",
     sep = ",", 
@@ -40,88 +40,86 @@ attach(HP)
 ```
 
 Trasformo le variabili opportune in factor
-
-```{r, message = F}
-
-###' Alley
+```{r, message = F, warning = F}
+# Alley
 HP <- HP %>%
   mutate(Alley = as.character(Alley),
          Alley = replace_na(Alley, "No Alley"))
 HP$Alley = factor(HP$Alley, levels = c("Grvl", "Pave", "No Alley"))
 
-###' BsmtQual
+# BsmtQual
 HP <- HP %>%
   mutate(BsmtQual = as.character(BsmtQual),
          BsmtQual = replace_na(BsmtQual, "No Bsmt"))
 HP$BsmtQual = factor(HP$BsmtQual, levels = c("Ex", "Gd", "TA", "Fa",	"Po",	"No Bsmt"))
 
-###' BsmtCond
+# BsmtCond
 HP <- HP %>%
   mutate(BsmtCond = as.character(BsmtCond),
          BsmtCond = replace_na(BsmtCond, "No Bsmt"))
 HP$BsmtCond = factor(HP$BsmtCond, levels = c("Ex", "Gd", "TA", "Fa",	"Po",	"No Bsmt"))
 
-###' BsmtExposure
+# BsmtExposure
 HP <- HP %>%
   mutate(BsmtExposure = as.character(BsmtExposure),
          BsmtExposure = replace_na(BsmtExposure, "No Bsmt"))
 HP$BsmtExposure = factor(HP$BsmtExposure, levels = c("Gd", "Av", "Mn",	"No",	"No Bsmt"))
 
-###' BsmtFinType1
+# BsmtFinType1
 HP <- HP %>%
   mutate(BsmtFinType1 = as.character(BsmtFinType1),
          BsmtFinType1 = replace_na(BsmtFinType1, "No Bsmt"))
-HP$BsmtFinType1 = factor(HP$BsmtFinType1, levels = c("GLQ", "ALQ", "BLQ", "Rec",	"LwQ",	"Unf", "No Bsmt"))
+HP$BsmtFinType1 = factor(HP$BsmtFinType1, levels = c("GLQ", "ALQ", "BLQ", "Rec", "LwQ",	"Unf", "No Bsmt"))
 
-###' BsmtFinType2
+# BsmtFinType2
 HP <- HP %>%
   mutate(BsmtFinType2 = as.character(BsmtFinType2),
          BsmtFinType2 = replace_na(BsmtFinType2, "No Bsmt"))
 HP$BsmtFinType2 = factor(HP$BsmtFinType2, levels = c("GLQ", "ALQ", "BLQ", "Rec",	"LwQ",	"Unf", "No Bsmt"))
 
-###' FireplaceQu
+# FireplaceQu
 HP <- HP %>%
   mutate(FireplaceQu = as.character(FireplaceQu),
          FireplaceQu = replace_na(FireplaceQu, "No Fireplace"))
 HP$FireplaceQu = factor(HP$FireplaceQu, levels = c("Ex", "Gd", "TA", "Fa",	"Po",	"No Fireplace"))
 
-###' GarageType
+# GarageType
 HP <- HP %>%
   mutate(GarageType = as.character(GarageType),
-         GarageType = replace_na(GarageType, "No Bsmt"))
-HP$GarageType = factor(HP$GarageType, levels = c("2Types", "Attchd", "Basment", "BuiltIn",	"CarPort",	"Detchd", "No Bsmt"))
+         GarageType = replace_na(GarageType, "No Garage"))
+HP$GarageType = factor(HP$GarageType, levels = c("2Types", "Attchd", "Basment", "BuiltIn", "CarPort",	"Detchd", "No Garage"))
 
-###' GarageFinish
+# GarageFinish
 HP <- HP %>%
   mutate(GarageFinish = as.character(GarageFinish),
-         GarageFinish = replace_na(GarageFinish, "No Bsmt"))
+         GarageFinish = replace_na(GarageFinish, "No Garage"))
 HP$GarageFinish = factor(HP$GarageFinish, levels = c("Fin", "RFn", "Unf", "No Garage"))
 
-###' GarageQual
+# GarageQual
 HP <- HP %>%
   mutate(GarageQual = as.character(GarageQual),
-         GarageQual = replace_na(GarageQual, "No Bsmt"))
-HP$GarageQual = factor(HP$GarageQual, levels = c("Ex", "Gd", "TA", "Fa",	"Po",	"No Bsmt"))
+         GarageQual = replace_na(GarageQual, "No Garage"))
+HP$GarageQual = factor(HP$GarageQual, levels = c("Ex", "Gd", "TA", "Fa",	"Po",	"No Garage"))
 
-###' GarageCond
+# GarageCond
 HP <- HP %>%
   mutate(GarageCond = as.character(GarageCond),
          GarageCond = replace_na(GarageCond, "No Garage"))
 HP$GarageCond = factor(HP$GarageCond, levels = c("Ex", "Gd", "TA", "Fa",	"Po",	"No Garage"))
 
-###' PoolQC
+# PoolQC
 HP <- HP %>%
   mutate(PoolQC = as.character(PoolQC),
          PoolQC = replace_na(PoolQC, "No Pool"))
 HP$PoolQC = factor(HP$PoolQC, levels = c("Ex", "Gd", "TA", "No Pool"))
 
-###' Fence
+# Fence
 HP <- HP %>%
   mutate(Fence = as.character(Fence),
          Fence = replace_na(Fence, "No Fence"))
 HP$Fence = factor(HP$Fence, levels = c("GdPrv", "MnPrv", "GdWo", "MnWw", "No Fence"))
 
-###' MiscFeature
+# MiscFeature
 HP <- HP %>%
   mutate(MiscFeature = as.character(MiscFeature),
          MiscFeature = replace_na(MiscFeature, "No MiscFeature"))
@@ -131,72 +129,83 @@ attach(HP)
 
 # Distribuzione dei prezzi delle case
 
-```{r, warning = F}
+``` {r, warning = F}
 SalePrice.summary <- summary(SalePrice)
 
 print(SalePrice.summary)
 ```
 
-```{r, warning = F}
+``` {r, warning = F}
 ggplot(HP, aes(x = SalePrice)) +
     geom_density() +
     xlab("Prezzo di vendita") +
     ylab("Densità") +
-    geom_vline(aes(xintercept = SalePrice.summary["1st Qu."], colour = "1° Quantile"), linetype = "dashed") +
-    geom_vline(aes(xintercept = SalePrice.summary["Mean"], colour = "Media"), linetype = "dashed") +
-    geom_vline(aes(xintercept = SalePrice.summary["Median"], colour = "Mediana"), linetype = "dashed") +
-    geom_vline(aes(xintercept = SalePrice.summary["3rd Qu."], colour = "3° Quantile"), linetype = "dashed") +
+    geom_vline(
+        aes(xintercept = SalePrice.summary["1st Qu."], colour = "1° Quantile"), 
+        linetype = "dashed") +
+    geom_vline(
+        aes(xintercept = SalePrice.summary["Mean"], colour = "Media"), 
+        linetype = "dashed") +
+    geom_vline(
+        aes(xintercept = SalePrice.summary["Median"], colour = "Mediana"), 
+        linetype = "dashed") +
+    geom_vline(
+        aes(xintercept = SalePrice.summary["3rd Qu."], colour = "3° Quantile"), 
+        linetype = "dashed") +
     labs(colour = "Statistiche") +
-    scale_color_manual(labels = c("1° Quantile", "3° Quantile", "Media", "Mediana"), values = c("green", "darkgreen", "red", "blue"))
+    scale_color_manual(
+        labels = c("1° Quantile", "3° Quantile", "Media", "Mediana"), 
+        values = c("green", "darkgreen", "red", "blue"))
 ```
 
-```{r, warning = F}
+``` {r, warning = F}
 ggplot(HP, aes(x = SalePrice)) +
     geom_boxplot() +
     xlab("Prezzo di vendita")
 ```
 
-Possiamo dedurre che la distribuzione è positivamente asimetrica e che la maggior parte del prezzo di vendita è compresa tra 129.975 e 214.000, essendo rispettivamente il 1° e il 3° quantile. Si può dedurre che sono una piccola parte delle case vendute siano ville di lusso, case lussuose o immobili di alto valore, ma la maggior parte del mercato immobiliare di concentri sulla vendita di piccoli o medi immobili.
+Possiamo dedurre che la distribuzione è positivamente asimetrica e che la maggior parte del prezzo di vendita è compresa tra 129.975 e 214.000, essendo rispettivamente il 1° e il 3° quantile.
+Si può dedurre che sono una piccola parte delle case vendute siano ville di lusso, case lussuose o immobili di alto valore, ma la maggior parte del mercato immobiliare di concentri sulla vendita di piccoli o medi immobili.
 
 # Matrice di correlazione
 
 Prima di tutto identifico le variabili su cui ha senso fare una correlazione con il prezzo
-
-```{r, warning = F}
-
+``` {r, warning = F}
 Heapmap.vars <- names(HP)
-selected_vars = HP[Heapmap.vars]
+
+selected_vars <- HP[Heapmap.vars]
+
 convert_to_numeric <- function(x) {
-  if (is.factor(x) || is.character(x)) {
-    as.numeric(factor(x, levels = unique(x)))
-  } else {
-    return(x)
-  }
+    if (is.factor(x) || is.character(x)) {
+        as.numeric(factor(x, levels = unique(x)))
+    } else {
+        return(x)
+    }
 }
 
-selected_data <- selected_vars %>%
-  mutate(across(everything(), ~ convert_to_numeric(.))
-  )
+selected_data <- selected_vars %>% 
+    mutate(across(everything(), ~ convert_to_numeric(.)))
 
-selected_data_numeric <- selected_data %>%
-  mutate(across(everything(), ~ as.numeric(as.character(.))))
+selected_data_numeric <- selected_data %>% 
+    mutate(across(everything(), ~ as.numeric(as.character(.))))
 
-corHeap = as.data.frame(round(cor(selected_data_numeric, HP$SalePrice),2))
+corHeap <- as.data.frame(round(cor(selected_data_numeric, HP$SalePrice),2))
 
-names(corHeap) = "SalePrice"
+names(corHeap) <- "SalePrice"
 
-withNA = rownames(corHeap)[is.na(corHeap$SalePrice)]
+withNA <- rownames(corHeap)[is.na(corHeap$SalePrice)]
 
-for (ele in withNA){
-  HP_lotfrontage = selected_data_numeric[[ele]][which(!is.na(selected_data_numeric[[ele]]))]
-  HP_lotfrontageSALE = selected_data_numeric$SalePrice[which(!is.na(selected_data_numeric[[ele]]))]
-  corHeap[ele,"SalePrice"] = cor(HP_lotfrontageSALE,HP_lotfrontage)
+for (ele in withNA) {
+    HP_lotfrontage <- selected_data_numeric[[ele]][
+        which(!is.na(selected_data_numeric[[ele]]))]
+    HP_lotfrontageSALE <- selected_data_numeric$SalePrice[
+        which(!is.na(selected_data_numeric[[ele]]))]
+    corHeap[ele,"SalePrice"] <- cor(HP_lotfrontageSALE,HP_lotfrontage)
 }
 ```
 
 ora si può visualizzare il vettore di correlazione come
-
-```{r, warning = F}
+``` {r, warning = F}
 length_corHeap = c(ceiling(NROW(corHeap)/4), ceiling(NROW(corHeap)/2), ceiling(3*NROW(corHeap)/4))
 
 first_half_corHeap <- as.data.frame(corHeap[1:length_corHeap[1],])
@@ -260,38 +269,10 @@ grid.arrange(
 )
 ```
 
-e filtrarlo per avere solo le variabili che hanno correlazione con SalePrice \>=0.4
-
-```{r, results = F, message = F, warning = F}
-ggarrange(
-    plotlist = lapply(
-        rownames(corHeap)[rownames(corHeap) != "SalePrice" & abs(corHeap) >= 0.4],
-        function (var) {
-            plt <- ggplot(HP, aes(x = HP[[var]], y = SalePrice)) +
-                xlab(var)
-            
-            if (is.factor(HP[[var]])) {
-                plt <- plt + geom_boxplot()
-            } else {
-                plt <- plt + geom_point()
-            }
-            
-            plot(plt)
-        }),
-    ncol = 2,
-    nrow = 1,
-    widths = c(1, 1)
-)
-## NA Alley -> No Alley
-## NA poolQC -> No pool
-```
-
 ## Variabili calcolate
 
-Prendo le variabili escluse corro e provo a creare delle variabili calcolate che potrebbero essere correlate a SalePrice. Ad esempio variabili quantitative o qualitative che hanno valori NA o 0 per indicare l'assenza di quella caratteristica le trasformo in variabili booleane.
-
-Trasformo le variabili opportune in factor
-
+Prendo le variabili escluse e le variabili che nealla heatmap hanno una bassa correlazione e provo a creare delle variabili calcolate che potrebbero essere correlate a SalePrice. 
+Ad esempio variabili quantitative o qualitative che hanno valori NA o 0 per indicare l'assenza di quella caratteristica le trasformo in variabili booleane.
 ```{r, message = F}
 HP_Excluded = HP
 
@@ -315,9 +296,14 @@ recode_map <- c(
 )
 HP_Excluded <- HP_Excluded %>%
   mutate(LotShapeReduced = recode(LotShape, !!!recode_map))
+
 ###' YearBuilt
 current_year <- as.integer(format(Sys.Date(), "%Y"))
 HP_Excluded$HouseAge <- current_year - YearBuilt
+
+# TotalBath
+HP_Excluded$TotalBath = FullBath + HalfBath + BsmtFullBath + BsmtHalfBath
+
 ###' MSZoning
 recode_map <- c(
   "A" = "Agriculture",
@@ -331,6 +317,7 @@ recode_map <- c(
 )
 HP_Excluded <- HP_Excluded %>%
   mutate(MSZoningReduced = recode(MSZoning, !!!recode_map))
+
 ###' GarageType
 recode_map <- c(
   "2Types" =	"T",
@@ -345,6 +332,7 @@ HP_Excluded <- HP_Excluded %>%
   mutate(GarageType = as.character(GarageType),
          GarageExists = recode(GarageType, !!!recode_map))
 HP_Excluded$GarageExists = factor(HP_Excluded$GarageExists, levels = c("F", "T"))
+
 ###' Utilities
 recode_map <- c(
   "AllPub" = "All",
@@ -354,6 +342,7 @@ recode_map <- c(
 )
 HP_Excluded <- HP_Excluded %>%
   mutate(UtilitiesReduced = recode(Utilities, !!!recode_map))
+
 ###' OverallCond
 recode_map <- c(
   "10" = "Excellent",
@@ -369,6 +358,7 @@ recode_map <- c(
 )
 HP_Excluded <- HP_Excluded %>%
   mutate(OverallCondReduced = recode(OverallCond, !!!recode_map))
+
 ###' FireplaceQu
 recode_map <- c(
   "Ex" =	"T",
@@ -382,6 +372,7 @@ HP_Excluded <- HP_Excluded %>%
   mutate(FireplaceQu = as.character(FireplaceQu),
          FirePlaceExists = recode(FireplaceQu, !!!recode_map))
 HP_Excluded$FirePlaceExists = factor(HP_Excluded$FirePlaceExists, levels = c("F", "T"))
+
 ###' BsmtCond
 recode_map <- c(
   "Ex" =	"T",
@@ -395,6 +386,7 @@ HP_Excluded <- HP_Excluded %>%
   mutate(BsmtCond = as.character(BsmtCond),
          BsmtExists = recode(BsmtCond, !!!recode_map))
 HP_Excluded$BsmtExists = factor(HP_Excluded$BsmtExists, levels = c("F", "T"))
+
 ###' Fence
 recode_map <- c(
   "GdPrv" =	"T",
@@ -407,6 +399,7 @@ HP_Excluded <- HP_Excluded %>%
   mutate(Fence = as.character(Fence),
          FenceExists = recode(Fence, !!!recode_map))
 HP_Excluded$FenceExists = factor(HP_Excluded$FenceExists, levels = c("F", "T"))
+
 ###' MiscFeature
 recode_map <- c(
   "Elev" =	"T",
@@ -420,42 +413,72 @@ HP_Excluded <- HP_Excluded %>%
   mutate(MiscFeature = as.character(MiscFeature),
          MiscFeatureExists = recode(MiscFeature, !!!recode_map))
 HP_Excluded$FenceExists = factor(HP_Excluded$FenceExists, levels = c("F", "T"))
-# total bath
-HP_Excluded$TotalBath = FullBath + HalfBath + BsmtFullBath + BsmtHalfBath
 ```
 
 ora procedo a metterle in correlazione con SalePrice in un heatmap
-
 ```{r, warning = F}
 vars <- c("SalePrice", "AlleyExists", "LotShapeReduced", "HouseAge", "MSZoningReduced", "GarageExists", "UtilitiesReduced", "OverallCondReduced", "FirePlaceExists", "BsmtExists", "FenceExists", "MiscFeatureExists", "TotalBath")
 
 excludevar = HP_Excluded[vars]
 
 selected_data <- excludevar %>%
-  mutate(across(everything(), ~ convert_to_numeric(.))
-  )
+    mutate(across(everything(), ~ convert_to_numeric(.)))
 
 selected_data_numeric <- selected_data %>%
   mutate(across(everything(), ~ as.numeric(as.character(.))))
 
-corHeap_excluded = as.data.frame(round(cor(selected_data_numeric, HP_Excluded$SalePrice),2))
+corHeap_excluded = as.data.frame(round(cor(selected_data_numeric, HP_Excluded$SalePrice), 2))
 names(corHeap_excluded) = "SalePrice"
 
 ggcorrplot(corHeap_excluded, type = "lower", lab = TRUE, lab_size = 2.5) + 
     theme(
         axis.text.x = element_text(size = 9),
         axis.text.y = element_text(size = 9))
-
 ```
+
+## Variabile correlate
+
+Filtro le variabili che hanno correlazione con SalePrice >=0.4
+```{r, results = F, message = F, warning = F}
+totalCorHeap = rbind.data.frame(corHeap, corHeap_excluded[-1, ])
+
+ggarrange(
+    plotlist = lapply(
+        rownames(totalCorHeap)[
+            rownames(totalCorHeap) != "SalePrice" & abs(totalCorHeap) >= 0.4],
+        function (var) {
+            plt <- ggplot(HP, aes(x = HP[[var]], y = SalePrice)) +
+                xlab(var)
+            
+            if (is.factor(HP[[var]])) {
+                plt <- plt + geom_boxplot()
+            } else {
+                plt <- plt + geom_point()
+            }
+            
+            plot(plt)
+        }),
+    ncol = 2,
+    nrow = 1,
+    widths = c(1, 1)
+)
+```
+
+
 
 # Analisi bivariata
 
 ## Funzioni di analisi
 
-Visto che la variabile target SalePrice è quantitativa, distinguo due casi: 1. la seconda variabile è qualitativa:
+Visto che la variabile target SalePrice è quantitativa, distinguo due casi:
+1. la seconda variabile è qualitativa:
 
 ```{r, warning = F}
-analysis.qualitative <- function(target, second_var, horizontal = F, target.lab = "prezzo di vendita", second_var.lab = "seconda variabile") {
+analysis.qualitative <- function(target, 
+                                 second_var, 
+                                 horizontal = F, 
+                                 target.lab = "prezzo di vendita", 
+                                 second_var.lab = "seconda variabile") {
     df <- subset(data.frame(target, second_var), !is.na(second_var))
     
     test <- aov(target ~ second_var)
@@ -488,10 +511,14 @@ analysis.qualitative <- function(target, second_var, horizontal = F, target.lab 
 }
 ```
 
-2.  la seconda variabile è quantitativa:
+2. la seconda variabile è quantitativa:
 
 ```{r, warning = F}
-analysis.quantitative <- function(target, second_var, horizontal = F, target.lab = "prezzo di vendita", second_var.lab = "seconda variabile") {
+analysis.quantitative <- function(target, 
+                                  second_var, 
+                                  horizontal = F, 
+                                  target.lab = "prezzo di vendita", 
+                                  second_var.lab = "seconda variabile") {
     mod <- lm(target ~ second_var)
     p <- summary(mod)$coefficients[2,4]
     
@@ -505,6 +532,11 @@ analysis.quantitative <- function(target, second_var, horizontal = F, target.lab
         intercept = coef(mod)[1], 
         slope = coef(mod)[2],
         color = "red") +
+      geom_hline(
+      yintercept = mean(target),
+      color = "green",
+      linetype = "dashed"
+    ) +
     labs(
         title = paste(target.lab, "VS", second_var.lab, sep = " "),
         subtitle = paste("Linear model p-value = ", signif(p, 3), sep = ""),
@@ -521,9 +553,9 @@ analysis.quantitative <- function(target, second_var, horizontal = F, target.lab
 
 Avendo il vettore delle età delle case, procedo a metterlo in relazione con il SalePrice trimite uno scatter plot
 
-```{r, message = F, warning = F}
+``` {r, message = F, warning = F}
 mod <- analysis.quantitative(
-    SalePrice, HouseAge,
+    SalePrice, HP_Excluded$HouseAge,
     second_var.lab = "età della casa"
 )
 ```
@@ -532,15 +564,14 @@ Con un p-value di `r summary(mod)[[4]][2,4]` si deduce che più la casa venduta 
 
 ## Analisi della qualità complessiva delle case
 
-```{r, message = F, warning = F}
+``` {r, message = F, warning = F}
 mod <- analysis.qualitative(
-    SalePrice, OverallQual,
-    horizontal = T,
+    SalePrice, factor(OverallQual, levels = 1:10),
     second_var.lab = "qualità di costruzione"
 )
 ```
 
-Si deduce che più la qualità di costruzione aumenta, più il prezzo tende a aumentare. È possibile che questo sia dovuto al fatto che le persone associano alla qualità un prezzo superiore. Alla condizione "Very Excellent" si puo osservare una grande varianza, questo puo essere dovuta al fatto che ci sono pocchi dati ma anche che valutare una casa diventa piu difficile.
+Si deduce che più la qualità di costruzione aumenta, più il prezzo tende a aumentare. È possibile che questo sia dovuto al fatto che le persone associano alla qualità un prezzo superiore. Alla condizione massimo si puo osservare una grande devianza, questo puo essere dovuta al fatto che ci sono pocchi dati ma anche che valutare una casa diventa piu difficile.
 
 ## Analisi della Area del Piano terra
 
@@ -551,37 +582,54 @@ mod <- analysis.quantitative(
 )
 ```
 
-Come nel punto precedente anche qua si nota che più la qualità esterna aumenta, più il prezzo tende a salire. Però si nota anche che nella classe di qualità più alta, il prezzo tende ad avere una varianza più alta.
+Si nota che più l'area del Piano terra, più il prezzo tende ad aumentare. Si nota oltre che si ha maggior densità di vendite quando le case sono comprese tra `r quantile(GrLivArea,probs=0.25)` e `r quantile(GrLivArea,probs=0.75)` oltre al quale diventa sparsa. Questo aumento puo essere causato dal incertezza su quale valore attribuire a un piano piu grande.
 
 ## Analisi dei Bagni Sopra il semiterrato
 
 ```{r, message = F, warning = F}
 mod <- analysis.qualitative(
-    SalePrice, FullBath,
-    horizontal = T,
+    SalePrice, as.factor(FullBath),
+    horizontal = F,
     second_var.lab = "Bagni Sopra il semiterrato"
 )
 ```
+
+Si deduce che più bagni si ha, più il prezzo tende a aumentare. È possibile che questo sia dovuto al fatto che le persone associano alla qualità un prezzo superiore.
 
 ## Analisi dei Numeri di Stanze sopra il semiterrato
 
 ```{r, message = F, warning = F}
 mod <- analysis.qualitative(
-    SalePrice, TotRmsAbvGrd,
-    horizontal = T,
+    SalePrice, as.factor(TotRmsAbvGrd),
+    horizontal = F,
     second_var.lab = "N Stanze sopra il semiterrato"
 )
 ```
+
+Si deduce che più Stanze si ha, più il prezzo tende a aumentare. È possibile che questo sia dovuto al fatto che le persone associano a Stanze un prezzo superiore. Si puo osservare degli outlier a 2 e 14  Stanze dovute alle mancanza dei dati (esiste un solo dato per ognuna).
 
 ## Analisi dei Numeri di camini
 
 ```{r, message = F, warning = F}
 mod <- analysis.qualitative(
-    SalePrice, Fireplaces,
-    horizontal = T,
+    SalePrice, as.factor(Fireplaces),
+    horizontal = F,
     second_var.lab = "N di camini"
 )
 ```
+
+Si deduce che più Camini si ha, più il prezzo tende a aumentare. È possibile che questo sia dovuto al fatto che le persone associano a Camini un prezzo superiore.
+
+## Analisi della Costruzione dei Fireplace
+
+```{r, message = F, warning = F}
+mod <- analysis.qualitative(
+    SalePrice, as.factor(FireplaceQu),
+    horizontal = F,
+    second_var.lab = "Costruzione dei Fireplace"
+)
+```
+Si deduce che al diminuire della qualità dei camini, più il prezzo tende a diminuire. È possibile che questo sia dovuto al fatto che le persone associano alla qualità un prezzo superiore. In particolare si nota che le persone associano alle case senza camini lo stesso prezzo con quelli alla stato peggiore
 
 ## Analisi dei Anno di costruzione dei garage
 
@@ -592,16 +640,18 @@ mod <- analysis.quantitative(
     second_var.lab = "Garage Year Built"
 )
 ```
+Si deduce che più nuovo il garage è, più il prezzo tende ad aumentare. È possibile che questo sia dovuto al fatto che le persone associano ai garage piu nuovi un prezzo superiore.
 
 ## Analisi dei Numeri di Auto
 
 ```{r, message = F, warning = F}
 mod <- analysis.qualitative(
-    SalePrice, GarageCars,
-    horizontal = T,
+    SalePrice, as.factor(GarageCars),
+    horizontal = F,
     second_var.lab = "N di Auto"
 )
 ```
+Si deduce che più auto che possono stare nel garage, più il prezzo tende ad aumentare. È possibile che questo sia dovuto al fatto che le persone associano ai posti auto un prezzo superiore.
 
 ## Analisi dei Area del Garage
 
@@ -612,3 +662,4 @@ mod <- analysis.quantitative(
     second_var.lab = "Area del Garage"
 )
 ```
+Si deduce che più grande è il garage, più il prezzo tende ad aumentare. È possibile che questo sia dovuto al fatto che le persone associano al area del garage un prezzo superiore. Si nota che con un garage di 0m^2, quindi nessun garage, il prezzo tende ad essere minore
