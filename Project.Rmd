@@ -413,8 +413,6 @@ HP_Excluded <- HP_Excluded %>%
   mutate(MiscFeature = as.character(MiscFeature),
          MiscFeatureExists = recode(MiscFeature, !!!recode_map))
 HP_Excluded$FenceExists = factor(HP_Excluded$FenceExists, levels = c("F", "T"))
-
-attach(HP_Excluded)
 ```
 
 ora procedo a metterle in correlazione con SalePrice in un heatmap
