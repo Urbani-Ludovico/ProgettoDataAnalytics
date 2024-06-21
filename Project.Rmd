@@ -8,7 +8,7 @@ output:
 # Importazione delle librerie
 
 ``` {r, message = F, warning = F}
-for (package in c("ggplot2", "ggcorrplot", "ggpubr", "dplyr", 
+for (package in c("ggplot2", "ggcorrplot", "ggpubr", "dplyr", "tidyr", 
                   "GGally", "reshape2", "gridExtra")) {
     if (!require(package, character.only = T, quietly = T)) {
       install.packages(package, character.only = T)
@@ -206,29 +206,67 @@ for (ele in withNA) {
 
 ora si può visualizzare il vettore di correlazione come
 ``` {r, warning = F}
-length_corHeap <- ceiling(NROW(corHeap)/2)
+length_corHeap = c(ceiling(NROW(corHeap)/4), ceiling(NROW(corHeap)/2), ceiling(3*NROW(corHeap)/4))
 
-first_half_corHeap <- as.data.frame(corHeap[1:length_corHeap,])
+first_half_corHeap <- as.data.frame(corHeap[1:length_corHeap[1],])
 names(first_half_corHeap) <- "SalePrice"
 first_half_corHeap <- rbind.data.frame(data.frame(SalePrice = 0), first_half_corHeap)
-rownames(first_half_corHeap) <- c("0", rownames(corHeap)[1:length_corHeap])
+rownames(first_half_corHeap) <- c("0", rownames(corHeap)[1:length_corHeap[1]])
 
-second_half_corHeap <- as.data.frame(corHeap[(length_corHeap + 1):NROW(corHeap), ])
+second_half_corHeap <- as.data.frame(corHeap[(length_corHeap[1]+1):length_corHeap[2], ])
 names(second_half_corHeap) <- "SalePrice"
 second_half_corHeap <- rbind.data.frame(data.frame(SalePrice = 0), second_half_corHeap)
 rownames(second_half_corHeap) <- c(
-    "0", rownames(corHeap)[(length_corHeap + 1):NROW(corHeap)])
+    "0", rownames(corHeap)[(length_corHeap[1]+1):length_corHeap[2]])
 
-p1 <- ggcorrplot(first_half_corHeap, type = "lower", lab = TRUE, lab_size = 2.5) +
-    theme(
-        axis.text.x = element_text(size = 9),
-        axis.text.y = element_text(size = 9))
-p2 <- ggcorrplot(second_half_corHeap, type = "lower", lab = TRUE, lab_size = 2.5) +
-    theme(
-        axis.text.x = element_text(size = 9),
-        axis.text.y = element_text(size = 9))
+third_half_corHeap = as.data.frame(corHeap[(length_corHeap[2]+1):length_corHeap[3],])
+names(third_half_corHeap) = "SalePrice"
+third_half_corHeap <- rbind.data.frame(data.frame(SalePrice = 0), third_half_corHeap)
+rownames(third_half_corHeap) <- c(
+    "0", rownames(corHeap)[(length_corHeap[2]+1):length_corHeap[3]])
 
-grid.arrange(p1, p2, nrow = 2)
+fourth_half_corHeap = as.data.frame(corHeap[(length_corHeap[3]+1):NROW(corHeap),])
+names(fourth_half_corHeap) = "SalePrice"
+fourth_half_corHeap <- rbind.data.frame(data.frame(SalePrice = 0), fourth_half_corHeap)
+rownames(fourth_half_corHeap) <- c(
+    "0", rownames(corHeap)[(length_corHeap[3]+1):NROW(corHeap)])
+
+p1 = ggcorrplot(first_half_corHeap, type = "lower", lab = TRUE, lab_size = 2.3, show.legend = F) +
+  theme(
+  axis.text.x = element_text(size = 7),
+  axis.text.y = element_text(size = 7)
+  )
+p2 = ggcorrplot(second_half_corHeap, type = "lower", lab = TRUE, lab_size = 2.3, show.legend = F) +
+  theme(
+  axis.text.x = element_text(size = 7),
+  axis.text.y = element_text(size = 7)
+  )
+p3 = ggcorrplot(third_half_corHeap, type = "lower", lab = TRUE, lab_size = 2.3, show.legend = T) +
+  theme(
+  axis.text.x = element_text(size = 7),
+  axis.text.y = element_text(size = 7)
+  )
+p4 = ggcorrplot(fourth_half_corHeap, type = "lower", lab = TRUE, lab_size = 2.3, show.legend = F) +
+  theme(
+  axis.text.x = element_text(size = 7),
+  axis.text.y = element_text(size = 7)
+  )
+
+get_legend <- function(myplot) {
+  tmp <- ggplot_gtable(ggplot_build(myplot))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  return(legend)
+}
+legend <- get_legend(p3)
+p3 = p3 + theme(legend.position = "none")
+
+grid.arrange(
+  arrangeGrob(p1, p2, p3, p4, nrow = 4),
+  legend,
+  ncol = 2,
+  widths = c(4, 1)
+)
 ```
 
 ## Variabili calcolate
