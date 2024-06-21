@@ -16,6 +16,7 @@ for (package in c("ggplot2", "ggcorrplot", "ggpubr", "dplyr",
     
     library(package, character.only = T)
 }
+rm(package)
 
 plot_theme = theme_minimal() +
     theme(
@@ -157,6 +158,8 @@ Prendo le variabili escluse e le variabili che nealla heatmap hanno una bassa co
 Ad esempio variabili quantitative o qualitative che hanno valori NA o 0 per indicare l'assenza di quella caratteristica le trasformo in variabili booleane.
 ```{r, message = F}
 current_year <- as.integer(format(Sys.Date(), "%Y"))
+
+new_cols <- 
 
 HP$FrontageExists <- factor(!is.na(LotFrontage), levels = c(F, T), labels = c("no", "yes"))
 HP$AlleyExists <- factor(!is.na(Alley), levels = c(F, T), labels = c("no", "yes"))
