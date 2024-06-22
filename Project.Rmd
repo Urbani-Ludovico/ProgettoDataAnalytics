@@ -16,7 +16,6 @@ for (package in c("ggplot2", "ggcorrplot", "ggpubr", "dplyr", "tidyr",
     
     library(package, character.only = T)
 }
-rm(package)
 
 plot_theme = theme_minimal() +
     theme(
@@ -687,23 +686,23 @@ mod <- analysis.qualitative(
 
 Con un p-value di `r mod` si nota che più la qualità del riscaldamento è alta e più il prezzo della casa di alza. Inoltre la maggioranza delle case con il prezzo più alto rientrano nella fascia migliore di riscaldamento.
 
-## Analisi dell'area del primo piano
+## Analisi dell'area del piano terra
 
 ``` {r, message = F, warning = F}
 mod <- analysis.quantitative(
     SalePrice, X1stFlrSF,
-    second_var.lab = "area del primo piano"
+    second_var.lab = "area del piano terra"
 )
 ```
 
 Con un p-value di `r mod` si nota che più la metratura del piano terra è elevata, più il prezzo della casa tende a salire.
 
-## Analisi dell'area del piano terra
+## Analisi dell'area dell'area abitabile
 
 ```{r, message = F, warning = F}
 mod <- analysis.quantitative(
     SalePrice, GrLivArea,
-    second_var.lab = "area del piano terra"
+    second_var.lab = "area dell'area abitabile"
 )
 ```
 
@@ -859,11 +858,10 @@ ggplot(HP, aes(x = YearBuilt, y = SalePrice, color = Foundation)) +
 Questo grafico invece evidenzia rispetto all'anno di costruzione anche il tipo di fondamenta utilizzate per la costruzione della casa.
 Anche in questo grafico, come il precedente, non abbiamo fasce, quindi il prezzo di vendita della casa non viene influenzato dalla tipologia di fondamenta utilizzate, ma si può evincere che le tipologia di fondamenta sono in relazione ad un periodo storico, nel senso che recentemente si utilizzano principalmente quelle in calcestruzzo colato, mentre prima del 1980 erano più di moda altre tecniche.
 
-## Analisi dell'area totale con il numero totale di stanze
+## Analisi dell'area sopra il seminterrato con il numero totale di stanze
 
 ```{r, message = F, warning = F}
-total_area = HP$X1stFlrSF + HP$GrLivArea + HP$MasVnrArea
-ggplot(HP, aes(x = total_area, y = SalePrice, color = factor(TotRmsAbvGrd))) +
+ggplot(HP, aes(x = GrLivArea, y = SalePrice, color = factor(TotRmsAbvGrd))) +
     geom_point() +
     labs(x = "area totale", 
          y = "prezzo di vendita", 
@@ -871,12 +869,12 @@ ggplot(HP, aes(x = total_area, y = SalePrice, color = factor(TotRmsAbvGrd))) +
     theme_minimal()
 ```
 
-Dal grafico possiamo notare che all'aumentare dell'area totale c'è anche un aumento del numero delle camere, questo aumento è più distribuito, meno netto rispetto alle tecniche del precedente grafico. Con l'aumento dell'area totale della casa c'è anche un significativo aumento del prezzo di vendita.
+Dal grafico possiamo notare che all'aumentare dell'area abitabile c'è anche un aumento del numero delle camere, questo aumento è più distribuito, meno netto rispetto alle tecniche del precedente grafico. Con l'aumento dell'area totale della casa c'è anche un significativo aumento del prezzo di vendita.
 
-## Analisi dell'area del piano terra con il numero di bagni
+## Analisi dell'area dell'area abitabile con il numero di bagni
 
 ```{r, message = F, warning = F}
-ggplot(HP, aes(x = X1stFlrSF + GrLivArea, y = log(SalePrice), color = factor(FullBath))) +
+ggplot(HP, aes(x = GrLivArea, y = log(SalePrice), color = factor(FullBath))) +
     geom_point() +
     labs(x = "metratura piano terra", 
          y = "prezzo di vendita",
@@ -884,7 +882,7 @@ ggplot(HP, aes(x = X1stFlrSF + GrLivArea, y = log(SalePrice), color = factor(Ful
     theme_minimal()
 ```
 
-Nel grafico sovrastante si può notare che all'aumentare della superficie del primo piano c'è anche un aumento del numero dei bagni completi all'interno della casa. C'è anche un vigoroso aumento di prezzo annesso, L'aumento vorticoso di prezzo in relazione alla superficie è plausibile considerando che non è la completa superficie della casa ma solamente una parte.
+Nel grafico sovrastante si può notare che all'aumentare dell'area abitabile c'è anche un aumento del numero dei bagni completi all'interno della casa. C'è anche un vigoroso aumento di prezzo annesso, L'aumento vorticoso di prezzo in relazione alla superficie è plausibile considerando che non è la completa superficie della casa ma solamente una parte.
 
 ## Analisi dell'area con l'anno di costruzione dei garage
 
