@@ -1,8 +1,8 @@
 ---
 title: "Analisi house price"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 # Importazione delle librerie
@@ -687,12 +687,12 @@ mod <- analysis.qualitative(
 
 Con un p-value di `r mod` si nota che più la qualità del riscaldamento è alta e più il prezzo della casa di alza. Inoltre la maggioranza delle case con il prezzo più alto rientrano nella fascia migliore di riscaldamento.
 
-## Analisi dell'area del piano terra
+## Analisi dell'area del primo piano
 
 ``` {r, message = F, warning = F}
 mod <- analysis.quantitative(
     SalePrice, X1stFlrSF,
-    second_var.lab = "area del piano terra"
+    second_var.lab = "area del primo piano"
 )
 ```
 
