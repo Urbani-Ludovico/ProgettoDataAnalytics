@@ -482,14 +482,15 @@ ggcorrplot(corHeap_excluded, type = "lower", lab = TRUE, lab_size = 2.5) +
 
 Filtro le variabili che hanno correlazione con SalePrice >=0.4
 ```{r, results = F, message = F, warning = F}
-totalCorHeap = rbind.data.frame(corHeap, corHeap_excluded[-1, ])
+totalCorHeap = rbind.data.frame(
+    subset(corHeap, subset = rownames(corHeap) != "SalePrice"), 
+    subset(corHeap_excluded, subset = rownames(corHeap_excluded) != "SalePrice"))
 
 ggarrange(
     plotlist = lapply(
-        rownames(totalCorHeap)[
-            rownames(totalCorHeap) != "SalePrice" & abs(totalCorHeap) >= 0.4],
+        rownames(totalCorHeap)[abs(totalCorHeap) >= 0.4],
         function (var) {
-            plt <- ggplot(HP, aes(x = HP[[var]], y = SalePrice)) +
+            plt <- ggplot(HP, aes(x = HP_Excluded[[var]], y = SalePrice)) +
                 xlab(var)
             
             if (is.factor(HP[[var]])) {
