@@ -3,8 +3,8 @@ title: "Analisi house price"
 author: "Urbani Ludovico, Mohamed Fadhla Mutua, Nicola Battiston, Nicolò Nava"
 date: "2024-06-24"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
 
 # Importazione delle librerie
@@ -331,7 +331,8 @@ grid.arrange(
 
 Prendo le variabili escluse e le variabili che nealla heatmap hanno una bassa correlazione e provo a creare delle variabili calcolate che potrebbero essere correlate a SalePrice. 
 Ad esempio variabili quantitative o qualitative che hanno valori NA o 0 per indicare l'assenza di quella caratteristica le trasformo in variabili booleane.
-```{r, message = F}
+
+```{r, message = F, warning = F}
 HP_Excluded = HP
 
 # Alley
@@ -341,7 +342,7 @@ recode_map <- c(
     "No Alley" = "F")
 HP_Excluded <- HP_Excluded %>%
     mutate(Alley = as.character(Alley),
-           AlleyExists = recode(Alley, !!!recode_map))
+           AlleyExists = dplyr::recode(Alley, !!!recode_map))
 HP_Excluded$AlleyExists <- factor(HP_Excluded$AlleyExists, levels = c("F", "T"))
 
 # LotShape
@@ -351,7 +352,7 @@ recode_map <- c(
     "IR2" = "Irregular",
     "IR3" = "Irregular")
 HP_Excluded <- HP_Excluded %>%
-    mutate(LotShapeReduced = recode(LotShape, !!!recode_map))
+    mutate(LotShapeReduced = dplyr::recode(LotShape, !!!recode_map))
 
 # YearBuilt
 current_year <- as.integer(format(Sys.Date(), "%Y"))
@@ -371,7 +372,7 @@ recode_map <- c(
     "RP" = "Residential",
     "RM" = "Residential")
 HP_Excluded <- HP_Excluded %>%
-    mutate(MSZoningReduced = recode(MSZoning, !!!recode_map))
+    mutate(MSZoningReduced = dplyr::recode(MSZoning, !!!recode_map))
 
 # GarageType
 recode_map <- c(
@@ -384,7 +385,7 @@ recode_map <- c(
     "No Garage" = "F")
 HP_Excluded <- HP_Excluded %>%
     mutate(GarageType = as.character(GarageType),
-           GarageExists = recode(GarageType, !!!recode_map))
+           GarageExists = dplyr::recode(GarageType, !!!recode_map))
 HP_Excluded$GarageExists <- factor(HP_Excluded$GarageExists, levels = c("F", "T"))
 
 # Utilities
@@ -394,7 +395,7 @@ recode_map <- c(
     "NoSeWa" ="Some",
     "ELO" =	"Some")
 HP_Excluded <- HP_Excluded %>%
-    mutate(UtilitiesReduced = recode(Utilities, !!!recode_map))
+    mutate(UtilitiesReduced = dplyr::recode(Utilities, !!!recode_map))
 
 # OverallCond
 recode_map <- c(
@@ -410,7 +411,7 @@ recode_map <- c(
     "1" =	"Poor"
 )
 HP_Excluded <- HP_Excluded %>%
-    mutate(OverallCondReduced = recode(OverallCond, !!!recode_map))
+    mutate(OverallCondReduced = dplyr::recode(OverallCond, !!!recode_map))
 
 # BsmtCond
 recode_map <- c(
@@ -422,7 +423,7 @@ recode_map <- c(
     "No Bsmt" = "F")
 HP_Excluded <- HP_Excluded %>%
     mutate(BsmtCond = as.character(BsmtCond),
-           BsmtExists = recode(BsmtCond, !!!recode_map))
+           BsmtExists = dplyr::recode(BsmtCond, !!!recode_map))
 HP_Excluded$BsmtExists <- factor(HP_Excluded$BsmtExists, levels = c("F", "T"))
 
 # Fence
@@ -435,7 +436,7 @@ recode_map <- c(
 )
 HP_Excluded <- HP_Excluded %>%
     mutate(Fence = as.character(Fence),
-           FenceExists = recode(Fence, !!!recode_map))
+           FenceExists = dplyr::recode(Fence, !!!recode_map))
 HP_Excluded$FenceExists <- factor(HP_Excluded$FenceExists, levels = c("F", "T"))
 
 # MiscFeature
@@ -449,7 +450,7 @@ recode_map <- c(
 )
 HP_Excluded <- HP_Excluded %>%
     mutate(MiscFeature = as.character(MiscFeature),
-           MiscFeatureExists = recode(MiscFeature, !!!recode_map))
+           MiscFeatureExists = dplyr::recode(MiscFeature, !!!recode_map))
 HP_Excluded$FenceExists <- factor(HP_Excluded$FenceExists, levels = c("F", "T"))
 ```
 
