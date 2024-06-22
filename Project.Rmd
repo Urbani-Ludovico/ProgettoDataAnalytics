@@ -620,3 +620,98 @@ mod <- analysis.qualitative(
 ```
 
 Come nel punto precedente anche qua si nota che più la qualità esterna aumenta, più il prezzo tende a salire. Però si nota anche che nella classe di qualità più alta, il prezzo tende ad avere una varianza più alta.
+
+
+# Analisi multivariata
+
+```{r, message = F, warning = F}
+ggplot(HP, aes(x = YearRemodAdd, y = log(SalePrice), color = factor(OverallQual))) +
+    geom_point() +
+    labs(x = "ultimi lavori eseguiti (anno)", y = "prezzo di vendita", color = "Qualità complessiva") +
+    theme_minimal()
+
+ggpairs(table(factor(HP$OverallQual), log(HP$SalePrice)))
+```
+
+Dal grafico sovrastante possiamo notare che più le date degli ultimi lavori efffettuti sulle case è recente più le abitazioni hanno una qualità complessiva migliore, inoltre anche il prezzo è maggiore.
+Inoltre possiamo notare che da circa l'inizio del nuovo millennio c'è stato un notevole riguardo alla qualità complessiva dell'abitazione. 
+Inoltre possiamo notare delle fasce di prezzo che sono composte principalmente da un colore solo, il che ci può far dedurre che sia la qualità generale dell'abitazione sia la data degli ultimi lavori sulla casa incidono sul prezzo in modo significativo.
+
+```{r, message = F, warning = F}
+ggplot(HP, aes(x = YearRemodAdd, y = log(SalePrice), color = factor(HeatingQC))) +
+    geom_point() +
+    labs(x = "ultimi lavori eseguiti", y = "prezzo di vendita", color = "Qualità del riscaldamento") +
+    theme_minimal()
+```
+
+Da questo grafico, invece, notiamo che il prezzo dell'abitazione non ha fasce distinte di colore, ma si può evincere che c'è un netto miglioramento delle condizioni del riscaldamento da l'inizio del 1990 circa. Con una qualità del riscaldamento che è passata ad eccellente nella maggior parte delle case che hanno avuto lavori.
+
+```{r, message = F, warning = F}
+ggplot(HP, aes(x = YearBuilt, y = SalePrice, color = Foundation)) +
+    geom_point() +
+    labs(x = "anno di costruzione", y = "prezzo di vendita", color = "Fondamenta") +
+    theme_minimal()
+```
+
+Questo grafico invece evidenzia rispetto all'anno di costruzione anche il tipo di fondamenta utilizzate per la costruzione della casa.
+Anche in questo grafico, come il precedente, non abbiamo fasce, quindi il prezzo di vendita della casa non viene influenzato dalla tipologia di fondamenta utilizzate, ma si può evincere che le tipologia di fondamenta sono in relazione ad un periodo storico, nel senso che recentemente si utilizzano principalmente quelle in calcestruzzo colato, mentre prima del 1980 erano più di moda altre tecniche.
+
+```{r, message = F, warning = F}
+total_area = HP$X1stFlrSF + HP$GrLivArea  + HP$MasVnrArea
+ggplot(HP, aes(x = total_area, y = SalePrice, color = factor(TotRmsAbvGrd))) +
+    geom_point() +
+    labs(x = "area totale", y = "prezzo di vendita", color = "Numero di stanze") +
+    theme_minimal()
+```
+
+Dal grafico possiamo notare che all'aumentare dell'area totale c'è anche un aumento del numero delle camere, questo aumento è più distribuito, meno netto rispetto alle tecniche del precedente grafico. Con l'aumento dell'area totale della casa c'è anche un significativo aumento del prezzo di vendita
+
+```{r, message = F, warning = F}
+ggplot(HP, aes(x = X1stFlrSF + GrLivArea, y = log(SalePrice), color = factor(FullBath))) +
+    geom_point() +
+    labs(color = "Numero di bagni", x = "metratura piano terra", y = "prezzo di vendita") +
+    theme_minimal()
+```
+
+Nel grafico sovrastante si può notare che all'aumentare della superficie del primo piano c'è anche un aumento del numero dei bagni completi all'interno della casa. C'è anche un vigoroso aumento di prezzo annesso, L'aumento vorticoso di prezzo in relazione alla superficie è plausibile considerando che non è la completa superficie della casa ma solamente una parte.
+
+Fare il 7° che è
+
+```{r, message = F, warning = F}
+HP$GarageArea.cut <- cut(
+    HP$GarageArea, 
+    breaks = c(min(HP$GarageArea), 200, 400, 600, 800, 1000, max(HP$GarageArea)), 
+    labels = c("0-200", "201-400", "401-600", "601-800", "801-1000", "1001-1418"))
+
+ggplot(HP, aes(x = GarageYrBlt, y = SalePrice, color = GarageArea.cut)) +
+    geom_point(na.rm = T) +
+    labs(x = "anno di costruzione del garage", y = "prezzo di vendita", color = "Area abitabile") +
+    scale_color_discrete(na.translate = F) +
+    theme_minimal()
+```
+
+Dal grafico possiamo notare un grande aumento dei prezzi delle case con un recente anno di costruzione del garage. Inoltre possiamo notare che sempre le case con il garage costruito recentemente hanno mediamente una metratura del piano terra più grande.
+
+```{r, message = F, warning = F}
+ggplot(HP, aes(x = YearRemodAdd, y = SalePrice, color = factor(FireplaceQu))) +
+    geom_point() +
+    labs(x = "ultimi lavori eseguiti (anno)", y = "prezzo di vendita", color = "Qualità estintori") +
+    scale_color_discrete(na.translate = F) +
+    theme_minimal()
+```
+
+Dal grafico sovrastante si può avincere che, come con il riscaldamento, anche in questo caso la qualità dei caminetti è mediamente in leggero aumento, in modo meno significativo; mentre con il prezzo di vendita non ci sono delle fasce di prezzo differenti per qualià differenti dei caminetti, dunque possiamo dedurre che la qualità del caminetto non incide significativamente sul prezzo di vendita.
+
+```{r, message = F, warning = F}
+min(HP$YearRemodAdd)
+year_gap <- cut(
+    HP$YearRemodAdd, 
+    breaks = c(1930, 1950, 1980, 2000, max(HP$YearRemodAdd)),
+    labels = c("1930-1950", "1950-1980", "1980-2000", "2000-now"))
+
+ggplot(HP, aes(x = GarageYrBlt, y = SalePrice, color = factor(year_gap))) +
+    geom_point() +
+    labs(color = "Ultimi lavori (anno)") +
+    scale_color_discrete(na.translate = F) +
+    theme_minimal()
+```
