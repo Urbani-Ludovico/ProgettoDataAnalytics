@@ -103,7 +103,8 @@ HP <- HP %>%
          GarageType = replace_na(GarageType, "No Garage"))
 HP$GarageType <- factor(
     HP$GarageType, 
-    levels = c("2Types", "Attchd", "Basment", "BuiltIn", "CarPort",	"Detchd", "No Garage"))
+    levels = c("2Types", "Attchd", "Basment", "BuiltIn", 
+               "CarPort",	"Detchd", "No Garage"))
 
 # GarageFinish
 HP <- HP %>%
@@ -459,7 +460,9 @@ HP_Excluded$FenceExists <- factor(HP_Excluded$FenceExists, levels = c("F", "T"))
 
 ora procedo a metterle in correlazione con SalePrice in un heatmap
 ```{r, warning = F}
-vars <- c("SalePrice", "AlleyExists", "LotShapeReduced", "HouseAge", "MSZoningReduced", "GarageExists", "UtilitiesReduced", "OverallCondReduced", "FirePlaceExists", "BsmtExists", "FenceExists", "MiscFeatureExists", "TotalBath")
+vars <- c("SalePrice", "AlleyExists", "LotShapeReduced", "HouseAge", "MSZoningReduced", 
+          "GarageExists", "UtilitiesReduced", "OverallCondReduced", "FirePlaceExists", 
+          "BsmtExists", "FenceExists", "MiscFeatureExists", "TotalBath")
 
 excludevar <- HP_Excluded[vars]
 
@@ -469,7 +472,8 @@ selected_data <- excludevar %>%
 selected_data_numeric <- selected_data %>%
     mutate(across(everything(), ~ as.numeric(as.character(.))))
 
-corHeap_excluded <- as.data.frame(round(cor(selected_data_numeric, HP_Excluded$SalePrice), 2))
+corHeap_excluded <- as.data.frame(
+    round(cor(selected_data_numeric, HP_Excluded$SalePrice), 2))
 names(corHeap_excluded) <- "SalePrice"
 
 ggcorrplot(corHeap_excluded, type = "lower", lab = TRUE, lab_size = 2.5) + 
@@ -627,7 +631,9 @@ Come nel punto precedente anche qua si nota che più la qualità esterna aumenta
 ```{r, message = F, warning = F}
 ggplot(HP, aes(x = YearRemodAdd, y = log(SalePrice), color = factor(OverallQual))) +
     geom_point() +
-    labs(x = "ultimi lavori (anno)", y = "prezzo di vendita", color = "Qualità complessiva") +
+    labs(x = "ultimi lavori (anno)", 
+         y = "prezzo di vendita", 
+         color = "Qualità complessiva") +
     theme_minimal()
 ```
 
@@ -638,7 +644,9 @@ Inoltre possiamo notare delle fasce di prezzo che sono composte principalmente d
 ```{r, message = F, warning = F}
 ggplot(HP, aes(x = YearRemodAdd, y = log(SalePrice), color = factor(HeatingQC))) +
     geom_point() +
-    labs(x = "ultimi lavori eseguiti", y = "prezzo di vendita", color = "Qualità del riscaldamento") +
+    labs(x = "ultimi lavori eseguiti", 
+         y = "prezzo di vendita", 
+         color = "Qualità del riscaldamento") +
     theme_minimal()
 ```
 
@@ -647,7 +655,9 @@ Da questo grafico, invece, notiamo che il prezzo dell'abitazione non ha fasce di
 ```{r, message = F, warning = F}
 ggplot(HP, aes(x = YearBuilt, y = SalePrice, color = Foundation)) +
     geom_point() +
-    labs(x = "anno di costruzione", y = "prezzo di vendita", color = "Fondamenta") +
+    labs(x = "anno di costruzione", 
+         y = "prezzo di vendita", 
+         color = "Fondamenta") +
     theme_minimal()
 ```
 
@@ -658,7 +668,9 @@ Anche in questo grafico, come il precedente, non abbiamo fasce, quindi il prezzo
 total_area = HP$X1stFlrSF + HP$GrLivArea + HP$MasVnrArea
 ggplot(HP, aes(x = total_area, y = SalePrice, color = factor(TotRmsAbvGrd))) +
     geom_point() +
-    labs(x = "area totale", y = "prezzo di vendita", color = "Numero di stanze") +
+    labs(x = "area totale", 
+         y = "prezzo di vendita", 
+         color = "Numero di stanze") +
     theme_minimal()
 ```
 
@@ -667,7 +679,9 @@ Dal grafico possiamo notare che all'aumentare dell'area totale c'è anche un aum
 ```{r, message = F, warning = F}
 ggplot(HP, aes(x = X1stFlrSF + GrLivArea, y = log(SalePrice), color = factor(FullBath))) +
     geom_point() +
-    labs(color = "Numero di bagni", x = "metratura piano terra", y = "prezzo di vendita") +
+    labs(x = "metratura piano terra", 
+         y = "prezzo di vendita",
+         color = "Numero di bagni") +
     theme_minimal()
 ```
 
@@ -681,7 +695,9 @@ HP$GarageArea.cut <- cut(
 
 ggplot(HP, aes(x = GarageYrBlt, y = SalePrice, color = GarageArea.cut)) +
     geom_point(na.rm = T) +
-    labs(x = "anno di costruzione del garage", y = "prezzo di vendita", color = "Area abitabile") +
+    labs(x = "anno di costruzione del garage", 
+         y = "prezzo di vendita", 
+         color = "Area abitabile") +
     scale_color_discrete(na.translate = F) +
     theme_minimal()
 ```
@@ -691,7 +707,9 @@ Dal grafico possiamo notare un grande aumento dei prezzi delle case con un recen
 ```{r, message = F, warning = F}
 ggplot(HP, aes(x = YearRemodAdd, y = SalePrice, color = factor(FireplaceQu))) +
     geom_point() +
-    labs(x = "ultimi lavori eseguiti (anno)", y = "prezzo di vendita", color = "Qualità estintori") +
+    labs(x = "ultimi lavori eseguiti (anno)", 
+         y = "prezzo di vendita", 
+         color = "Qualità estintori") +
     scale_color_discrete(na.translate = F) +
     theme_minimal()
 ```
@@ -707,7 +725,9 @@ year_gap <- cut(
 
 ggplot(HP, aes(x = GarageYrBlt, y = SalePrice, color = factor(year_gap))) +
     geom_point() +
-    labs(x = "anno di costruzione del garage", y = "prezzo di vendita", color = "Ultimi lavori (anno)") +
+    labs(x = "anno di costruzione del garage", 
+         y = "prezzo di vendita", 
+         color = "Ultimi lavori (anno)") +
     scale_color_discrete(na.translate = F) +
     theme_minimal()
 ```
