@@ -817,7 +817,7 @@ Con un p-value di `r mod` si deduce che più i numeri di bagni aumenta, più il 
 
 # Analisi multivariata
 
-##Analisi della qualità complessiva con l'anno degli ultimi lavori
+## Analisi della qualità complessiva con l'anno degli ultimi lavori
 ```{r, message = F, warning = F}
 ggplot(HP, aes(x = YearRemodAdd, y = log(SalePrice), color = factor(OverallQual))) +
     geom_point() +
@@ -827,9 +827,9 @@ ggplot(HP, aes(x = YearRemodAdd, y = log(SalePrice), color = factor(OverallQual)
     theme_minimal()
 ```
 
-Dal grafico sovrastante possiamo notare che più le date degli ultimi lavori efffettuti sulle case è recente più le abitazioni hanno una qualità complessiva migliore, inoltre anche il prezzo è maggiore.
-Inoltre possiamo notare che da circa l'inizio del nuovo millennio c'è stato un notevole riguardo alla qualità complessiva dell'abitazione.
-Inoltre possiamo notare delle fasce di prezzo che sono composte principalmente da un colore solo, il che ci può far dedurre che sia la qualità generale dell'abitazione sia la data degli ultimi lavori sulla casa incidono sul prezzo in modo significativo.
+Dal grafico sovrastante possiamo notare che più gli ultimi lavori effettuti sulle abitazioni è recente, più le abitazioni hanno una qualità complessiva migliore, di conseguenza anche il prezzo è maggiore.
+Inoltre possiamo notare che a partire dall'inizio del nuovo millennio c'è stato un notevole riguardo alla qualità complessiva dell'abitazione.
+Infine possiamo notare delle fasce di prezzo che sono composte principalmente da un colore solo, il che ci può far dedurre che sia la qualità generale dell'abitazione sia la data degli ultimi lavori sulla casa incidono sul prezzo in modo significativo.
 
 ## Analisi della qualità dei camini con l'anno degli ultimi lavori
 
@@ -842,7 +842,7 @@ ggplot(HP, aes(x = YearRemodAdd, y = log(SalePrice), color = factor(HeatingQC)))
     theme_minimal()
 ```
 
-Da questo grafico, invece, notiamo che il prezzo dell'abitazione non ha fasce distinte di colore, ma si può evincere che c'è un netto miglioramento delle condizioni del riscaldamento da l'inizio del 1990 circa. Con una qualità del riscaldamento che è passata ad eccellente nella maggior parte delle case che hanno avuto lavori.
+Da questo grafico, invece, notiamo che il prezzo dell'abitazione non ha fasce distinte di colore, ma si si evidenza un netto miglioramento delle condizioni del riscaldamento dall'inizio del 1990 circa. Con una qualità del riscaldamento che tende ad eccellente nella maggior parte delle case che sono state ristrutturate o costruite negli ultimi anni.
 
 ## Analisi del tipo di fondamenta con l'anno degli ultimi lavori
 
@@ -855,8 +855,8 @@ ggplot(HP, aes(x = YearBuilt, y = SalePrice, color = Foundation)) +
     theme_minimal()
 ```
 
-Questo grafico invece evidenzia rispetto all'anno di costruzione anche il tipo di fondamenta utilizzate per la costruzione della casa.
-Anche in questo grafico, come il precedente, non abbiamo fasce, quindi il prezzo di vendita della casa non viene influenzato dalla tipologia di fondamenta utilizzate, ma si può evincere che le tipologia di fondamenta sono in relazione ad un periodo storico, nel senso che recentemente si utilizzano principalmente quelle in calcestruzzo colato, mentre prima del 1980 erano più di moda altre tecniche.
+In questo grafico si evidenzia rispetto all'anno di costruzione anche il tipo di fondamenta utilizzate per la costruzione della casa.
+Come nell'analisi precedente non si evidenziano fasce evidenti, quindi il prezzo di vendita della casa non viene influenzato dalla tipologia di fondamenta utilizzate, ma si può vedere che le tipologia di fondamenta sono in relazione ad un periodo storico, ad esempio recentemente si utilizzano principalmente quelle in calcestruzzo colato, mentre prima del 1980 erano più di moda altre tecniche.
 
 ## Analisi dell'area sopra il seminterrato con il numero totale di stanze
 
@@ -869,7 +869,7 @@ ggplot(HP, aes(x = GrLivArea, y = SalePrice, color = factor(TotRmsAbvGrd))) +
     theme_minimal()
 ```
 
-Dal grafico possiamo notare che all'aumentare dell'area abitabile c'è anche un aumento del numero delle camere, questo aumento è più distribuito, meno netto rispetto alle tecniche del precedente grafico. Con l'aumento dell'area totale della casa c'è anche un significativo aumento del prezzo di vendita.
+Dal grafico possiamo notare che all'aumentare dell'area abitabile c'è anche un aumento del numero delle camere. Questo aumento è più distribuito, meno evidente rispetto alle tecniche del precedente grafico. Inoltre, con l'aumento dell'area totale della casa, c'è anche un significativo aumento del prezzo di vendita.
 
 ## Analisi dell'area dell'area abitabile con il numero di bagni
 
@@ -882,7 +882,8 @@ ggplot(HP, aes(x = GrLivArea, y = log(SalePrice), color = factor(FullBath))) +
     theme_minimal()
 ```
 
-Nel grafico sovrastante si può notare che all'aumentare dell'area abitabile c'è anche un aumento del numero dei bagni completi all'interno della casa. C'è anche un vigoroso aumento di prezzo annesso, L'aumento vorticoso di prezzo in relazione alla superficie è plausibile considerando che non è la completa superficie della casa ma solamente una parte.
+Nel grafico sovrastante si può notare che all'aumentare dell'area abitabile c'è anche un aumento del numero dei bagni completi all'interno della casa. Con completi si intendono i bagni non di servizio.
+C'è anche un evidente aumento di prezzo annesso, che probabilmente è dovuto al fatto che all'aumento del numero di bagni, aumenta anche la metratura della casa.
 
 ## Analisi dell'area con l'anno di costruzione dei garage
 
@@ -915,7 +916,7 @@ ggplot(HP, aes(x = YearRemodAdd, y = SalePrice, color = factor(FireplaceQu))) +
     theme_minimal()
 ```
 
-Dal grafico sovrastante si può avincere che, come con il riscaldamento, anche in questo caso la qualità dei caminetti è mediamente in leggero aumento, in modo meno significativo; mentre con il prezzo di vendita non ci sono delle fasce di prezzo differenti per qualià differenti dei caminetti, dunque possiamo dedurre che la qualità del caminetto non incide significativamente sul prezzo di vendita.
+Dal grafico sovrastante si può evidenziare che, come con il riscaldamento, anche in questo caso la qualità dei caminetti è mediamente in leggero aumento, in modo meno significativo. Mentre per il prezzo di vendita non ci sono delle fasce di prezzo differenti per qualità dei caminetti. Dunque possiamo dedurre che la qualità del caminetto non incide significativamente sul prezzo di vendita.
 
 ## Analisi dell'anno di costruzione del garage con l'anno degli ultimi lavori
 
@@ -937,4 +938,4 @@ ggplot(HP, aes(x = GarageYrBlt, y = SalePrice, color = factor(year_gap))) +
     theme_minimal()
 ```
 
-Nel grafico si può notare una come con le fondamenta, possiamo notare delle distinzioni per epoche, il garage soprattutto negli ultimi decenni è stato costruito in cocomitanza con gli ultimi lavori effettuati.
+Nel grafico si può notare, come con le fondamenta, delle distinzioni per epoche, il garage soprattutto negli ultimi decenni è stato costruito in concomitanza con gli ultimi lavori effettuati.
