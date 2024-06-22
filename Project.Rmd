@@ -266,8 +266,8 @@ rownames(fourth_half_corHeap) <- c(
 
 p1 <- ggcorrplot(
     first_half_corHeap, 
-    type = "lower", l
-    ab = TRUE, 
+    type = "lower",
+    lab = TRUE, 
     lab_size = 2.3, 
     show.legend = F) +
     theme(
@@ -275,8 +275,8 @@ p1 <- ggcorrplot(
         axis.text.y = element_text(size = 7))
 p2 <- ggcorrplot(
     second_half_corHeap,
-    type = "lower", l
-    ab = TRUE, 
+    type = "lower",
+    lab = TRUE, 
     lab_size = 2.3, 
     show.legend = F) +
     theme(
@@ -284,17 +284,17 @@ p2 <- ggcorrplot(
         axis.text.y = element_text(size = 7))
 p3 <- ggcorrplot(
     third_half_corHeap,
-    type = "lower", l
-    ab = TRUE, 
+    type = "lower",
+    lab = TRUE, 
     lab_size = 2.3, 
-    show.legend = F) +
+    show.legend = T) +
     theme(
         axis.text.x = element_text(size = 7),
         axis.text.y = element_text(size = 7))
 p4 <- ggcorrplot(
     fourth_half_corHeap,
-    type = "lower", l
-    ab = TRUE, 
+    type = "lower",
+    lab = TRUE, 
     lab_size = 2.3, 
     show.legend = F) +
     theme(
@@ -505,8 +505,6 @@ ggarrange(
     widths = c(1, 1)
 )
 ```
-
-
 
 # Analisi bivariata
 
