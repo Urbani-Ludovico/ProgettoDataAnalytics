@@ -1,8 +1,8 @@
 ---
 title: "Analisi house price"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
 
 # Importazione delle librerie
@@ -627,14 +627,12 @@ Come nel punto precedente anche qua si nota che più la qualità esterna aumenta
 ```{r, message = F, warning = F}
 ggplot(HP, aes(x = YearRemodAdd, y = log(SalePrice), color = factor(OverallQual))) +
     geom_point() +
-    labs(x = "ultimi lavori eseguiti (anno)", y = "prezzo di vendita", color = "Qualità complessiva") +
+    labs(x = "ultimi lavori (anno)", y = "prezzo di vendita", color = "Qualità complessiva") +
     theme_minimal()
-
-ggpairs(table(factor(HP$OverallQual), log(HP$SalePrice)))
 ```
 
 Dal grafico sovrastante possiamo notare che più le date degli ultimi lavori efffettuti sulle case è recente più le abitazioni hanno una qualità complessiva migliore, inoltre anche il prezzo è maggiore.
-Inoltre possiamo notare che da circa l'inizio del nuovo millennio c'è stato un notevole riguardo alla qualità complessiva dell'abitazione. 
+Inoltre possiamo notare che da circa l'inizio del nuovo millennio c'è stato un notevole riguardo alla qualità complessiva dell'abitazione.
 Inoltre possiamo notare delle fasce di prezzo che sono composte principalmente da un colore solo, il che ci può far dedurre che sia la qualità generale dell'abitazione sia la data degli ultimi lavori sulla casa incidono sul prezzo in modo significativo.
 
 ```{r, message = F, warning = F}
@@ -657,14 +655,14 @@ Questo grafico invece evidenzia rispetto all'anno di costruzione anche il tipo d
 Anche in questo grafico, come il precedente, non abbiamo fasce, quindi il prezzo di vendita della casa non viene influenzato dalla tipologia di fondamenta utilizzate, ma si può evincere che le tipologia di fondamenta sono in relazione ad un periodo storico, nel senso che recentemente si utilizzano principalmente quelle in calcestruzzo colato, mentre prima del 1980 erano più di moda altre tecniche.
 
 ```{r, message = F, warning = F}
-total_area = HP$X1stFlrSF + HP$GrLivArea  + HP$MasVnrArea
+total_area = HP$X1stFlrSF + HP$GrLivArea + HP$MasVnrArea
 ggplot(HP, aes(x = total_area, y = SalePrice, color = factor(TotRmsAbvGrd))) +
     geom_point() +
     labs(x = "area totale", y = "prezzo di vendita", color = "Numero di stanze") +
     theme_minimal()
 ```
 
-Dal grafico possiamo notare che all'aumentare dell'area totale c'è anche un aumento del numero delle camere, questo aumento è più distribuito, meno netto rispetto alle tecniche del precedente grafico. Con l'aumento dell'area totale della casa c'è anche un significativo aumento del prezzo di vendita
+Dal grafico possiamo notare che all'aumentare dell'area totale c'è anche un aumento del numero delle camere, questo aumento è più distribuito, meno netto rispetto alle tecniche del precedente grafico. Con l'aumento dell'area totale della casa c'è anche un significativo aumento del prezzo di vendita.
 
 ```{r, message = F, warning = F}
 ggplot(HP, aes(x = X1stFlrSF + GrLivArea, y = log(SalePrice), color = factor(FullBath))) +
@@ -674,8 +672,6 @@ ggplot(HP, aes(x = X1stFlrSF + GrLivArea, y = log(SalePrice), color = factor(Ful
 ```
 
 Nel grafico sovrastante si può notare che all'aumentare della superficie del primo piano c'è anche un aumento del numero dei bagni completi all'interno della casa. C'è anche un vigoroso aumento di prezzo annesso, L'aumento vorticoso di prezzo in relazione alla superficie è plausibile considerando che non è la completa superficie della casa ma solamente una parte.
-
-Fare il 7° che è
 
 ```{r, message = F, warning = F}
 HP$GarageArea.cut <- cut(
@@ -711,7 +707,9 @@ year_gap <- cut(
 
 ggplot(HP, aes(x = GarageYrBlt, y = SalePrice, color = factor(year_gap))) +
     geom_point() +
-    labs(color = "Ultimi lavori (anno)") +
+    labs(x = "anno di costruzione del garage", y = "prezzo di vendita", color = "Ultimi lavori (anno)") +
     scale_color_discrete(na.translate = F) +
     theme_minimal()
 ```
+
+Nel grafico si può notare una come con le fondamenta, possiamo notare delle distinzioni per epoche, il garage soprattutto negli ultimi decenni è stato costruito in cocomitanza con gli ultimi lavori effettuati.
