@@ -10,8 +10,8 @@ output:
 # Importazione delle librerie
 
 ``` {r, message = F, warning = F}
-for (package in c("ggplot2", "ggcorrplot", "ggpubr", "dplyr", "tidyr", 
-                  "reshape2", "gridExtra")) {
+for (package in c("ggplot2", "ggcorrplot", "ggpubr", "ggfortify", "dplyr", "tidyr", 
+                  "reshape2", "gridExtra", "MASS", "car", "lmtest")) {
     if (!require(package, character.only = T, quietly = T)) {
       install.packages(package, character.only = T)
     }
@@ -933,3 +933,319 @@ ggplot(HP, aes(x = GarageYrBlt, y = SalePrice, color = factor(year_gap))) +
 ```
 
 Nel grafico si può notare, come con le fondamenta, delle distinzioni per epoche, il garage soprattutto negli ultimi decenni è stato costruito in concomitanza con gli ultimi lavori effettuati.
+
+# Analisi di regressione
+
+## Data preprocessing
+
+### Gestione dei valori mancanti
+
+```{r, message = F, warning = F}
+for(col in names(HP)) {
+    if (is.numeric(HP[[col]])) {
+        HP[[col]][is.na(HP[[col]])] <- mean(HP[[col]], na.rm = TRUE)
+    } else {
+        HP[[col]][is.na(HP[[col]])] <- as.character(sort(table(HP[[col]])[1]))
+    }
+}
+```
+
+### Identificazione e rimozione dei valori categorici singoli
+
+```{r, message = F, warning = F}
+categorical_vars <- names(HP)[sapply(data, function(x) is.factor(x) | is.character(x))]
+single_level_vars <- categorical_vars[
+    unlist(sapply(HP[categorical_vars], function(x) length(unique(x)) == 1))]
+
+HP <- HP[, !names(HP) %in% single_level_vars]
+
+categorical_vars <- names(HP)[sapply(HP, function(x) is.factor(x) | is.character(x))]
+HP[categorical_vars] <- lapply(HP[categorical_vars], as.factor)
+```
+
+## Analisi di correlazione
+
+```{r, message = F, warning = F}
+numericVars <- which(sapply(HP, is.numeric))
+numericData <- HP[, numericVars]
+correlations <- cor(numericData, use = "pairwise.complete.obs")
+correlationWithSalePrice <- sort(correlations[, 'SalePrice'], decreasing = TRUE)
+topNumericPredictors <- names(correlationWithSalePrice)[2:11]
+```
+
+## Selezione delle feature
+
+```{r, message = F, warning = F}
+keyCategoricalVars <- c("Neighborhood", "BldgType", "HouseStyle", "OverallQual")
+keyCategoricalVars <- keyCategoricalVars[keyCategoricalVars %in% names(HP)]
+encoded_data <- data.frame(model.matrix(~.-1, HP))
+encoded_categoricalVars <- grep(
+    paste(keyCategoricalVars, collapse="|"), names(encoded_data), value=TRUE)
+selected_predictors <- c(topNumericPredictors, encoded_categoricalVars)
+X_selected <- encoded_data[, selected_predictors]
+y <- encoded_data$SalePrice
+```
+
+## Regressione con STEPWISE e AIC
+
+```{r, message = F, warning = F}
+simple.model <- lm(y ~ ., data = X_selected)
+stepwise.model <- stepAIC(simple.model, direction = "both", trace = TRUE)
+summary(stepwise.model)
+```
+
+## Diagnostiche
+
+### Valori dei residui vs fitted
+
+```{r, message = F, warning = F}
+residuals <- resid(stepwise.model)
+fitted_values <- fitted(stepwise.model)
+
+ggplot() +
+    geom_point(aes(x = fitted_values, y = residuals), color = "blue") +
+    geom_hline(yintercept = 0,
+               color = "red",
+               linetype = "dashed") +
+    ggtitle("Residuals vs Fitted Values") +
+    xlab("Fitted Values") +
+    ylab("Residuals")
+```
+
+### Q-Q Plot dei residui
+
+```{r, message = F, warning = F}
+ggplot() +
+    geom_qq(aes(sample = residuals)) +
+    geom_qq_line(aes(sample = residuals), color = "red") +
+    ggtitle("Q-Q Plot dei residui")
+```
+
+### Resudui standard, leva e distanza di Cook
+
+```{r, message = F, warning = F}
+autoplot(stepwise.model, which = 1:6)
+```
+
+in questo primo tentativo di regressione abbiamo ottenuto un R^2 = 0.82, quindi siamo riusciti a spiegare l'82% della variabilità di y (salesprice), il che è un ottimo risultato di partenza, in tutte le regressioni sono state prese le prime 10 variabili piu' correlate a salesprice, unite alle variabili categoriche "Neighborhood", "BldgType", "HouseStyle", "OverallQual" convertite con one hot encoding, in quanto mi sembravano molto importanti. Il modello poi ha trovato in numero corretto di variabili con un p-value basso, che spiegano in maniera buona salesprice.
+dal grafico scatter dei residui si nota che nella parte destra si forma un pattern a "funnel" , che si potrebbe spigare col fatto che c'è della non linearità, o degli outlier che influenzano i risultati del modello.
+Si nota subito che il valore 1299 del dataset ha un alto valore di Crook, e un alta leva, quindi è opportuno investigarlo.
+Da investigazioni sul dato emerge che il fatto che il SaleCondition di quell ossevazione è  "Partial", il che s'ignifica che le caratteristiche della casa erano state rilevate quando essa era in fase di costruzione, percio' ho rimosso le oservazioni col valore di SaleCondition "Partial", in quanto disturbavano i parametri del modello, e non possiamo sapere con certezza se i parametri di quella casa sono affidabili per spiegare il saleprice che cerchiamo di predire.
+
+## Analysis del dataset senza i SaleCondition "Partial"
+
+```{r, message = F, warning = F}
+HP_no_partial <- HP[HP$SaleCondition != "Partial",]
+HP_no_partial$Id <- NULL
+
+categorical_vars <-
+    names(HP_no_partial)[sapply(HP_no_partial, function(x)
+        is.factor(x) | is.character(x))]
+single_level_vars <-
+    categorical_vars[sapply(HP_no_partial[categorical_vars], function(x)
+        length(unique(x)) == 1)]
+HP_no_partial <-
+    HP_no_partial[,!names(HP_no_partial) %in% single_level_vars]
+categorical_vars <-
+    names(HP_no_partial)[sapply(HP_no_partial, function(x)
+        is.factor(x) | is.character(x))]
+HP_no_partial[categorical_vars] <-
+    lapply(HP_no_partial[categorical_vars], as.factor)
+numericVars <- which(sapply(HP_no_partial, is.numeric))
+numericData <- HP_no_partial[, numericVars]
+correlations <- cor(numericData, use = "pairwise.complete.obs")
+correlationWithSalePrice <-
+    sort(correlations[, 'SalePrice'], decreasing = TRUE)
+topNumericPredictors <- names(correlationWithSalePrice)[2:11]
+keyCategoricalVars <-
+    c("Neighborhood", "BldgType", "HouseStyle", "OverallQual")
+keyCategoricalVars <-
+    keyCategoricalVars[keyCategoricalVars %in% names(HP_no_partial)]
+encoded_data <- data.frame(model.matrix( ~ . - 1, HP_no_partial))
+encoded_categoricalVars <-
+    grep(paste(keyCategoricalVars, collapse = "|"),
+         names(encoded_data),
+         value = TRUE)
+selected_predictors <-
+    c(topNumericPredictors, encoded_categoricalVars)
+X_selected <- encoded_data[, selected_predictors]
+y <- encoded_data$SalePrice
+simple.model <- lm(y ~ ., data = X_selected)
+stepwise.model <-
+    stepAIC(simple.model, direction = "both", trace = TRUE)
+summary(stepwise.model)
+```
+
+### Valori dei residui vs fitted (senza Partial Sales)
+
+```{r, message = F, warning = F}
+residuals <- resid(stepwise.model)
+fitted_values <- fitted(stepwise.model)
+
+ggplot() +
+    geom_point(aes(x = fitted_values, y = residuals), color = "blue") +
+    geom_hline(yintercept = 0,
+               color = "red",
+               linetype = "dashed") +
+    ggtitle("Residuals vs Fitted Values (Without Partial Sales)") +
+    xlab("Fitted Values") +
+    ylab("Residuals")
+```
+
+### Q-Q Plot dei residui (senza Partial Sales)
+
+```{r, message = F, warning = F}
+ggplot() +
+    geom_qq(aes(sample = residuals)) +
+    geom_qq_line(aes(sample = residuals), color = "red") +
+    ggtitle("Q-Q Plot dei residui (Without Partial Sales)")
+```
+
+### Resudui standard, leva e distanza di Cook (senza Partial Sales)
+
+```{r, message = F, warning = F}
+autoplot(stepwise.model, which = 1:6)
+```
+
+In questo secondo tentativo di regressione abbiamo ottenuto un R^2 = 0.85, quindi siamo riusciti a spiegare l'85% della variabilità di y (salesprice), il che è un ottimo incremento, che conferma che il nostro modello è adatto per spiegare le case con condizioni di vendita non "Partial", 
+dal grafico scatter dei residui si nota che nella parte destra il pattern precedente si è affievolito, pero' viene mostrata un esplosione dei residui con l'aumentare di y, il che implica che il modello non riesce a generalizzare bene per alti prezzi di saleprice , per tale motivo ho deciso di tentare successivamente una regressione con log(y) come variabile target, per cercare di catturare anche questo tipo di curva dei residui e mitigarla. Il QQ plot dei residui mostra che sulle code si hanno delle deviazioni dalla normalità, presupponendo presenza di outlier o non-linearita.
+
+## Analisi con Log(y) del Dataset senza Partial Sales
+
+```{r, message = F, warning = F}
+y_transformed <- log(y)
+simple.model <- lm(y_transformed ~ ., data = X_selected)
+stepwise.model <-
+    stepAIC(simple.model, direction = "both", trace = TRUE)
+summary(stepwise.model)
+residuals <- resid(stepwise.model)
+fitted_values <- fitted(stepwise.model)
+
+ggplot() +
+    geom_point(aes(x = fitted_values, y = residuals), color = "blue") +
+    geom_hline(yintercept = 0,
+               color = "red",
+               linetype = "dashed") +
+    ggtitle("Residuals vs Fitted Values") +
+    xlab("Fitted Values") +
+    ylab("Residuals")
+
+ggplot() +
+    geom_qq(aes(sample = residuals)) +
+    geom_qq_line(aes(sample = residuals), color = "red") +
+    ggtitle("Q-Q Plot dei residui")
+
+autoplot(stepwise.model, which = 1:6)
+dwtest(stepwise.model)
+```
+
+In questo terzo tentativo di regressione abbiamo ottenuto un R^2 = 0.87, quindi siamo riusciti a spiegare l'87% della variabilità di y (salesprice), il che è un buon incremento rispetto a prima, infatti quando si controlla lo scatterplot dei residui, si nota che il pattern di prima è sparito, ci sono ancora alcune non linearita o outlier sulla coda sinistra, che si notano anche nel qq plot. La distanza di Crook e la leva mostrano che non ci sono parametri con un alta distanza di Crook con anche varia Leva sui paraemtri del modello, il che è un buon risoltato.
+
+Ho voluto cercare di ri-computare il modello usando solo i dati di vendite dove la SaleCondition era "Normal", quindi non c'erano vendite tra familiari, o vendite di appartamenti/case multiple, o assestamenti parziali delle caratteristiche delle case.
+
+## Analisi del Dataset con solo Normal Sales
+
+```{r, message = F, warning = F}
+HP_normal <- HP[HP$SaleCondition == "Normal",]
+HP_normal$Id <- NULL
+
+categorical_vars <-
+    names(HP_normal)[sapply(HP_normal, function(x)
+        is.factor(x) | is.character(x))]
+single_level_vars <-
+    categorical_vars[sapply(HP_normal[categorical_vars], function(x)
+        length(unique(x)) == 1)]
+HP_normal <- HP_normal[,!names(HP_normal) %in% single_level_vars]
+categorical_vars <-
+    names(HP_normal)[sapply(HP_normal, function(x)
+        is.factor(x) | is.character(x))]
+HP_normal[categorical_vars] <-
+    lapply(HP_normal[categorical_vars], as.factor)
+numericVars <- which(sapply(HP_normal, is.numeric))
+numericData <- HP_normal[, numericVars]
+correlations <- cor(numericData, use = "pairwise.complete.obs")
+correlationWithSalePrice <-
+    sort(correlations[, 'SalePrice'], decreasing = TRUE)
+topNumericPredictors <- names(correlationWithSalePrice)[2:11]
+keyCategoricalVars <-
+    c("Neighborhood", "BldgType", "HouseStyle", "OverallQual")
+keyCategoricalVars <-
+    keyCategoricalVars[keyCategoricalVars %in% names(HP_normal)]
+encoded_data <- data.frame(model.matrix( ~ . - 1, HP_normal))
+encoded_categoricalVars <-
+    grep(paste(keyCategoricalVars, collapse = "|"),
+         names(encoded_data),
+         value = TRUE)
+selected_predictors <-
+    c(topNumericPredictors, encoded_categoricalVars)
+X_selected <- encoded_data[, selected_predictors]
+y <- encoded_data$SalePrice
+simple.model <- lm(y ~ ., data = X_selected)
+stepwise.model <-
+    stepAIC(simple.model, direction = "both", trace = TRUE)
+summary(stepwise.model)
+```
+
+### Valori dei residui vs fitted (solo Normal Sales )
+
+```{r, message = F, warning = F}
+residuals <- resid(stepwise.model)
+fitted_values <- fitted(stepwise.model)
+
+ggplot() +
+    geom_point(aes(x = fitted_values, y = residuals), color = "blue") +
+    geom_hline(yintercept = 0,
+               color = "red",
+               linetype = "dashed") +
+    ggtitle("Residuals vs Fitted Values (Normal Sales Only)") +
+    xlab("Fitted Values") +
+    ylab("Residuals")
+```
+
+### Q-Q Plot dei residui (solo Normal Sales)
+
+```{r, message = F, warning = F}
+ggplot() +
+    geom_qq(aes(sample = residuals)) +
+    geom_qq_line(aes(sample = residuals), color = "red") +
+    ggtitle("Q-Q Plot of Residuals (Normal Sales Only)")
+```
+
+### Resudui standard, leva e distanza di Cook (solo Normal Sales )
+
+```{r, message = F, warning = F}
+autoplot(stepwise.model, which = 1:6)
+```
+
+## Analili con Log(y) del Dataset con solo Normal Sales
+
+```{r, message = F, warning = F}
+y_transformed <- log(y)
+
+simple.model <- lm(y_transformed ~ ., data = X_selected)
+stepwise.model <-
+    stepAIC(simple.model, direction = "both", trace = TRUE)
+summary(stepwise.model)
+residuals <- resid(stepwise.model)
+fitted_values <- fitted(stepwise.model)
+
+ggplot() +
+    geom_point(aes(x = fitted_values, y = residuals), color = "blue") +
+    geom_hline(yintercept = 0,
+               color = "red",
+               linetype = "dashed") +
+    ggtitle("Residuals vs Fitted Values") +
+    xlab("Fitted Values") +
+    ylab("Residuals")
+
+ggplot() +
+    geom_qq(aes(sample = residuals)) +
+    geom_qq_line(aes(sample = residuals), color = "red") +
+    ggtitle("Q-Q Plot of Residuals")
+
+autoplot(stepwise.model, which = 1:6)
+dwtest(stepwise.model)
+```
+
+
+Il modello performa ancora meglio, con un R^2 di 0.89, quindi un ottima accuratezza sui dati di training con salescondition "Normal".
