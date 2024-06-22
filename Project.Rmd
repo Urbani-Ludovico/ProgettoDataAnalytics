@@ -359,20 +359,6 @@ recode_map <- c(
 HP_Excluded <- HP_Excluded %>%
   mutate(OverallCondReduced = recode(OverallCond, !!!recode_map))
 
-###' FireplaceQu
-recode_map <- c(
-  "Ex" =	"T",
-  "Gd" =	"T",
-  "TA" =	"T",
-  "Fa" =	"T",
-  "Po" =	"T",
-  "No Fireplace" = "F"
-)
-HP_Excluded <- HP_Excluded %>%
-  mutate(FireplaceQu = as.character(FireplaceQu),
-         FirePlaceExists = recode(FireplaceQu, !!!recode_map))
-HP_Excluded$FirePlaceExists = factor(HP_Excluded$FirePlaceExists, levels = c("F", "T"))
-
 ###' BsmtCond
 recode_map <- c(
   "Ex" =	"T",
@@ -417,7 +403,7 @@ HP_Excluded$FenceExists = factor(HP_Excluded$FenceExists, levels = c("F", "T"))
 
 ora procedo a metterle in correlazione con SalePrice in un heatmap
 ```{r, warning = F}
-vars <- c("SalePrice", "AlleyExists", "LotShapeReduced", "HouseAge", "MSZoningReduced", "GarageExists", "UtilitiesReduced", "OverallCondReduced", "FirePlaceExists", "BsmtExists", "FenceExists", "MiscFeatureExists", "TotalBath")
+vars <- c("SalePrice", "AlleyExists", "LotShapeReduced", "HouseAge", "MSZoningReduced", "GarageExists", "UtilitiesReduced", "OverallCondReduced", "BsmtExists", "FenceExists", "MiscFeatureExists", "TotalBath")
 
 excludevar = HP_Excluded[vars]
 
@@ -440,17 +426,19 @@ ggcorrplot(corHeap_excluded, type = "lower", lab = TRUE, lab_size = 2.5) +
 
 Filtro le variabili che hanno correlazione con SalePrice >=0.4
 ```{r, results = F, message = F, warning = F}
-totalCorHeap = rbind.data.frame(corHeap, corHeap_excluded[-1, ])
+totalCorHeap = rbind.data.frame(
+    subset(corHeap, subset = rownames(corHeap) != "SalePrice"), 
+    subset(corHeap_excluded, subset = rownames(corHeap_excluded) !="SalePrice"))
 
 ggarrange(
     plotlist = lapply(
         rownames(totalCorHeap)[
             rownames(totalCorHeap) != "SalePrice" & abs(totalCorHeap) >= 0.4],
         function (var) {
-            plt <- ggplot(HP, aes(x = HP[[var]], y = SalePrice)) +
+            plt <- ggplot(HP_Excluded, aes(x = HP_Excluded[[var]], y = SalePrice)) +
                 xlab(var)
             
-            if (is.factor(HP[[var]])) {
+            if (is.factor(HP_Excluded[[var]])) {
                 plt <- plt + geom_boxplot()
             } else {
                 plt <- plt + geom_point()
@@ -562,6 +550,18 @@ mod <- analysis.quantitative(
 
 Con un p-value di `r summary(mod)[[4]][2,4]` si deduce che più la casa venduta è vecchia, più il prezzo tende a scendere. È possibile che questo sia dovuto al fatto che quando una casa si deteriora, i proprietari tendano a venderla per poco invece di ristrutturarla.
 
+## Analisi dei Numeri di bagni
+
+```{r, message = F, warning = F}
+mod <- analysis.qualitative(
+    SalePrice, as.factor(HP_Excluded$TotalBath),
+    horizontal = F,
+    second_var.lab = "N di bagni"
+)
+```
+
+Con un p-value di `r summary(mod)[[1]]$"Pr(>F)"[1]` si deduce che più i numeri di bagni aumenta, più il prezzo tende a aumentare. È possibile che questo sia dovuto al fatto che le persone associano al numeri di bagni à un prezzo superiore.
+
 ## Analisi della qualità complessiva delle case
 
 ``` {r, message = F, warning = F}
@@ -571,7 +571,7 @@ mod <- analysis.qualitative(
 )
 ```
 
-Si deduce che più la qualità di costruzione aumenta, più il prezzo tende a aumentare. È possibile che questo sia dovuto al fatto che le persone associano alla qualità un prezzo superiore. Alla condizione massimo si puo osservare una grande devianza, questo puo essere dovuta al fatto che ci sono pocchi dati ma anche che valutare una casa diventa piu difficile.
+Con un p-value di `r summary(mod)[[1]]$"Pr(>F)"[1]` si deduce che più la qualità di costruzione aumenta, più il prezzo tende a aumentare. È possibile che questo sia dovuto al fatto che le persone associano alla qualità un prezzo superiore. Alla condizione massimo si puo osservare una grande devianza, questo puo essere dovuta al fatto che ci sono pocchi dati ma anche che valutare una casa diventa piu difficile.
 
 ## Analisi della Area del Piano terra
 
@@ -582,7 +582,7 @@ mod <- analysis.quantitative(
 )
 ```
 
-Si nota che più l'area del Piano terra, più il prezzo tende ad aumentare. Si nota oltre che si ha maggior densità di vendite quando le case sono comprese tra `r quantile(GrLivArea,probs=0.25)` e `r quantile(GrLivArea,probs=0.75)` oltre al quale diventa sparsa. Questo aumento puo essere causato dal incertezza su quale valore attribuire a un piano piu grande.
+Con un p-value di `r summary(mod)[[4]][2,4]` si nota che più l'area del Piano terra aumenta, più il prezzo tende ad aumentare. È possibile che questo sia dovuto al fatto che le persone associano a piu bagni un prezzo superiore. Si nota oltre che piu l'area aumenta, piu l'incertezza su quale prezzo attribuire alla casa.
 
 ## Analisi dei Bagni Sopra il semiterrato
 
@@ -594,7 +594,7 @@ mod <- analysis.qualitative(
 )
 ```
 
-Si deduce che più bagni si ha, più il prezzo tende a aumentare. È possibile che questo sia dovuto al fatto che le persone associano alla qualità un prezzo superiore.
+Con un p-value di `r summary(mod)[[1]]$"Pr(>F)"[1]` si deduce che più bagni si ha, più il prezzo tende a aumentare. È possibile che questo sia dovuto al fatto che le persone associano a piu bagni un prezzo superiore.
 
 ## Analisi dei Numeri di Stanze sopra il semiterrato
 
@@ -606,7 +606,7 @@ mod <- analysis.qualitative(
 )
 ```
 
-Si deduce che più Stanze si ha, più il prezzo tende a aumentare. È possibile che questo sia dovuto al fatto che le persone associano a Stanze un prezzo superiore. Si puo osservare degli outlier a 2 e 14  Stanze dovute alle mancanza dei dati (esiste un solo dato per ognuna).
+Con un p-value di `r summary(mod)[[1]]$"Pr(>F)"[1]` si deduce che più Stanze si ha, più il prezzo tende a aumentare. È possibile che questo sia dovuto al fatto che le persone associano a Stanze un prezzo superiore. Si puo osservare degli outlier a 2 e 14  Stanze dovute alle mancanza dei dati (esiste un solo dato per ognuna).
 
 ## Analisi dei Numeri di camini
 
@@ -618,7 +618,7 @@ mod <- analysis.qualitative(
 )
 ```
 
-Si deduce che più Camini si ha, più il prezzo tende a aumentare. È possibile che questo sia dovuto al fatto che le persone associano a Camini un prezzo superiore.
+Con un p-value di `r summary(mod)[[1]]$"Pr(>F)"[1]` si deduce che più Camini si ha, più il prezzo tende a aumentare. È possibile che questo sia dovuto al fatto che le persone associano a Camini un prezzo superiore.
 
 ## Analisi della Costruzione dei Fireplace
 
@@ -629,7 +629,7 @@ mod <- analysis.qualitative(
     second_var.lab = "Costruzione dei Fireplace"
 )
 ```
-Si deduce che al diminuire della qualità dei camini, più il prezzo tende a diminuire. È possibile che questo sia dovuto al fatto che le persone associano alla qualità un prezzo superiore. In particolare si nota che le persone associano alle case senza camini lo stesso prezzo con quelli alla stato peggiore
+Con un p-value di `r summary(mod)[[1]]$"Pr(>F)"[1]` si deduce che al diminuire della qualità dei camini, più il prezzo tende a diminuire. È possibile che questo sia dovuto al fatto che le persone associano alla qualità un prezzo superiore. In particolare si nota che le persone associano alle case senza camini lo stesso prezzo con quelli alla stato peggiore
 
 ## Analisi dei Anno di costruzione dei garage
 
@@ -640,7 +640,7 @@ mod <- analysis.quantitative(
     second_var.lab = "Garage Year Built"
 )
 ```
-Si deduce che più nuovo il garage è, più il prezzo tende ad aumentare. È possibile che questo sia dovuto al fatto che le persone associano ai garage piu nuovi un prezzo superiore.
+Con un p-value di `r summary(mod)[[4]][2,4]` si deduce che più nuovo il garage è, più il prezzo tende ad aumentare. È possibile che questo sia dovuto al fatto che le persone associano ai garage piu nuovi un prezzo superiore.
 
 ## Analisi dei Numeri di Auto
 
@@ -651,7 +651,7 @@ mod <- analysis.qualitative(
     second_var.lab = "N di Auto"
 )
 ```
-Si deduce che più auto che possono stare nel garage, più il prezzo tende ad aumentare. È possibile che questo sia dovuto al fatto che le persone associano ai posti auto un prezzo superiore.
+Con un p-value di `r summary(mod)[[1]]$"Pr(>F)"[1]` si deduce che più auto che possono stare nel garage, più il prezzo tende ad aumentare. È possibile che questo sia dovuto al fatto che le persone associano ai posti auto un prezzo superiore.
 
 ## Analisi dei Area del Garage
 
@@ -662,4 +662,4 @@ mod <- analysis.quantitative(
     second_var.lab = "Area del Garage"
 )
 ```
-Si deduce che più grande è il garage, più il prezzo tende ad aumentare. È possibile che questo sia dovuto al fatto che le persone associano al area del garage un prezzo superiore. Si nota che con un garage di 0m^2, quindi nessun garage, il prezzo tende ad essere minore
+Con un p-value di `r summary(mod)[[4]][2,4]` si deduce che più grande è il garage, più il prezzo tende ad aumentare. È possibile che questo sia dovuto al fatto che le persone associano al area del garage un prezzo superiore. Si nota che con un garage di 0m^2, quindi nessun garage, il prezzo tende ad essere minore
