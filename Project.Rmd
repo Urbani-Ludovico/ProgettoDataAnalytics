@@ -9,7 +9,7 @@ output:
 
 ``` {r, message = F, warning = F}
 for (package in c("ggplot2", "ggcorrplot", "ggpubr", "dplyr", "tidyr", 
-                  "GGally", "reshape2", "gridExtra")) {
+                  "reshape2", "gridExtra")) {
     if (!require(package, character.only = T, quietly = T)) {
       install.packages(package, character.only = T)
     }
