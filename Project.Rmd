@@ -674,6 +674,7 @@ mod <- analysis.quantitative(
 ```
 
 Con un p-value di `r mod` si nota che le case con un ampio seminterrato tendono ad avere un prezzo più alto rispetto alle altre.
+Nella società americana è comune adibire i seminterrati come spazi di svago e di relax, quindi una casa con un ampio seminterrato ha una maggiore domanda di acquisto.
 
 ## Analisi della qualità del riscaldamento
 
@@ -718,7 +719,7 @@ mod <- analysis.qualitative(
 )
 ```
 
-Con un p-value di `r mod` si deduce che più bagni si ha, più il prezzo tende a aumentare. È possibile che questo sia dovuto al fatto che le persone associano a piu bagni un prezzo superiore.
+Con un p-value di `r mod` si deduce che più bagni si ha, più il prezzo tende a aumentare. È possibile che questo sia dovuto al fatto il numero di bagni sia direttamente proporzionale alle dimensioni della casa.
 
 ## Analisi del numero di stanze sopra il terreno
 
@@ -730,7 +731,8 @@ mod <- analysis.qualitative(
 )
 ```
 
-Con un p-value di `r mod` si deduce che più Stanze si ha, più il prezzo tende a aumentare. È possibile che questo sia dovuto al fatto che le persone associano a Stanze un prezzo superiore. Si puo osservare degli outlier a 2 e 14  Stanze dovute alle mancanza dei dati (esiste un solo dato per ognuna).
+Con un p-value di `r mod` si deduce che più stanze si ha, più il prezzo tende a aumentare. È possibile che questo sia dovuto al fatto che le persone associano a più stanze delle famiglie più numerose.
+Si puo osservare degli outlier sulle 2 e 14 stanze dovute alle mancanza dei dati (esiste un solo dato per ognuna).
 
 ## Analisi del numero di camini
 
@@ -742,7 +744,7 @@ mod <- analysis.qualitative(
 )
 ```
 
-Con un p-value di `r mod` si deduce che più Camini si ha, più il prezzo tende a aumentare. È possibile che questo sia dovuto al fatto che le persone associano a Camini un prezzo superiore.
+Con un p-value di `r mod` si deduce che più camini si ha, più il prezzo tende a aumentare.
 
 ## Analisi della qualità dei camini
 
@@ -754,7 +756,8 @@ mod <- analysis.qualitative(
 )
 ```
 
-Con un p-value di `r mod` si deduce che al diminuire della qualità dei camini, più il prezzo tende a diminuire. È possibile che questo sia dovuto al fatto che le persone associano alla qualità un prezzo superiore. In particolare si nota che le persone associano alle case senza camini lo stesso prezzo con quelli alla stato peggiore.
+Con un p-value di `r mod` si deduce che al diminuire della qualità dei camini, più il prezzo tende a diminuire. È possibile che questo sia dovuto al fatto che le persone associano alla qualità dei camini una classe energetica superiore e quindi un prezzo maggiore. 
+In particolare si nota che le persone associano alle case senza camini lo stesso prezzo delle case con stato peggiore.
 
 ## Analisi dell'anno di costruzione del garage
 
@@ -766,7 +769,8 @@ mod <- analysis.quantitative(
 )
 ```
 
-Con un p-value di `r mod` si deduce che più nuovo il garage è, più il prezzo tende ad aumentare. È possibile che questo sia dovuto al fatto che le persone associano ai garage piu nuovi un prezzo superiore.
+Con un p-value di `r mod` si deduce che più è nuovo il garage, più il prezzo tende ad aumentare. 
+Dato il fatto che la società americana si basa sul petrolio e sui mezzo a motori, il possedere un garage nuovo e/o di buona qualità, costituisca un punto di forza nella vendita di una casa.
 
 ## Analisi del numero di posti auto nel garage
 
@@ -778,7 +782,7 @@ mod <- analysis.qualitative(
 )
 ```
 
-Con un p-value di `r mod` si deduce che più auto che possono stare nel garage, più il prezzo tende ad aumentare. È possibile che questo sia dovuto al fatto che le persone associano ai posti auto un prezzo superiore.
+Con un p-value di `r mod` si deduce che più auto che possono stare nel garage, più il prezzo tende ad aumentare. Come nel punto precedente, nei nuclei familiari americani il numero medio di automobili è superiore a quello degli altri paesi, quindi questo comporta una domanda di garage più ampi.
 
 ## Analisi dell'area del garage
 
@@ -790,7 +794,9 @@ mod <- analysis.quantitative(
 )
 ```
 
-Con un p-value di `r mod` si deduce che più grande è il garage, più il prezzo tende ad aumentare. È possibile che questo sia dovuto al fatto che le persone associano al area del garage un prezzo superiore. Si nota che con un garage di 0m^2, quindi nessun garage, il prezzo tende ad essere minore.
+Con un p-value di `r mod` si deduce che più grande è il garage, più il prezzo tende ad aumentare. 
+Come nel punto precedente, il numero di automobili è direttamente proporzionale alla metratura del garage, quindi le conclusioni sono le stesse.
+Si nota che con un garage di 0m^2, quindi nessun garage, il prezzo tende ad essere minore.
 
 ## Analisi dell'età delle case
 
@@ -813,7 +819,7 @@ mod <- analysis.qualitative(
 )
 ```
 
-Con un p-value di `r mod` si deduce che più i numeri di bagni aumenta, più il prezzo tende a aumentare. È possibile che questo sia dovuto al fatto che le persone associano al numeri di bagni à un prezzo superiore.
+Con un p-value di `r mod` si deduce che più i numeri di bagni aumenta, più il prezzo tende a aumentare. Il numero di bagni solitamente è proporzionale alla grandezza di una casa e una casa più grande ha un costo maggiore.
 
 # Analisi multivariata
 
