@@ -560,7 +560,7 @@ analysis.qualitative <- function(target,
     
     plot(plt)
     
-    return(test)
+    return (signif(p, 3))
 }
 ```
 
@@ -593,7 +593,7 @@ analysis.quantitative <- function(target,
     
     plot(plt)
     
-    return (mod)
+    return (signif(p, 3))
 }
 ```
 
@@ -606,7 +606,7 @@ mod <- analysis.qualitative(
 )
 ```
 
-Si deduce che più la qualità di costruzione aumenta, più il prezzo tende a aumentare. È possibile che questo sia dovuto al fatto che le persone associano alla qualità un prezzo superiore. Alla condizione "Very Excellent" si puo osservare una grande varianza, questo puo essere dovuta al fatto che ci sono pocchi dati ma anche che valutare una casa diventa piu difficile.
+Con un p-value di `r mod` si deduce che più la qualità di costruzione aumenta, più il prezzo tende a aumentare. È possibile che questo sia dovuto al fatto che le persone associano alla qualità un prezzo superiore. Alla condizione "Very Excellent" si puo osservare una grande varianza, questo puo essere dovuta al fatto che ci sono pocchi dati ma anche che valutare una casa diventa piu difficile.
 
 ## Analisi dell'anno di costruzione
 
@@ -630,7 +630,7 @@ mod2 <- analysis.qualitative(
 )
 ```
 
-Con un p-value di `r summary(mod)[[4]][2,4]` si nota che più le case sono recenti, più il prezzo tende a crescere. Ma le case costruite prima del 1910/1920, quindi le case ritenute storiche, continuano a manterere un costo di vendita abbastanza alto.
+Con un p-value di `r mod` si nota che più le case sono recenti, più il prezzo tende a crescere. Ma le case costruite prima del 1910/1920, quindi le case ritenute storiche, continuano a manterere un costo di vendita abbastanza alto.
 
 ## Analisi dell'anno di conclusione degli ultimi lavori
 
@@ -641,7 +641,7 @@ mod <- analysis.quantitative(
 )
 ```
 
-Con un p-value di `r summary(mod)[[4]][2,4]` si nota che più gli ultimi lavori di ristrutturazione (o di costruzione nel caso non siano state ristrutturate) siano recenti, più il prezzo tende a crescere. Questo è dovuto al fatto che, più una casa è in vuole condizioni dopo dei lavori, meno soldi richiederà per essere mantenuta.
+Con un p-value di `r mod` si nota che più gli ultimi lavori di ristrutturazione (o di costruzione nel caso non siano state ristrutturate) siano recenti, più il prezzo tende a crescere. Questo è dovuto al fatto che, più una casa è in vuole condizioni dopo dei lavori, meno soldi richiederà per essere mantenuta.
 
 ## Analisi dell'area di rivestimento in muratura
 
@@ -652,7 +652,7 @@ mod <- analysis.quantitative(
 )
 ```
 
-Con un p-value di `r summary(mod)[[4]][2,4]` si nota che più la superificie rivestita di muratura è ampia, più il prezzp delle case tende a crescere. Questo in quanto il rivestimento in muratura tende a preservare meglio le condizioni delle pareti nel tempo.
+Con un p-value di `r mod` si nota che più la superificie rivestita di muratura è ampia, più il prezzp delle case tende a crescere. Questo in quanto il rivestimento in muratura tende a preservare meglio le condizioni delle pareti nel tempo.
 
 ## Analisi del tipo di fondamenta
 
@@ -663,7 +663,7 @@ mod <- analysis.qualitative(
 )
 ```
 
-Con un p-value di `r summary(mod)[[4]][2,4]` si nota che le case con delle fondamenta in calcestruzzo gettato in opera, tendono ad avere un prezzo più alto.
+Con un p-value di `r mod` si nota che le case con delle fondamenta in calcestruzzo gettato in opera, tendono ad avere un prezzo più alto.
 
 ## Analisi dell'area del seminterrato
 
@@ -674,7 +674,7 @@ mod <- analysis.quantitative(
 )
 ```
 
-Con un p-value di `r summary(mod)[[4]][2,4]` si nota che le case con un ampio seminterrato tendono ad avere un prezzo più alto rispetto alle altre.
+Con un p-value di `r mod` si nota che le case con un ampio seminterrato tendono ad avere un prezzo più alto rispetto alle altre.
 
 ## Analisi della qualità del riscaldamento
 
@@ -685,7 +685,7 @@ mod <- analysis.qualitative(
 )
 ```
 
-Con un p-value di `r summary(mod)[[4]][2,4]` si nota che più la qualità del riscaldamento è alta e più il prezzo della casa di alza. Inoltre la maggioranza delle case con il prezzo più alto rientrano nella fascia migliore di riscaldamento.
+Con un p-value di `r mod` si nota che più la qualità del riscaldamento è alta e più il prezzo della casa di alza. Inoltre la maggioranza delle case con il prezzo più alto rientrano nella fascia migliore di riscaldamento.
 
 ## Analisi dell'area del piano terra
 
@@ -696,7 +696,7 @@ mod <- analysis.quantitative(
 )
 ```
 
-Con un p-value di `r summary(mod)[[4]][2,4]` si nota che più la metratura del piano terra è elevata, più il prezzo della casa tende a salire.
+Con un p-value di `r mod` si nota che più la metratura del piano terra è elevata, più il prezzo della casa tende a salire.
 
 ## Analisi dell'area del piano terra
 
@@ -707,7 +707,7 @@ mod <- analysis.quantitative(
 )
 ```
 
-Con un p-value di `r summary(mod)[[4]][2,4]` si nota che più l'area del Piano terra aumenta, più il prezzo tende ad aumentare. È possibile che questo sia dovuto al fatto che le persone associano a piu bagni un prezzo superiore. Si nota oltre che piu l'area aumenta, piu l'incertezza su quale prezzo attribuire alla casa.
+Con un p-value di `r mod` si nota che più l'area del Piano terra aumenta, più il prezzo tende ad aumentare. È possibile che questo sia dovuto al fatto che le persone associano a piu bagni un prezzo superiore. Si nota oltre che piu l'area aumenta, piu l'incertezza su quale prezzo attribuire alla casa.
 
 ## Analisi del numero di bagni
 
@@ -719,7 +719,7 @@ mod <- analysis.qualitative(
 )
 ```
 
-Con un p-value di `r summary(mod)[[1]]$"Pr(>F)"[1]` si deduce che più bagni si ha, più il prezzo tende a aumentare. È possibile che questo sia dovuto al fatto che le persone associano a piu bagni un prezzo superiore.
+Con un p-value di `r mod` si deduce che più bagni si ha, più il prezzo tende a aumentare. È possibile che questo sia dovuto al fatto che le persone associano a piu bagni un prezzo superiore.
 
 ## Analisi del numero di stanze sopra il terreno
 
@@ -731,7 +731,7 @@ mod <- analysis.qualitative(
 )
 ```
 
-Con un p-value di `r summary(mod)[[1]]$"Pr(>F)"[1]` si deduce che più Stanze si ha, più il prezzo tende a aumentare. È possibile che questo sia dovuto al fatto che le persone associano a Stanze un prezzo superiore. Si puo osservare degli outlier a 2 e 14  Stanze dovute alle mancanza dei dati (esiste un solo dato per ognuna).
+Con un p-value di `r mod` si deduce che più Stanze si ha, più il prezzo tende a aumentare. È possibile che questo sia dovuto al fatto che le persone associano a Stanze un prezzo superiore. Si puo osservare degli outlier a 2 e 14  Stanze dovute alle mancanza dei dati (esiste un solo dato per ognuna).
 
 ## Analisi del numero di camini
 
@@ -743,7 +743,7 @@ mod <- analysis.qualitative(
 )
 ```
 
-Con un p-value di `r summary(mod)[[1]]$"Pr(>F)"[1]` si deduce che più Camini si ha, più il prezzo tende a aumentare. È possibile che questo sia dovuto al fatto che le persone associano a Camini un prezzo superiore.
+Con un p-value di `r mod` si deduce che più Camini si ha, più il prezzo tende a aumentare. È possibile che questo sia dovuto al fatto che le persone associano a Camini un prezzo superiore.
 
 ## Analisi della qualità dei camini
 
@@ -755,7 +755,7 @@ mod <- analysis.qualitative(
 )
 ```
 
-Con un p-value di `r summary(mod)[[1]]$"Pr(>F)"[1]` si deduce che al diminuire della qualità dei camini, più il prezzo tende a diminuire. È possibile che questo sia dovuto al fatto che le persone associano alla qualità un prezzo superiore. In particolare si nota che le persone associano alle case senza camini lo stesso prezzo con quelli alla stato peggiore.
+Con un p-value di `r mod` si deduce che al diminuire della qualità dei camini, più il prezzo tende a diminuire. È possibile che questo sia dovuto al fatto che le persone associano alla qualità un prezzo superiore. In particolare si nota che le persone associano alle case senza camini lo stesso prezzo con quelli alla stato peggiore.
 
 ## Analisi dell'anno di costruzione del garage
 
@@ -767,7 +767,7 @@ mod <- analysis.quantitative(
 )
 ```
 
-Con un p-value di `r summary(mod)[[4]][2,4]` si deduce che più nuovo il garage è, più il prezzo tende ad aumentare. È possibile che questo sia dovuto al fatto che le persone associano ai garage piu nuovi un prezzo superiore.
+Con un p-value di `r mod` si deduce che più nuovo il garage è, più il prezzo tende ad aumentare. È possibile che questo sia dovuto al fatto che le persone associano ai garage piu nuovi un prezzo superiore.
 
 ## Analisi del numero di posti auto nel garage
 
@@ -779,7 +779,7 @@ mod <- analysis.qualitative(
 )
 ```
 
-Con un p-value di `r summary(mod)[[1]]$"Pr(>F)"[1]` si deduce che più auto che possono stare nel garage, più il prezzo tende ad aumentare. È possibile che questo sia dovuto al fatto che le persone associano ai posti auto un prezzo superiore.
+Con un p-value di `r mod` si deduce che più auto che possono stare nel garage, più il prezzo tende ad aumentare. È possibile che questo sia dovuto al fatto che le persone associano ai posti auto un prezzo superiore.
 
 ## Analisi dell'area del garage
 
@@ -791,7 +791,7 @@ mod <- analysis.quantitative(
 )
 ```
 
-Con un p-value di `r summary(mod)[[4]][2,4]` si deduce che più grande è il garage, più il prezzo tende ad aumentare. È possibile che questo sia dovuto al fatto che le persone associano al area del garage un prezzo superiore. Si nota che con un garage di 0m^2, quindi nessun garage, il prezzo tende ad essere minore.
+Con un p-value di `r mod` si deduce che più grande è il garage, più il prezzo tende ad aumentare. È possibile che questo sia dovuto al fatto che le persone associano al area del garage un prezzo superiore. Si nota che con un garage di 0m^2, quindi nessun garage, il prezzo tende ad essere minore.
 
 ## Analisi dell'età delle case
 
@@ -802,7 +802,7 @@ mod <- analysis.quantitative(
 )
 ```
 
-Con un p-value di `r summary(mod)[[4]][2,4]` si deduce che più la casa venduta è vecchia, più il prezzo tende a scendere. È possibile che questo sia dovuto al fatto che quando una casa si deteriora, i proprietari tendano a venderla per poco invece di ristrutturarla.
+Con un p-value di `r mod` si deduce che più la casa venduta è vecchia, più il prezzo tende a scendere. È possibile che questo sia dovuto al fatto che quando una casa si deteriora, i proprietari tendano a venderla per poco invece di ristrutturarla.
 
 ## Analisi del numero di bagni
 
@@ -814,7 +814,7 @@ mod <- analysis.qualitative(
 )
 ```
 
-Con un p-value di `r summary(mod)[[1]]$"Pr(>F)"[1]` si deduce che più i numeri di bagni aumenta, più il prezzo tende a aumentare. È possibile che questo sia dovuto al fatto che le persone associano al numeri di bagni à un prezzo superiore.
+Con un p-value di `r mod` si deduce che più i numeri di bagni aumenta, più il prezzo tende a aumentare. È possibile che questo sia dovuto al fatto che le persone associano al numeri di bagni à un prezzo superiore.
 
 # Analisi multivariata
 
