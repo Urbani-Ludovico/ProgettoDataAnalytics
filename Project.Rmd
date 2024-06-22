@@ -989,7 +989,7 @@ y <- encoded_data$SalePrice
 
 ## Regressione con STEPWISE e AIC
 
-```{r, message = F, warning = F}
+```{r, results = "hide", message = F, warning = F}
 simple.model <- lm(y ~ ., data = X_selected)
 stepwise.model <- stepAIC(simple.model, direction = "both", trace = TRUE)
 summary(stepwise.model)
@@ -1035,7 +1035,7 @@ Da investigazioni sul dato emerge che il fatto che il SaleCondition di quell oss
 
 ## Analysis del dataset senza i SaleCondition "Partial"
 
-```{r, message = F, warning = F}
+```{r, results = "hide", message = F, warning = F}
 HP_no_partial <- HP[HP$SaleCondition != "Partial",]
 HP_no_partial$Id <- NULL
 
@@ -1113,7 +1113,7 @@ dal grafico scatter dei residui si nota che nella parte destra il pattern preced
 
 ## Analisi con Log(y) del Dataset senza Partial Sales
 
-```{r, message = F, warning = F}
+```{r, results = "hide", message = F, warning = F}
 y_transformed <- log(y)
 simple.model <- lm(y_transformed ~ ., data = X_selected)
 stepwise.model <-
@@ -1146,7 +1146,7 @@ Ho voluto cercare di ri-computare il modello usando solo i dati di vendite dove 
 
 ## Analisi del Dataset con solo Normal Sales
 
-```{r, message = F, warning = F}
+```{r, results = "hide", message = F, warning = F}
 HP_normal <- HP[HP$SaleCondition == "Normal",]
 HP_normal$Id <- NULL
 
@@ -1220,7 +1220,7 @@ autoplot(stepwise.model, which = 1:6)
 
 ## Analili con Log(y) del Dataset con solo Normal Sales
 
-```{r, message = F, warning = F}
+```{r, results = "hide", message = F, warning = F}
 y_transformed <- log(y)
 
 simple.model <- lm(y_transformed ~ ., data = X_selected)
