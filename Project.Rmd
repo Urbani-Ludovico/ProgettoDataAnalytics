@@ -334,7 +334,7 @@ Ad esempio variabili quantitative o qualitative che hanno valori NA o 0 per indi
 ```{r, message = F}
 HP_Excluded = HP
 
-###' Alley
+# Alley
 recode_map <- c(
     "Grvl" = "T",
     "Pave" = "T",
@@ -344,7 +344,7 @@ HP_Excluded <- HP_Excluded %>%
            AlleyExists = recode(Alley, !!!recode_map))
 HP_Excluded$AlleyExists <- factor(HP_Excluded$AlleyExists, levels = c("F", "T"))
 
-###' LotShape
+# LotShape
 recode_map <- c(
     "Reg" = "Regular",
     "IR1" = "Irregular",
@@ -353,14 +353,14 @@ recode_map <- c(
 HP_Excluded <- HP_Excluded %>%
     mutate(LotShapeReduced = recode(LotShape, !!!recode_map))
 
-###' YearBuilt
+# YearBuilt
 current_year <- as.integer(format(Sys.Date(), "%Y"))
 HP_Excluded$HouseAge <- current_year - YearBuilt
 
 # TotalBath
 HP_Excluded$TotalBath <- FullBath + HalfBath + BsmtFullBath + BsmtHalfBath
 
-###' MSZoning
+# MSZoning
 recode_map <- c(
     "A" = "Agriculture",
     "C" = "Commercial",
@@ -373,7 +373,7 @@ recode_map <- c(
 HP_Excluded <- HP_Excluded %>%
     mutate(MSZoningReduced = recode(MSZoning, !!!recode_map))
 
-###' GarageType
+# GarageType
 recode_map <- c(
     "2Types" =	"T",
     "Attchd" =	"T",
@@ -387,7 +387,7 @@ HP_Excluded <- HP_Excluded %>%
            GarageExists = recode(GarageType, !!!recode_map))
 HP_Excluded$GarageExists <- factor(HP_Excluded$GarageExists, levels = c("F", "T"))
 
-###' Utilities
+# Utilities
 recode_map <- c(
     "AllPub" = "All",
     "NoSewr" = "Some",
@@ -396,7 +396,7 @@ recode_map <- c(
 HP_Excluded <- HP_Excluded %>%
     mutate(UtilitiesReduced = recode(Utilities, !!!recode_map))
 
-###' OverallCond
+# OverallCond
 recode_map <- c(
     "10" = "Excellent",
     "9"	 = "Excellent",
@@ -412,21 +412,7 @@ recode_map <- c(
 HP_Excluded <- HP_Excluded %>%
     mutate(OverallCondReduced = recode(OverallCond, !!!recode_map))
 
-###' FireplaceQu
-recode_map <- c(
-  "Ex" =	"T",
-  "Gd" =	"T",
-  "TA" =	"T",
-  "Fa" =	"T",
-  "Po" =	"T",
-  "No Fireplace" = "F"
-)
-HP_Excluded <- HP_Excluded %>%
-    mutate(FireplaceQu = as.character(FireplaceQu),
-           FirePlaceExists = recode(FireplaceQu, !!!recode_map))
-HP_Excluded$FirePlaceExists <- factor(HP_Excluded$FirePlaceExists, levels = c("F", "T"))
-
-###' BsmtCond
+# BsmtCond
 recode_map <- c(
     "Ex" =	"T",
     "Gd" =	"T",
@@ -439,7 +425,7 @@ HP_Excluded <- HP_Excluded %>%
            BsmtExists = recode(BsmtCond, !!!recode_map))
 HP_Excluded$BsmtExists <- factor(HP_Excluded$BsmtExists, levels = c("F", "T"))
 
-###' Fence
+# Fence
 recode_map <- c(
     "GdPrv" =	"T",
     "MnPrv" =	"T",
@@ -452,7 +438,7 @@ HP_Excluded <- HP_Excluded %>%
            FenceExists = recode(Fence, !!!recode_map))
 HP_Excluded$FenceExists <- factor(HP_Excluded$FenceExists, levels = c("F", "T"))
 
-###' MiscFeature
+# MiscFeature
 recode_map <- c(
     "Elev" =	"T",
     "Gar2" =	"T",
@@ -470,7 +456,7 @@ HP_Excluded$FenceExists <- factor(HP_Excluded$FenceExists, levels = c("F", "T"))
 ora procedo a metterle in correlazione con SalePrice in un heatmap
 ```{r, warning = F}
 vars <- c("SalePrice", "AlleyExists", "LotShapeReduced", "HouseAge", "MSZoningReduced", 
-          "GarageExists", "UtilitiesReduced", "OverallCondReduced", "FirePlaceExists", 
+          "GarageExists", "UtilitiesReduced", "OverallCondReduced", 
           "BsmtExists", "FenceExists", "MiscFeatureExists", "TotalBath")
 
 excludevar <- HP_Excluded[vars]
