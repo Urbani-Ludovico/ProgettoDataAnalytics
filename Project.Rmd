@@ -827,7 +827,7 @@ Dal grafico sovrastante possiamo notare che più gli ultimi lavori effettuti sul
 Inoltre possiamo notare che a partire dall'inizio del nuovo millennio c'è stato un notevole riguardo alla qualità complessiva dell'abitazione.
 Infine possiamo notare delle fasce di prezzo che sono composte principalmente da un colore solo, il che ci può far dedurre che sia la qualità generale dell'abitazione sia la data degli ultimi lavori sulla casa incidono sul prezzo in modo significativo.
 
-## Analisi della qualità dei camini con l'anno degli ultimi lavori
+## Analisi della qualità del riscaldamento con l'anno degli ultimi lavori
 
 ```{r, message = F, warning = F}
 ggplot(HP, aes(x = YearRemodAdd, y = log(SalePrice), color = factor(HeatingQC))) +
@@ -838,7 +838,7 @@ ggplot(HP, aes(x = YearRemodAdd, y = log(SalePrice), color = factor(HeatingQC)))
     theme_minimal()
 ```
 
-Da questo grafico, invece, notiamo che il prezzo dell'abitazione non ha fasce distinte di colore, ma si si evidenza un netto miglioramento delle condizioni del riscaldamento dall'inizio del 1990 circa. Con una qualità del riscaldamento che tende ad eccellente nella maggior parte delle case che sono state ristrutturate o costruite negli ultimi anni.
+Da questo grafico, invece, notiamo che il prezzo dell'abitazione non ha fasce distinte di colore, ma si evidenza un netto miglioramento delle condizioni del riscaldamento dall'inizio del 1990 circa. Con una qualità del riscaldamento che tende ad eccellente nella maggior parte delle case che sono state ristrutturate o costruite negli ultimi anni.
 
 ## Analisi del tipo di fondamenta con l'anno degli ultimi lavori
 
