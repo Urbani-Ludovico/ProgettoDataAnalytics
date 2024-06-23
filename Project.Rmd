@@ -11,7 +11,8 @@ output:
 
 ``` {r, message = F, warning = F}
 for (package in c("ggplot2", "ggcorrplot", "ggpubr", "ggfortify", "dplyr", "tidyr", 
-                  "reshape2", "gridExtra", "MASS", "car", "lmtest")) {
+                  "reshape2", "gridExtra", "MASS", "car", "lmtest",
+                  "cluster", "factoextra", "dbscan", "dendextend")) {
     if (!require(package, character.only = T, quietly = T)) {
       install.packages(package, character.only = T)
     }
@@ -1259,3 +1260,610 @@ summary(stepwise.model)
 ```
 
 Il modello performa ancora meglio, con un R^2 di 0.89, quindi un ottima accuratezza sui dati di training con salescondition "Normal".
+
+# Clustering
+
+Questa sezione descrive il processo di esecuzione del clustering K-means, Hierarchical (Agnes) e DBSCAN sul dataset House Prices, viene utilizzato il metodo dell'Elbow per determinare il numero ottimale di cluster. L'analisi include la preparazione dei dati, la selezione delle caratteristiche, il clustering e l'analisi dei risultati.
+
+## Preprocessing dei dati
+
+### Filtraggio delle vendite normali
+
+```{r, message = F, warning = F}
+HP_normal <- HP[HP$SaleCondition == "Normal", ]
+```
+
+### Gestione dei valori mancanti
+
+```{r, message = F, warning = F}
+for(col in names(HP_normal)) {
+  if (is.numeric(HP_normal[[col]])) {
+    HP_normal[[col]][is.na(HP_normal[[col]])] <- mean(HP_normal[[col]], na.rm = TRUE)
+  } else {
+    HP_normal[[col]][is.na(HP_normal[[col]])] <- as.character(sort(table(HP_normal[[col]])[1]))
+  }
+}
+```
+
+## Selezione delle Caratteristiche Numeriche per il Clustering
+
+```{r, message = F, warning = F}
+numericVars <- which(sapply(HP_normal, is.numeric))
+numericData <- HP_normal[, numericVars]
+
+# Calcolo delle correlazioni con il prezzo di vendita (SalePrice)
+correlations <- cor(numericData, use = "complete.obs")
+correlationWithSalePrice <- sort(correlations[, 'SalePrice'], decreasing = TRUE)
+
+# Selezione delle due variabili numeriche più correlate, includendo SalePrice
+topTwoNumericPredictors <- names(correlationWithSalePrice)[1:3]
+
+# Creazione di un nuovo dataset con solo le due caratteristiche selezionate e SalePrice
+selected_data <- numericData[, topTwoNumericPredictors]
+
+# Standardizzazione dei dati selezionati per avere media zero e deviazione standard uno
+scaled_data <- scale(selected_data)
+```
+
+## Metodo dell'Elbow per il clustering K-means
+
+```{r, message = F, warning = F}
+set.seed(123)
+fviz_nbclust(scaled_data, kmeans, method = "wss", k.max = 30) + 
+  labs(subtitle = "Metodo dell'Elbow")
+```
+
+### Applicazione del clustering K-means con il numero ottimale di cluster
+
+```{r, message = F, warning = F}
+kmeans_result <- kmeans(scaled_data, centers = 4, nstart = 25)
+fviz_cluster(kmeans_result, data = scaled_data, ellipse.type = "convex") +
+  labs(title = "Clustering K-means", subtitle = "4 Cluster")
+```
+
+### Aggiunta delle assegnazioni dei cluster ai dati originali
+
+```{r, message = F, warning = F}
+HP_normal$cluster <- kmeans_result$cluster
+
+# Calcolo della media di ciascuna variabile selezionata per ciascun cluster
+centroids <- HP_normal %>%
+  group_by(cluster) %>%
+  summarise(across(all_of(topTwoNumericPredictors), mean, na.rm = TRUE))
+
+print(centroids)
+```
+
+### Numero di osservazioni in ogni cluster
+
+```{r, message = F, warning = F}
+print(table(HP_normal$cluster))
+```
+
+### Analisi della Silhouette
+
+```{r, message = F, warning = F}
+sil <- silhouette(kmeans_result$cluster, dist(scaled_data))
+
+p <- fviz_silhouette(sil) + 
+  labs(title = "Silhouette Plot per K-means Clustering", subtitle = "4 Clusters")
+
+
+summary_sil <- summary(sil)
+
+
+info_text <- paste("n =", length(sil[, 1]), "\n",
+                   "Average silhouette width:", round(summary_sil$avg.width, 2), "\n",
+                   paste("Cluster 1:", length(which(sil[, 1] == 1)), "|", round(summary_sil$clus.avg.widths[1], 2)), "\n",
+                   paste("Cluster 2:", length(which(sil[, 1] == 2)), "|", round(summary_sil$clus.avg.widths[2], 2)), "\n",
+                   paste("Cluster 3:", length(which(sil[, 1] == 3)), "|", round(summary_sil$clus.avg.widths[3], 2)), "\n",
+                   paste("Cluster 4:", length(which(sil[, 1] == 3)), "|", round(summary_sil$clus.avg.widths[4], 2)))
+
+p <- p + annotate("text", x = -1, y = 1, label = info_text, hjust = 0, vjust = 1)
+
+print(p)
+```
+
+### Statistiche riassuntive per ogni cluster
+
+```{r, message = F, warning = F}
+cluster_summary <- HP_normal %>%
+  group_by(cluster) %>%
+  summarise(across(where(is.numeric), list(mean = mean, sd = sd), na.rm = TRUE))
+
+print(cluster_summary, width = Inf)
+```
+
+### Visualizzazione della distribuzione di SalePrice tra i cluster
+
+```{r, message = F, warning = F}
+ggplot(HP_normal, aes(x = factor(cluster), y = SalePrice, fill = factor(cluster))) +
+  geom_boxplot() +
+  labs(title = "Distribuzione di SalePrice tra i Cluster", x = "Cluster", y = "SalePrice")
+```
+
+### Osservazioni
+
+Il metodo dell'Elbow ci indica che il numero ottimale di cluster è tra il 3 e il 4, Usando 4 cluster e 2 variabili emergono dei gruppi coerenti: 
+
+Cluster 1: 
+
+Interpretazione:
+
+Comprende case di media qualità con prezzi e dimensioni del soggiorno nella media.
+Cluster 2: 
+
+Interpretazione:
+
+Rappresenta case di qualità superiore con un prezzo e una dimensione del soggiorno maggiore rispetto al Cluster 1.
+
+Cluster 3: 
+
+Interpretazione:
+
+Contiene case di alta qualità con prezzi di vendita e dimensioni del soggiorno molto alti.
+
+Cluster 4: 
+
+Interpretazione:
+
+Comprende case di bassa qualità con prezzi e dimensioni del soggiorno più bassi rispetto agli altri cluster.
+
+Analisi della Silhouette:
+
+L'analisi della silhouette mostra che il valore medio della silhouette è 0.33, indicando che i cluster sono discretamente ben separati. Tuttavia, un valore medio della silhouette più alto indicherebbe una separazione migliore tra i cluster.
+
+## Passaggio a 3 cluster
+
+Considerando l'analisi della silhouette e la distribuzione dei dati, l'utilizzo di 3 cluster può migliorare il valore della silhouette, suggerendo una separazione più chiara tra i cluster. 
+
+### Applicazione del clustering K-means con il numero ottimale di cluster (3)
+
+```{r, message = F, warning = F}
+kmeans_result <- kmeans(scaled_data, centers = 3, nstart = 25)
+fviz_cluster(kmeans_result, data = scaled_data, ellipse.type = "convex") +
+  labs(title = "Clustering K-means", subtitle = "3 Cluster")
+```
+
+### Aggiunta delle Assegnazioni dei Cluster ai Dati Originali
+
+```{r, message = F, warning = F}
+HP_normal$cluster <- kmeans_result$cluster
+
+# Calcolo della media di ciascuna variabile selezionata per ciascun cluster
+centroids <- HP_normal %>%
+  group_by(cluster) %>%
+  summarise(across(all_of(topTwoNumericPredictors), mean, na.rm = TRUE))
+
+print(centroids)
+```
+
+### Numero di osservazioni in ogni cluster
+
+```{r, message = F, warning = F}
+print(table(HP_normal$cluster))
+```
+
+### Analisi della Silhouette
+
+```{r, message = F, warning = F}
+sil <- silhouette(kmeans_result$cluster, dist(scaled_data))
+p <- fviz_silhouette(sil) + 
+  labs(title = "Silhouette Plot per K-means Clustering con Variabili Estese", subtitle = "3 Clusters")
+
+
+summary_sil <- summary(sil)
+
+
+info_text <- paste("n =", length(sil[, 1]), "\n",
+                   "Average silhouette width:", round(summary_sil$avg.width, 2), "\n",
+                   paste("Cluster 1:", length(which(sil[, 1] == 1)), "|", round(summary_sil$clus.avg.widths[1], 2)), "\n",
+                   paste("Cluster 2:", length(which(sil[, 1] == 2)), "|", round(summary_sil$clus.avg.widths[2], 2)), "\n",
+                   paste("Cluster 3:", length(which(sil[, 1] == 3)), "|", round(summary_sil$clus.avg.widths[3], 2)))
+
+
+p <- p + annotate("text", x = -1, y = 1, label = info_text, hjust = 0, vjust = 1)
+
+print(p)
+```
+
+### Statistiche riassuntive per ogni cluster
+
+```{r, message = F, warning = F}
+cluster_summary <- HP_normal %>%
+  group_by(cluster) %>%
+  summarise(across(where(is.numeric), list(mean = mean, sd = sd), na.rm = TRUE))
+
+print(cluster_summary, width = Inf)
+```
+
+### Visualizzazione della distribuzione di SalePrice tra i cluster
+
+```{r, message = F, warning = F}
+ggplot(HP_normal, aes(x = factor(cluster), y = SalePrice, fill = factor(cluster))) +
+  geom_boxplot() +
+  labs(title = "Distribuzione di SalePrice tra i Cluster", x = "Cluster", y = "SalePrice")
+```
+
+### Osservazioni
+
+Cluster 1 (Rosso):
+
+Interpretazione:
+
+Le case in questo cluster hanno prezzi di vendita e qualità complessiva moderati.
+La superficie abitabile è intorno alla media.
+Le proprietà tendono ad essere costruite intorno al 1976 e ristrutturate intorno al 1988.
+Hanno una superficie media del garage di 473 piedi quadrati e lotti di dimensioni moderate.
+
+Cluster 2 (Verde):
+
+Interpretazione:
+
+Le case in questo cluster hanno i prezzi di vendita e la qualità complessiva più alti.
+Queste proprietà hanno le superfici abitabili più grandi.
+Sono relativamente nuove, costruite intorno al 1989 e ristrutturate intorno al 1998.
+Hanno garage e lotti di dimensioni maggiori, rendendole proprietà più desiderabili.
+
+Cluster 3 (Blu):
+
+Interpretazione:
+
+Le case in questo cluster hanno i prezzi di vendita e la qualità complessiva più bassi.
+Queste proprietà hanno superfici abitabili più piccole e sono più vecchie, con un anno medio di costruzione intorno al 1955 e ristrutturazione intorno al 1975.
+Tendono ad avere garage e lotti di dimensioni più piccole.
+
+Analisi della Silhouette:
+
+Valore medio della silhouette: 0.37
+Un valore più alto della silhouette indica cluster meglio definiti. Il valore della silhouette per il Cluster 2 è il più alto, indicando che è il cluster più ben definito, mentre il Cluster 3 ha il valore più basso, suggerendo un po' di sovrapposizione o una separazione meno netta dagli altri cluster.
+
+Il boxplot illustra la distribuzione dei prezzi di vendita tra i tre cluster:
+
+Cluster 1 (Rosso): Mostra prezzi di vendita moderati con alcuni outlier.
+
+Cluster 2 (Verde): Mostra i prezzi di vendita più alti con una distribuzione più ampia e diversi outlier, indicando una maggiore variazione dei prezzi di vendita all'interno di questo cluster.
+
+Cluster 3 (Blu): Mostra i prezzi di vendita più bassi, con una distribuzione più stretta.
+
+Usabilità dei cluster:
+
+I cluster categorizzano chiaramente le case in base ai loro prezzi di vendita, qualità complessiva e superficie abitabile, fornendo preziose intuizioni per strategie di marketing o di prezzo mirate.
+La soluzione a tre cluster si allinea bene con l'interpretazione pratica, distinguendo tra proprietà di fascia bassa, media e alta.
+Mentre è stata esplorata anche una soluzione a 4 cluster, i valori della silhouette e le separazioni visive suggeriscono che la soluzione a 3 cluster fornisce una segmentazione più semplice e interpretabile del mercato immobiliare.
+
+## Selezione di variabili aggiuntive
+
+```{r, message = F, warning = F}
+additional_vars <- c("TotalBsmtSF", "GarageCars", "YearBuilt")
+
+# Creazione di un nuovo dataset con le variabili selezionate
+selected_data_extended <- HP_normal %>%
+  dplyr::select(SalePrice, OverallQual, GrLivArea, all_of(additional_vars))
+
+# Standardizzazione del dataset esteso
+scaled_data_extended <- scale(selected_data_extended)
+
+# Clustering K-means sul dataset esteso
+set.seed(123)
+kmeans_result_extended <- kmeans(scaled_data_extended, centers = 3, nstart = 25)
+
+# Visualizzazione del clustering K-means esteso
+fviz_cluster(kmeans_result_extended, data = scaled_data_extended, ellipse.type = "convex") +
+  labs(title = "Clustering K-means con Variabili Estese", subtitle = "3 Cluster")
+```
+
+### Aggiunta delle assegnazioni dei Cluster ai dati originali
+
+```{r, message = F, warning = F}
+HP_normal$cluster_extended <- kmeans_result_extended$cluster
+
+# Calcolo della media di ciascuna variabile selezionata per ciascun cluster
+centroids_extended <- HP_normal %>%
+  group_by(cluster_extended) %>%
+  summarise(across(where(is.numeric), mean, na.rm = TRUE))
+
+print(centroids_extended, width = Inf)
+```
+
+### Numero di osservazioni in ogni cluster
+
+```{r, message = F, warning = F}
+print(table(HP_normal$cluster_extended))
+```
+
+### Analisi della Silhouette per il clustering esteso
+
+```{r, message = F, warning = F}
+sil_extended <- silhouette(kmeans_result_extended$cluster, dist(scaled_data_extended))
+p <- fviz_silhouette(sil) + 
+  labs(title = "Silhouette Plot per K-means Clustering con Variabili Estese", subtitle = "3 Clusters")
+
+
+summary_sil <- summary(sil)
+
+
+info_text <- paste("n =", length(sil[, 1]), "\n",
+                   "Average silhouette width:", round(summary_sil$avg.width, 2), "\n",
+                   paste("Cluster 1:", length(which(sil[, 1] == 1)), "|", round(summary_sil$clus.avg.widths[1], 2)), "\n",
+                   paste("Cluster 2:", length(which(sil[, 1] == 2)), "|", round(summary_sil$clus.avg.widths[2], 2)), "\n",
+                   paste("Cluster 3:", length(which(sil[, 1] == 3)), "|", round(summary_sil$clus.avg.widths[3], 2)))
+
+
+p <- p + annotate("text", x = -1, y = 1, label = info_text, hjust = 0, vjust = 1)
+
+print(p)
+```
+
+### Osservazioni
+
+Cluster 1:
+
+Interpretazione:
+
+Rappresenta le case di fascia alta, con un prezzo di vendita medio significativamente superiore rispetto agli altri cluster. Le case in questo cluster tendono ad essere relativamente nuove, con una media dell'anno di costruzione nel 1993, e hanno una qualità costruttiva elevata. Queste case hanno anche una superficie abitabile ampia e una capacità di parcheggio di garage superiore.
+
+Cluster 2:
+
+Interpretazione:
+
+Rappresenta le case di fascia bassa, con il prezzo di vendita medio più basso tra i cluster. Le case in questo cluster sono generalmente più vecchie, con un anno di costruzione medio nel 1947, e hanno una qualità costruttiva inferiore. La superficie abitabile è la più piccola tra i cluster, e la capacità di parcheggio di garage è limitata.
+
+Cluster 3:
+
+Interpretazione:
+
+Rappresenta le case di fascia media, con un prezzo di vendita medio intermedio rispetto agli altri cluster. Le case in questo cluster sono di età moderata, con un anno di costruzione medio nel 1983, e hanno una qualità costruttiva moderata. La superficie abitabile è intermedia e la capacità di parcheggio di garage è adeguata.
+
+Analisi della Silhouette:
+La silhouette è 0.27 il che è minore del valore nel clustering con meno variabili, quindi è opportuno fermarsi con l'aggiunta di nuove variabili.
+
+## Clustering Gerarchico (Agnes)
+
+### Prima passata con le prime 2 variabili
+
+```{r, message = F, warning = F}
+hc_agnes1 <- agnes(scaled_data, method = "ward")
+
+dend <- as.dendrogram(hc_agnes1)
+dend_colored <- color_branches(dend, k = 3)
+plot(dend_colored, main = "Dendrogram of Agnes (Top 2 Variables)", cex = 0.6)
+rect.hclust(as.hclust(dend), k = 3, border = 2:4)
+
+cut_agnes1 <- cutree(hc_agnes1, k = 3)
+HP_normal$cluster_agnes1 <- cut_agnes1
+
+centroids_agnes1 <- HP_normal %>%
+  group_by(cluster_agnes1) %>%
+  summarise(across(where(is.numeric), mean, na.rm = TRUE))
+
+print(centroids_agnes1, width = Inf)
+print(table(HP_normal$cluster_agnes1))
+```
+
+#### Osservazioni
+
+Cluster 1:
+
+Interpretazione:
+
+Rappresenta abitazioni di dimensioni medie con una qualità complessiva moderata. Le case in questo cluster sono state costruite principalmente intorno agli anni '70 e sono state ristrutturate negli anni '80. Il prezzo medio di vendita è di circa 173.000 dollari.
+
+Cluster 2:
+
+Interpretazione:
+
+Rappresenta abitazioni di dimensioni più piccole con una qualità complessiva inferiore rispetto agli altri cluster. Le case in questo cluster sono state costruite principalmente negli anni '50 e ristrutturate negli anni '70. Il prezzo medio di vendita è di circa 126.000 dollari, il che indica che queste abitazioni sono più economiche e con caratteristiche meno desiderabili.
+
+Cluster 3:
+
+Interpretazione:
+
+Rappresenta le abitazioni di maggior dimensioni e qualità. Le case in questo cluster sono state costruite principalmente negli anni '80 e '90 e hanno subito ristrutturazioni negli anni '90. Il prezzo medio di vendita è di circa 272.000 dollari, il che indica che queste abitazioni sono le più costose e con caratteristiche più desiderabili.
+
+L'analisi gerarchica ha permesso di identificare questi gruppi distinti, che possono essere utili per ulteriori analisi di mercato, segmentazione dei clienti o strategie di vendita.
+
+
+### Seconda passata con le variabili estese
+
+```{r hierarchical-clustering-extended}
+hc_agnes2 <- agnes(scaled_data_extended, method = "ward")
+
+dend2 <- as.dendrogram(hc_agnes2)
+dend_colored2 <- color_branches(dend2, k = 3)
+plot(dend_colored2, main = "Dendrogram of Agnes (Extended Variables)", cex = 0.6)
+rect.hclust(as.hclust(dend2), k = 3, border = 2:4)
+
+cut_agnes2 <- cutree(hc_agnes2, k = 3)
+fviz_cluster(list(data = scaled_data_extended, cluster = cut_agnes2)) +
+  labs(title = "Hierarchical Clustering (Extended Variables)", subtitle = "3 Clusters")
+
+HP_normal$cluster_agnes2 <- cut_agnes2
+
+centroids_agnes2 <- HP_normal %>%
+  group_by(cluster_agnes2) %>%
+  summarise(across(where(is.numeric), mean, na.rm = TRUE))
+
+print(centroids_agnes2, width = Inf)
+print(table(HP_normal$cluster_agnes2))
+```
+
+#### Osservazioni
+
+Cluster 1: 
+
+Interpretazione:
+
+Case di medie dimensioni con qualità e condizione moderate, costruite principalmente negli anni '70 e '80. Queste case hanno un prezzo di vendita medio di circa 160,000 USD.
+
+Cluster 2: 
+
+Interpretazione:
+
+Case di grandi dimensioni e di alta qualità, costruite principalmente negli anni '90. Queste case hanno un prezzo di vendita medio di circa 260,000 USD.
+
+Cluster 3: 
+
+Interpretazione:
+
+Case di piccole dimensioni e di bassa qualità, costruite principalmente negli anni '40. Queste case hanno un prezzo di vendita medio di circa 124,000 USD.
+
+I cluster identificati possono essere utilizzati per comprendere meglio il mercato immobiliare e per prendere decisioni informate riguardo a investimenti, ristrutturazioni e valutazioni delle proprietà.
+
+## Clustering DBSCAN
+
+### Prima passata con le prime 2 variabili
+
+```{r, message = F, warning = F}
+dbscan_result1 <- dbscan(scaled_data, eps = 0.5, minPts = 10)
+fviz_cluster(dbscan_result1, data = scaled_data, geom = "point") +
+  labs(title = "DBSCAN Clustering (Top 2 Variables)", subtitle = "eps = 0.5, minPts = 10")
+
+HP_normal$cluster_dbscan1 <- dbscan_result1$cluster
+
+dbscan_centroids1 <- HP_normal %>%
+  group_by(cluster_dbscan1) %>%
+  summarise(across(where(is.numeric), mean, na.rm = TRUE))
+
+print(dbscan_centroids1, width = Inf)
+print(table(HP_normal$cluster_dbscan1))
+```
+
+#### Osservazioni
+
+Cluster 0: 
+
+Interpretazione:
+
+Case di alta qualità, con ampi lotti e grandi superfici abitative. Queste case sono state costruite principalmente negli anni '60 e presentano prezzi di vendita elevati.
+
+Cluster 1:
+
+Interpretazione:
+
+Case di qualità media, con lotti e superfici abitative moderate. Costruite principalmente negli anni '80, queste case hanno un prezzo di vendita medio-alto.
+
+Cluster 2:
+
+Interpretazione:
+
+Case di qualità media con dimensioni ridotte. Costruite principalmente negli anni '60, queste case presentano prezzi di vendita moderati.
+
+Cluster 3: 
+
+Interpretazione:
+
+Case di alta qualità con dimensioni moderate. Costruite principalmente negli anni '90, queste case hanno prezzi di vendita elevati.
+
+Cluster 4: 
+
+Interpretazione:
+
+Case di bassa qualità con dimensioni ridotte. Costruite principalmente negli anni '50, queste case presentano prezzi di vendita bassi.
+
+Cluster 5:
+
+Interpretazione:
+
+Case di bassa qualità con dimensioni molto ridotte. Costruite principalmente negli anni '50, queste case hanno i prezzi di vendita più bassi.
+
+Cluster 6: 
+
+Interpretazione:
+
+Case molto vecchie di bassa qualità, con dimensioni ridotte. Costruite principalmente negli anni '30, queste case hanno i prezzi di vendita più bassi.
+
+Una visione globale ci permette di dividere il cluster in 4 gruppi:
+
+Cluster 0 e 3: Case di alta qualità con ampi lotti e superfici abitative, principalmente costruite negli anni '60 e '90, con prezzi di vendita elevati.
+
+Cluster 1 e 2: Case di qualità media con lotti e superfici abitative moderate, costruite principalmente negli anni '60 e '80, con prezzi di vendita moderati.
+
+Cluster 4 e 5: Case di bassa qualità con dimensioni ridotte, costruite principalmente negli anni '50, con prezzi di vendita bassi.
+
+Cluster 6: Case molto vecchie di bassa qualità, con dimensioni ridotte, costruite principalmente negli anni '30, con i prezzi di vendita più bassi.
+
+Questa segmentazione può aiutare a comprendere meglio il mercato immobiliare e a prendere decisioni informate.
+
+### Seconda passata con le variabili estese
+
+```{r, message = F, warning = F}
+dbscan_result2 <- dbscan(scaled_data_extended, eps = 0.5, minPts = 10)
+fviz_cluster(dbscan_result2, data = scaled_data_extended, geom = "point") +
+  labs(title = "DBSCAN Clustering (Extended Variables)", subtitle = "eps = 0.5, minPts = 10")
+
+HP_normal$cluster_dbscan2 <- dbscan_result2$cluster
+
+dbscan_centroids2 <- HP_normal %>%
+  group_by(cluster_dbscan2) %>%
+  summarise(across(where(is.numeric), mean, na.rm = TRUE))
+
+print(dbscan_centroids2, width = Inf)
+print(table(HP_normal$cluster_dbscan2))
+```
+
+#### Osservazioni
+
+Cluster 0: 
+
+Interpretazione:
+
+Case di media qualità con dimensioni moderate, costruite principalmente negli anni '60. Prezzo di vendita medio.
+
+Cluster 1: 
+
+Interpretazione:
+
+Case di alta qualità con dimensioni grandi, costruite principalmente negli anni 2000. Prezzo di vendita alto.
+
+Cluster 2: 
+
+Interpretazione:
+
+Case di bassa qualità con dimensioni ridotte, costruite principalmente negli anni '60. Prezzo di vendita basso.
+
+Cluster 3: 
+
+Interpretazione:
+
+Case di media qualità con ampi spazi seminterrati, costruite principalmente negli anni '70. Prezzo di vendita medio.
+
+Cluster 4: 
+
+Interpretazione: 
+
+Case di bassa qualità con lotti di dimensioni ridotte, costruite principalmente negli anni '60. Prezzo di vendita basso.
+
+Cluster 5: 
+
+Interpretazione:
+
+Case di alta qualità con grandi dimensioni, costruite principalmente negli anni 2000. Prezzo di vendita molto alto.
+
+Cluster 6: 
+
+Interpretazione:
+Case di media qualità con dimensioni moderate, costruite principalmente negli anni '80. Prezzo di vendita medio.
+
+Cluster 7: 
+
+Interpretazione:
+
+Case di alta qualità con dimensioni ridotte, costruite principalmente negli anni 2000. Prezzo di vendita alto.
+
+Cluster 8: 
+
+Interpretazione:
+
+Case di media qualità con lotti molto piccoli, costruite principalmente negli anni 2000. Prezzo di vendita medio-basso.
+
+Cluster 9: 
+
+Interpretazione:
+
+Case di media qualità con dimensioni moderate, costruite principalmente negli anni '60. Prezzo di vendita medio.
+
+Una visione globale :
+
+L'algoritmo DBSCAN con variabili estese ha identificato dieci cluster distinti di case, ognuno con caratteristiche e valori di vendita significativamente diversi. Questa segmentazione fornisce una visione dettagliata del mercato immobiliare, aiutando a identificare diverse tipologie di proprietà e le loro relative valutazioni di mercato.
+
