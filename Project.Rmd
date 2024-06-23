@@ -3,8 +3,8 @@ title: "Analisi house price"
 author: "Urbani Ludovico, Mohamed Fadhla Mutua, Nicola Battiston, Nicolò Nava"
 date: "2024-06-24"
 output:
-  pdf_document: default
-  html_document: default
+    pdf_document: default
+    html_document: default
 ---
 
 # Importazione delle librerie
@@ -34,9 +34,9 @@ theme_set(plot_theme)
 ```{r, message = F, warning = F}
 HP <- read.csv2(
     "./dataset.csv",
-    sep = ",", 
+    sep = ",",
     stringsAsFactors = T,
-    row.names=1)
+    row.names = 1)
 
 attach(HP)
 ```
@@ -45,123 +45,123 @@ Trasformo le variabili opportune in factor
 ```{r, message = F, warning = F}
 # Alley
 HP <- HP %>%
-  mutate(Alley = as.character(Alley),
-         Alley = replace_na(Alley, "No Alley"))
+    mutate(Alley = as.character(Alley),
+           Alley = replace_na(Alley, "No Alley"))
 HP$Alley <- factor(
-    HP$Alley, 
+    HP$Alley,
     levels = c("Grvl", "Pave", "No Alley"))
 
 # BsmtQual
 HP <- HP %>%
-  mutate(BsmtQual = as.character(BsmtQual),
-         BsmtQual = replace_na(BsmtQual, "No Bsmt"))
+    mutate(BsmtQual = as.character(BsmtQual),
+           BsmtQual = replace_na(BsmtQual, "No Bsmt"))
 HP$BsmtQual <- factor(
-    HP$BsmtQual, 
+    HP$BsmtQual,
     levels = c("Ex", "Gd", "TA", "Fa", "Po", "No Bsmt"))
 
 # BsmtCond
 HP <- HP %>%
-  mutate(BsmtCond = as.character(BsmtCond),
-         BsmtCond = replace_na(BsmtCond, "No Bsmt"))
+    mutate(BsmtCond = as.character(BsmtCond),
+           BsmtCond = replace_na(BsmtCond, "No Bsmt"))
 HP$BsmtCond <- factor(
-    HP$BsmtCond, 
+    HP$BsmtCond,
     levels = c("Ex", "Gd", "TA", "Fa", "Po", "No Bsmt"))
 
 # BsmtExposure
 HP <- HP %>%
-  mutate(BsmtExposure = as.character(BsmtExposure),
-         BsmtExposure = replace_na(BsmtExposure, "No Bsmt"))
+    mutate(BsmtExposure = as.character(BsmtExposure),
+           BsmtExposure = replace_na(BsmtExposure, "No Bsmt"))
 HP$BsmtExposure <- factor(
-    HP$BsmtExposure, 
+    HP$BsmtExposure,
     levels = c("Gd", "Av", "Mn", "No", "No Bsmt"))
 
 # BsmtFinType1
 HP <- HP %>%
-  mutate(BsmtFinType1 = as.character(BsmtFinType1),
-         BsmtFinType1 = replace_na(BsmtFinType1, "No Bsmt"))
+    mutate(BsmtFinType1 = as.character(BsmtFinType1),
+           BsmtFinType1 = replace_na(BsmtFinType1, "No Bsmt"))
 HP$BsmtFinType1 <- factor(
-    HP$BsmtFinType1, 
+    HP$BsmtFinType1,
     levels = c("GLQ", "ALQ", "BLQ", "Rec", "LwQ", "Unf", "No Bsmt"))
 
 # BsmtFinType2
 HP <- HP %>%
-  mutate(BsmtFinType2 = as.character(BsmtFinType2),
-         BsmtFinType2 = replace_na(BsmtFinType2, "No Bsmt"))
+    mutate(BsmtFinType2 = as.character(BsmtFinType2),
+           BsmtFinType2 = replace_na(BsmtFinType2, "No Bsmt"))
 HP$BsmtFinType2 <- factor(
-    HP$BsmtFinType2, 
+    HP$BsmtFinType2,
     levels = c("GLQ", "ALQ", "BLQ", "Rec", "LwQ", "Unf", "No Bsmt"))
 
 # Heating
 HP <- HP %>%
-  mutate(HeatingQC = as.character(HeatingQC),
-         HeatingQC = replace_na(HeatingQC, "No Heating"))
+    mutate(HeatingQC = as.character(HeatingQC),
+           HeatingQC = replace_na(HeatingQC, "No Heating"))
 HP$HeatingQC <- factor(
-    HP$HeatingQC, 
+    HP$HeatingQC,
     levels = c("Ex", "Gd", "TA", "Fa", "Po", "No Heating"))
 
 # FireplaceQu
 HP <- HP %>%
-  mutate(FireplaceQu = as.character(FireplaceQu),
-         FireplaceQu = replace_na(FireplaceQu, "No Fireplace"))
+    mutate(FireplaceQu = as.character(FireplaceQu),
+           FireplaceQu = replace_na(FireplaceQu, "No Fireplace"))
 HP$FireplaceQu <- factor(
-    HP$FireplaceQu, 
+    HP$FireplaceQu,
     levels = c("Ex", "Gd", "TA", "Fa", "Po", "No Fireplace"))
 
 # GarageType
 HP <- HP %>%
-  mutate(GarageType = as.character(GarageType),
-         GarageType = replace_na(GarageType, "No Garage"))
+    mutate(GarageType = as.character(GarageType),
+           GarageType = replace_na(GarageType, "No Garage"))
 HP$GarageType <- factor(
-    HP$GarageType, 
-    levels = c("2Types", "Attchd", "Basment", "BuiltIn", 
-               "CarPort",	"Detchd", "No Garage"))
+    HP$GarageType,
+    levels = c("2Types", "Attchd", "Basment", "BuiltIn",
+               "CarPort", "Detchd", "No Garage"))
 
 # GarageFinish
 HP <- HP %>%
-  mutate(GarageFinish = as.character(GarageFinish),
-         GarageFinish = replace_na(GarageFinish, "No Garage"))
+    mutate(GarageFinish = as.character(GarageFinish),
+           GarageFinish = replace_na(GarageFinish, "No Garage"))
 HP$GarageFinish <- factor(
     HP$GarageFinish,
     levels = c("Fin", "RFn", "Unf", "No Garage"))
 
 # GarageQual
 HP <- HP %>%
-  mutate(GarageQual = as.character(GarageQual),
-         GarageQual = replace_na(GarageQual, "No Garage"))
+    mutate(GarageQual = as.character(GarageQual),
+           GarageQual = replace_na(GarageQual, "No Garage"))
 HP$GarageQual <- factor(
-    HP$GarageQual, 
+    HP$GarageQual,
     levels = c("Ex", "Gd", "TA", "Fa", "Po", "No Garage"))
 
 # GarageCond
 HP <- HP %>%
-  mutate(GarageCond = as.character(GarageCond),
-         GarageCond = replace_na(GarageCond, "No Garage"))
+    mutate(GarageCond = as.character(GarageCond),
+           GarageCond = replace_na(GarageCond, "No Garage"))
 HP$GarageCond <- factor(
-    HP$GarageCond, 
+    HP$GarageCond,
     levels = c("Ex", "Gd", "TA", "Fa", "Po", "No Garage"))
 
 # PoolQC
 HP <- HP %>%
-  mutate(PoolQC = as.character(PoolQC),
-         PoolQC = replace_na(PoolQC, "No Pool"))
+    mutate(PoolQC = as.character(PoolQC),
+           PoolQC = replace_na(PoolQC, "No Pool"))
 HP$PoolQC <- factor(
-    HP$PoolQC, 
+    HP$PoolQC,
     levels = c("Ex", "Gd", "TA", "No Pool"))
 
 # Fence
 HP <- HP %>%
-  mutate(Fence = as.character(Fence),
-         Fence = replace_na(Fence, "No Fence"))
+    mutate(Fence = as.character(Fence),
+           Fence = replace_na(Fence, "No Fence"))
 HP$Fence <- factor(
-    HP$Fence, 
+    HP$Fence,
     levels = c("GdPrv", "MnPrv", "GdWo", "MnWw", "No Fence"))
 
 # MiscFeature
 HP <- HP %>%
-  mutate(MiscFeature = as.character(MiscFeature),
-         MiscFeature = replace_na(MiscFeature, "No MiscFeature"))
+    mutate(MiscFeature = as.character(MiscFeature),
+           MiscFeature = replace_na(MiscFeature, "No MiscFeature"))
 HP$MiscFeature <- factor(
-    HP$MiscFeature, 
+    HP$MiscFeature,
     levels = c("Elev", "Gar2", "Othr", "Shed", "TenC", "No MiscFeature"))
 
 attach(HP)
@@ -330,7 +330,7 @@ grid.arrange(
 
 ## Variabili calcolate
 
-Prendo le variabili escluse e le variabili che nealla heatmap hanno una bassa correlazione e provo a creare delle variabili calcolate che potrebbero essere correlate a SalePrice. 
+Prendo le variabili escluse e le variabili che nealla heatmap hanno una bassa correlazione e provo a creare delle variabili calcolate che potrebbero essere correlate a SalePrice.
 Ad esempio variabili quantitative o qualitative che hanno valori NA o 0 per indicare l'assenza di quella caratteristica le trasformo in variabili booleane.
 
 ```{r, message = F, warning = F}
@@ -377,12 +377,12 @@ HP_Excluded <- HP_Excluded %>%
 
 # GarageType
 recode_map <- c(
-    "2Types" =	"T",
-    "Attchd" =	"T",
-    "Basment" =	"T",
-    "BuiltIn" =	"T",
-    "CarPort" =	"T",
-    "Detchd" =	"T",
+    "2Types" = "T",
+    "Attchd" = "T",
+    "Basment" = "T",
+    "BuiltIn" = "T",
+    "CarPort" = "T",
+    "Detchd" = "T",
     "No Garage" = "F")
 HP_Excluded <- HP_Excluded %>%
     mutate(GarageType = as.character(GarageType),
@@ -393,34 +393,34 @@ HP_Excluded$GarageExists <- factor(HP_Excluded$GarageExists, levels = c("F", "T"
 recode_map <- c(
     "AllPub" = "All",
     "NoSewr" = "Some",
-    "NoSeWa" ="Some",
-    "ELO" =	"Some")
+    "NoSeWa" = "Some",
+    "ELO" = "Some")
 HP_Excluded <- HP_Excluded %>%
     mutate(UtilitiesReduced = dplyr::recode(Utilities, !!!recode_map))
 
 # OverallCond
 recode_map <- c(
     "10" = "Excellent",
-    "9"	 = "Excellent",
-    "8" =	"Good",
-    "7"	= "Good",
-    "6" =	"Average",	
-    "5" =	"Average",
-    "4" = "Average"	,
-    "3" =	"Poor",
-    "2" =	"Poor",
-    "1" =	"Poor"
+    "9" = "Excellent",
+    "8" = "Good",
+    "7" = "Good",
+    "6" = "Average",
+    "5" = "Average",
+    "4" = "Average",
+    "3" = "Poor",
+    "2" = "Poor",
+    "1" = "Poor"
 )
 HP_Excluded <- HP_Excluded %>%
     mutate(OverallCondReduced = dplyr::recode(OverallCond, !!!recode_map))
 
 # BsmtCond
 recode_map <- c(
-    "Ex" =	"T",
-    "Gd" =	"T",
-    "TA" =	"T",
-    "Fa" =	"T",
-    "Po" =	"T",
+    "Ex" = "T",
+    "Gd" = "T",
+    "TA" = "T",
+    "Fa" = "T",
+    "Po" = "T",
     "No Bsmt" = "F")
 HP_Excluded <- HP_Excluded %>%
     mutate(BsmtCond = as.character(BsmtCond),
@@ -429,10 +429,10 @@ HP_Excluded$BsmtExists <- factor(HP_Excluded$BsmtExists, levels = c("F", "T"))
 
 # Fence
 recode_map <- c(
-    "GdPrv" =	"T",
-    "MnPrv" =	"T",
-    "GdWo" =	"T",
-    "MnWw" =	"T",
+    "GdPrv" = "T",
+    "MnPrv" = "T",
+    "GdWo" = "T",
+    "MnWw" = "T",
     "No Fence" = "F"
 )
 HP_Excluded <- HP_Excluded %>%
@@ -442,11 +442,11 @@ HP_Excluded$FenceExists <- factor(HP_Excluded$FenceExists, levels = c("F", "T"))
 
 # MiscFeature
 recode_map <- c(
-    "Elev" =	"T",
-    "Gar2" =	"T",
-    "Othr" =	"T",
-    "Shed" =	"T",
-    "TenC" =	"T",
+    "Elev" = "T",
+    "Gar2" = "T",
+    "Othr" = "T",
+    "Shed" = "T",
+    "TenC" = "T",
     "No MiscFeature" = "F"
 )
 HP_Excluded <- HP_Excluded %>%
@@ -457,23 +457,23 @@ HP_Excluded$FenceExists <- factor(HP_Excluded$FenceExists, levels = c("F", "T"))
 
 ora procedo a metterle in correlazione con SalePrice in un heatmap
 ```{r, warning = F}
-vars <- c("SalePrice", "AlleyExists", "LotShapeReduced", "HouseAge", "MSZoningReduced", 
-          "GarageExists", "UtilitiesReduced", "OverallCondReduced", 
+vars <- c("SalePrice", "AlleyExists", "LotShapeReduced", "HouseAge", "MSZoningReduced",
+          "GarageExists", "UtilitiesReduced", "OverallCondReduced",
           "BsmtExists", "FenceExists", "MiscFeatureExists", "TotalBath")
 
 excludevar <- HP_Excluded[vars]
 
 selected_data <- excludevar %>%
-    mutate(across(everything(), ~ convert_to_numeric(.)))
+    mutate(across(everything(), ~convert_to_numeric(.)))
 
 selected_data_numeric <- selected_data %>%
-    mutate(across(everything(), ~ as.numeric(as.character(.))))
+    mutate(across(everything(), ~as.numeric(as.character(.))))
 
 corHeap_excluded <- as.data.frame(
     round(cor(selected_data_numeric, HP_Excluded$SalePrice), 2))
 names(corHeap_excluded) <- "SalePrice"
 
-ggcorrplot(corHeap_excluded, type = "lower", lab = TRUE, lab_size = 2.5) + 
+ggcorrplot(corHeap_excluded, type = "lower", lab = TRUE, lab_size = 2.5) +
     theme(
         axis.text.x = element_text(size = 9),
         axis.text.y = element_text(size = 9))
@@ -484,22 +484,22 @@ ggcorrplot(corHeap_excluded, type = "lower", lab = TRUE, lab_size = 2.5) +
 Filtro le variabili che hanno correlazione con SalePrice >=0.4
 ```{r, results = F, message = F, warning = F}
 totalCorHeap = rbind.data.frame(
-    subset(corHeap, subset = rownames(corHeap) != "SalePrice"), 
+    subset(corHeap, subset = rownames(corHeap) != "SalePrice"),
     subset(corHeap_excluded, subset = rownames(corHeap_excluded) != "SalePrice"))
 
 ggarrange(
     plotlist = lapply(
         rownames(totalCorHeap)[abs(totalCorHeap) >= 0.4],
-        function (var) {
+        function(var) {
             plt <- ggplot(HP, aes(x = HP_Excluded[[var]], y = SalePrice)) +
                 xlab(var)
-            
+
             if (is.factor(HP[[var]])) {
                 plt <- plt + geom_boxplot()
             } else {
                 plt <- plt + geom_point()
             }
-            
+
             plot(plt)
         }),
     ncol = 2,
@@ -516,73 +516,73 @@ Visto che la variabile target SalePrice è quantitativa, distinguo due casi:
 1. la seconda variabile è qualitativa:
 
 ```{r, warning = F}
-analysis.qualitative <- function(target, 
-                                 second_var, 
-                                 horizontal = F, 
-                                 target.lab = "prezzo di vendita", 
+analysis.qualitative <- function(target,
+                                 second_var,
+                                 horizontal = F,
+                                 target.lab = "prezzo di vendita",
                                  second_var.lab = "seconda variabile") {
     df <- subset(data.frame(target, second_var), !is.na(second_var))
-    
+
     test <- aov(target ~ second_var)
     p <- summary(test)[[1]][["Pr(>F)"]][1]
-    
+
     plt <- ggplot(
         df,
         aes(
-            x = if (horizontal) target else second_var, 
+            x = if (horizontal) target else second_var,
             y = if (horizontal) second_var else target)) +
-    geom_violin(
-        trim = F, 
-        draw_quantiles = c(0.25, 0.5, 0.75)) +
-    stat_summary(
-        fun = "mean",
-        geom = "point",
-        color = "red",
-        fill = "red",
-        shape = 20,
-        size = 2) +
-    labs(
-        title = paste(target.lab, "VS", second_var.lab, sep = " "),
-        subtitle = paste("Anova p-value = ", signif(p, 3), sep = ""),
-        x = if (horizontal) target.lab else second_var.lab,
-        y = if (horizontal) second_var.lab else target.lab)
-    
+        geom_violin(
+            trim = F,
+            draw_quantiles = c(0.25, 0.5, 0.75)) +
+        stat_summary(
+            fun = "mean",
+            geom = "point",
+            color = "red",
+            fill = "red",
+            shape = 20,
+            size = 2) +
+        labs(
+            title = paste(target.lab, "VS", second_var.lab, sep = " "),
+            subtitle = paste("Anova p-value = ", signif(p, 3), sep = ""),
+            x = if (horizontal) target.lab else second_var.lab,
+            y = if (horizontal) second_var.lab else target.lab)
+
     plot(plt)
-    
-    return (signif(p, 3))
+
+    return(signif(p, 3))
 }
 ```
 
 2. la seconda variabile è quantitativa:
 
 ```{r, warning = F}
-analysis.quantitative <- function(target, 
-                                  second_var, 
-                                  horizontal = F, 
-                                  target.lab = "prezzo di vendita", 
+analysis.quantitative <- function(target,
+                                  second_var,
+                                  horizontal = F,
+                                  target.lab = "prezzo di vendita",
                                   second_var.lab = "seconda variabile") {
     mod <- lm(target ~ second_var)
-    p <- summary(mod)$coefficients[2,4]
-    
+    p <- summary(mod)$coefficients[2, 4]
+
     plt <- ggplot(
         data.frame(target, second_var),
         aes(
-            x = if (horizontal) target else second_var, 
+            x = if (horizontal) target else second_var,
             y = if (horizontal) second_var else target)) +
-    geom_point(size = 1) +
-    geom_abline(
-        intercept = coef(mod)[1], 
-        slope = coef(mod)[2],
-        color = "red") +
-    labs(
-        title = paste(target.lab, "VS", second_var.lab, sep = " "),
-        subtitle = paste("Linear model p-value = ", signif(p, 3), sep = ""),
-        x = if (horizontal) target.lab else second_var.lab,
-        y = if (horizontal) second_var.lab else target.lab)
-    
+        geom_point(size = 1) +
+        geom_abline(
+            intercept = coef(mod)[1],
+            slope = coef(mod)[2],
+            color = "red") +
+        labs(
+            title = paste(target.lab, "VS", second_var.lab, sep = " "),
+            subtitle = paste("Linear model p-value = ", signif(p, 3), sep = ""),
+            x = if (horizontal) target.lab else second_var.lab,
+            y = if (horizontal) second_var.lab else target.lab)
+
     plot(plt)
-    
-    return (signif(p, 3))
+
+    return(signif(p, 3))
 }
 ```
 
@@ -746,7 +746,7 @@ mod <- analysis.qualitative(
 )
 ```
 
-Con un p-value di `r mod` si deduce che al diminuire della qualità dei camini, più il prezzo tende a diminuire. È possibile che questo sia dovuto al fatto che le persone associano alla qualità dei camini una classe energetica superiore e quindi un prezzo maggiore. 
+Con un p-value di `r mod` si deduce che al diminuire della qualità dei camini, più il prezzo tende a diminuire. È possibile che questo sia dovuto al fatto che le persone associano alla qualità dei camini una classe energetica superiore e quindi un prezzo maggiore.
 In particolare si nota che le persone associano alle case senza camini lo stesso prezzo delle case con stato peggiore.
 
 ## Analisi dell'anno di costruzione del garage
@@ -759,7 +759,7 @@ mod <- analysis.quantitative(
 )
 ```
 
-Con un p-value di `r mod` si deduce che più è nuovo il garage, più il prezzo tende ad aumentare. 
+Con un p-value di `r mod` si deduce che più è nuovo il garage, più il prezzo tende ad aumentare.
 Dato il fatto che la società americana si basa sul petrolio e sui mezzo a motori, il possedere un garage nuovo e/o di buona qualità, costituisca un punto di forza nella vendita di una casa.
 
 ## Analisi del numero di posti auto nel garage
@@ -784,7 +784,7 @@ mod <- analysis.quantitative(
 )
 ```
 
-Con un p-value di `r mod` si deduce che più grande è il garage, più il prezzo tende ad aumentare. 
+Con un p-value di `r mod` si deduce che più grande è il garage, più il prezzo tende ad aumentare.
 Come nel punto precedente, il numero di automobili è direttamente proporzionale alla metratura del garage, quindi le conclusioni sono le stesse.
 Si nota che con un garage di 0m^2, quindi nessun garage, il prezzo tende ad essere minore.
 
@@ -817,8 +817,8 @@ Con un p-value di `r mod` si deduce che più i numeri di bagni aumenta, più il 
 ```{r, message = F, warning = F}
 ggplot(HP, aes(x = YearRemodAdd, y = log(SalePrice), color = factor(OverallQual))) +
     geom_point() +
-    labs(x = "ultimi lavori (anno)", 
-         y = "prezzo di vendita", 
+    labs(x = "ultimi lavori (anno)",
+         y = "prezzo di vendita",
          color = "Qualità complessiva") +
     theme_minimal()
 ```
@@ -832,8 +832,8 @@ Infine possiamo notare delle fasce di prezzo che sono composte principalmente da
 ```{r, message = F, warning = F}
 ggplot(HP, aes(x = YearRemodAdd, y = log(SalePrice), color = factor(HeatingQC))) +
     geom_point() +
-    labs(x = "ultimi lavori eseguiti", 
-         y = "prezzo di vendita", 
+    labs(x = "ultimi lavori eseguiti",
+         y = "prezzo di vendita",
          color = "Qualità del riscaldamento") +
     theme_minimal()
 ```
@@ -845,8 +845,8 @@ Da questo grafico, invece, notiamo che il prezzo dell'abitazione non ha fasce di
 ```{r, message = F, warning = F}
 ggplot(HP, aes(x = YearBuilt, y = SalePrice, color = Foundation)) +
     geom_point() +
-    labs(x = "anno di costruzione", 
-         y = "prezzo di vendita", 
+    labs(x = "anno di costruzione",
+         y = "prezzo di vendita",
          color = "Fondamenta") +
     theme_minimal()
 ```
@@ -859,8 +859,8 @@ Come nell'analisi precedente non si evidenziano fasce evidenti, quindi il prezzo
 ```{r, message = F, warning = F}
 ggplot(HP, aes(x = GrLivArea, y = SalePrice, color = factor(TotRmsAbvGrd))) +
     geom_point() +
-    labs(x = "area totale", 
-         y = "prezzo di vendita", 
+    labs(x = "area totale",
+         y = "prezzo di vendita",
          color = "Numero di stanze") +
     theme_minimal()
 ```
@@ -872,7 +872,7 @@ Dal grafico possiamo notare che all'aumentare dell'area abitabile c'è anche un 
 ```{r, message = F, warning = F}
 ggplot(HP, aes(x = GrLivArea, y = log(SalePrice), color = factor(FullBath))) +
     geom_point() +
-    labs(x = "metratura piano terra", 
+    labs(x = "metratura piano terra",
          y = "prezzo di vendita",
          color = "Numero di bagni") +
     theme_minimal()
@@ -885,14 +885,14 @@ C'è anche un evidente aumento di prezzo annesso, che probabilmente è dovuto al
 
 ```{r, message = F, warning = F}
 HP$GarageArea.cut <- cut(
-    HP$GarageArea, 
-    breaks = c(min(HP$GarageArea), 200, 400, 600, 800, 1000, max(HP$GarageArea)), 
+    HP$GarageArea,
+    breaks = c(min(HP$GarageArea), 200, 400, 600, 800, 1000, max(HP$GarageArea)),
     labels = c("0-200", "201-400", "401-600", "601-800", "801-1000", "1001-1418"))
 
 ggplot(HP, aes(x = GarageYrBlt, y = SalePrice, color = GarageArea.cut)) +
     geom_point(na.rm = T) +
-    labs(x = "anno di costruzione del garage", 
-         y = "prezzo di vendita", 
+    labs(x = "anno di costruzione del garage",
+         y = "prezzo di vendita",
          color = "Area abitabile") +
     scale_color_discrete(na.translate = F) +
     theme_minimal()
@@ -905,8 +905,8 @@ Dal grafico possiamo notare un grande aumento dei prezzi delle case con un recen
 ```{r, message = F, warning = F}
 ggplot(HP, aes(x = YearRemodAdd, y = SalePrice, color = factor(FireplaceQu))) +
     geom_point() +
-    labs(x = "ultimi lavori eseguiti (anno)", 
-         y = "prezzo di vendita", 
+    labs(x = "ultimi lavori eseguiti (anno)",
+         y = "prezzo di vendita",
          color = "Qualità camini") +
     scale_color_discrete(na.translate = F) +
     theme_minimal()
@@ -918,17 +918,17 @@ Dal grafico sovrastante si può evidenziare che, come con il riscaldamento, anch
 
 ```{r, message = F, warning = F}
 year_gap <- cut(
-    HP$YearRemodAdd, 
+    HP$YearRemodAdd,
     breaks = c(min(HP$YearRemodAdd), 1980, 2000, max(HP$YearRemodAdd)),
-    labels = c(paste(min(HP$YearRemodAdd), "-1980", sep = ""), 
-               "1980-2000", 
+    labels = c(paste(min(HP$YearRemodAdd), "-1980", sep = ""),
+               "1980-2000",
                paste("2000-", max(HP$YearRemodAdd), sep = "")),
     include.lowest = T)
 
 ggplot(HP, aes(x = GarageYrBlt, y = SalePrice, color = factor(year_gap))) +
     geom_point() +
-    labs(x = "anno di costruzione del garage", 
-         y = "prezzo di vendita", 
+    labs(x = "anno di costruzione del garage",
+         y = "prezzo di vendita",
          color = "Ultimi lavori (anno)") +
     scale_color_discrete(na.translate = F) +
     theme_minimal()
@@ -943,7 +943,7 @@ Nel grafico si può notare, come con le fondamenta, delle distinzioni per epoche
 ### Gestione dei valori mancanti
 
 ```{r, message = F, warning = F}
-for(col in names(HP)) {
+for (col in names(HP)) {
     if (is.numeric(HP[[col]])) {
         HP[[col]][is.na(HP[[col]])] <- mean(HP[[col]], na.rm = TRUE)
     } else {
@@ -980,9 +980,9 @@ topNumericPredictors <- names(correlationWithSalePrice)[2:11]
 ```{r, message = F, warning = F}
 keyCategoricalVars <- c("Neighborhood", "BldgType", "HouseStyle", "OverallQual")
 keyCategoricalVars <- keyCategoricalVars[keyCategoricalVars %in% names(HP)]
-encoded_data <- data.frame(model.matrix(~.-1, HP))
+encoded_data <- data.frame(model.matrix(~. - 1, HP))
 encoded_categoricalVars <- grep(
-    paste(keyCategoricalVars, collapse="|"), names(encoded_data), value=TRUE)
+    paste(keyCategoricalVars, collapse = "|"), names(encoded_data), value = TRUE)
 selected_predictors <- c(topNumericPredictors, encoded_categoricalVars)
 X_selected <- encoded_data[, selected_predictors]
 y <- encoded_data$SalePrice
@@ -1049,7 +1049,7 @@ single_level_vars <-
     categorical_vars[sapply(HP_no_partial[categorical_vars], function(x)
         length(unique(x)) == 1)]
 HP_no_partial <-
-    HP_no_partial[,!names(HP_no_partial) %in% single_level_vars]
+    HP_no_partial[, !names(HP_no_partial) %in% single_level_vars]
 categorical_vars <-
     names(HP_no_partial)[sapply(HP_no_partial, function(x)
         is.factor(x) | is.character(x))]
@@ -1065,7 +1065,7 @@ keyCategoricalVars <-
     c("Neighborhood", "BldgType", "HouseStyle", "OverallQual")
 keyCategoricalVars <-
     keyCategoricalVars[keyCategoricalVars %in% names(HP_no_partial)]
-encoded_data <- data.frame(model.matrix( ~ . - 1, HP_no_partial))
+encoded_data <- data.frame(model.matrix(~. - 1, HP_no_partial))
 encoded_categoricalVars <-
     grep(paste(keyCategoricalVars, collapse = "|"),
          names(encoded_data),
@@ -1113,7 +1113,7 @@ ggplot() +
 autoplot(stepwise.model, which = 1:6)
 ```
 
-In questo secondo tentativo di regressione abbiamo ottenuto un R^2 = 0.85, quindi siamo riusciti a spiegare l'85% della variabilità di y (salesprice), il che è un ottimo incremento, che conferma che il nostro modello è adatto per spiegare le case con condizioni di vendita non "Partial", 
+In questo secondo tentativo di regressione abbiamo ottenuto un R^2 = 0.85, quindi siamo riusciti a spiegare l'85% della variabilità di y (salesprice), il che è un ottimo incremento, che conferma che il nostro modello è adatto per spiegare le case con condizioni di vendita non "Partial",
 dal grafico scatter dei residui si nota che nella parte destra il pattern precedente si è affievolito, pero' viene mostrata un esplosione dei residui con l'aumentare di y, il che implica che il modello non riesce a generalizzare bene per alti prezzi di saleprice , per tale motivo ho deciso di tentare successivamente una regressione con log(y) come variabile target, per cercare di catturare anche questo tipo di curva dei residui e mitigarla. Il QQ plot dei residui mostra che sulle code si hanno delle deviazioni dalla normalità, presupponendo presenza di outlier o non-linearita.
 
 ## Analisi con Log(y) del Dataset senza Partial Sales
@@ -1163,7 +1163,7 @@ categorical_vars <-
 single_level_vars <-
     categorical_vars[sapply(HP_normal[categorical_vars], function(x)
         length(unique(x)) == 1)]
-HP_normal <- HP_normal[,!names(HP_normal) %in% single_level_vars]
+HP_normal <- HP_normal[, !names(HP_normal) %in% single_level_vars]
 categorical_vars <-
     names(HP_normal)[sapply(HP_normal, function(x)
         is.factor(x) | is.character(x))]
@@ -1179,7 +1179,7 @@ keyCategoricalVars <-
     c("Neighborhood", "BldgType", "HouseStyle", "OverallQual")
 keyCategoricalVars <-
     keyCategoricalVars[keyCategoricalVars %in% names(HP_normal)]
-encoded_data <- data.frame(model.matrix( ~ . - 1, HP_normal))
+encoded_data <- data.frame(model.matrix(~. - 1, HP_normal))
 encoded_categoricalVars <-
     grep(paste(keyCategoricalVars, collapse = "|"),
          names(encoded_data),
@@ -1270,18 +1270,18 @@ Questa sezione descrive il processo di esecuzione del clustering K-means, Hierar
 ### Filtraggio delle vendite normali
 
 ```{r, message = F, warning = F}
-HP_normal <- HP[HP$SaleCondition == "Normal", ]
+HP_normal <- HP[HP$SaleCondition == "Normal",]
 ```
 
 ### Gestione dei valori mancanti
 
 ```{r, message = F, warning = F}
-for(col in names(HP_normal)) {
-  if (is.numeric(HP_normal[[col]])) {
-    HP_normal[[col]][is.na(HP_normal[[col]])] <- mean(HP_normal[[col]], na.rm = TRUE)
-  } else {
-    HP_normal[[col]][is.na(HP_normal[[col]])] <- as.character(sort(table(HP_normal[[col]])[1]))
-  }
+for (col in names(HP_normal)) {
+    if (is.numeric(HP_normal[[col]])) {
+        HP_normal[[col]][is.na(HP_normal[[col]])] <- mean(HP_normal[[col]], na.rm = TRUE)
+    } else {
+        HP_normal[[col]][is.na(HP_normal[[col]])] <- as.character(sort(table(HP_normal[[col]])[1]))
+    }
 }
 ```
 
@@ -1309,8 +1309,8 @@ scaled_data <- scale(selected_data)
 
 ```{r, message = F, warning = F}
 set.seed(123)
-fviz_nbclust(scaled_data, kmeans, method = "wss", k.max = 30) + 
-  labs(subtitle = "Metodo dell'Elbow")
+fviz_nbclust(scaled_data, kmeans, method = "wss", k.max = 30) +
+    labs(subtitle = "Metodo dell'Elbow")
 ```
 
 ### Applicazione del clustering K-means con il numero ottimale di cluster
@@ -1318,7 +1318,7 @@ fviz_nbclust(scaled_data, kmeans, method = "wss", k.max = 30) +
 ```{r, message = F, warning = F}
 kmeans_result <- kmeans(scaled_data, centers = 4, nstart = 25)
 fviz_cluster(kmeans_result, data = scaled_data, ellipse.type = "convex") +
-  labs(title = "Clustering K-means", subtitle = "4 Cluster")
+    labs(title = "Clustering K-means", subtitle = "4 Cluster")
 ```
 
 ### Aggiunta delle assegnazioni dei cluster ai dati originali
@@ -1328,8 +1328,8 @@ HP_normal$cluster <- kmeans_result$cluster
 
 # Calcolo della media di ciascuna variabile selezionata per ciascun cluster
 centroids <- HP_normal %>%
-  group_by(cluster) %>%
-  summarise(across(all_of(topTwoNumericPredictors), mean, na.rm = TRUE))
+    group_by(cluster) %>%
+    summarise(across(all_of(topTwoNumericPredictors), mean, na.rm = TRUE))
 
 print(centroids)
 ```
@@ -1345,19 +1345,22 @@ print(table(HP_normal$cluster))
 ```{r, message = F, warning = F}
 sil <- silhouette(kmeans_result$cluster, dist(scaled_data))
 
-p <- fviz_silhouette(sil) + 
-  labs(title = "Silhouette Plot per K-means Clustering", subtitle = "4 Clusters")
-
+p <- fviz_silhouette(sil) +
+    labs(title = "Silhouette Plot per K-means Clustering", subtitle = "4 Clusters")
 
 summary_sil <- summary(sil)
 
-
-info_text <- paste("n =", length(sil[, 1]), "\n",
-                   "Average silhouette width:", round(summary_sil$avg.width, 2), "\n",
-                   paste("Cluster 1:", length(which(sil[, 1] == 1)), "|", round(summary_sil$clus.avg.widths[1], 2)), "\n",
-                   paste("Cluster 2:", length(which(sil[, 1] == 2)), "|", round(summary_sil$clus.avg.widths[2], 2)), "\n",
-                   paste("Cluster 3:", length(which(sil[, 1] == 3)), "|", round(summary_sil$clus.avg.widths[3], 2)), "\n",
-                   paste("Cluster 4:", length(which(sil[, 1] == 3)), "|", round(summary_sil$clus.avg.widths[4], 2)))
+info_text <- paste(
+    "n =", length(sil[, 1]), "\n",
+    "Average silhouette width:", round(summary_sil$avg.width, 2), "\n",
+    paste("Cluster 1:", length(which(sil[, 1] == 1)), "|", 
+          round(summary_sil$clus.avg.widths[1], 2)), "\n",
+    paste("Cluster 2:", length(which(sil[, 1] == 2)), "|", 
+          round(summary_sil$clus.avg.widths[2], 2)), "\n",
+    paste("Cluster 3:", length(which(sil[, 1] == 3)), "|", 
+          round(summary_sil$clus.avg.widths[3], 2)), "\n",
+    paste("Cluster 4:", length(which(sil[, 1] == 3)), "|", 
+          round(summary_sil$clus.avg.widths[4], 2)))
 
 p <- p + annotate("text", x = -1, y = 1, label = info_text, hjust = 0, vjust = 1)
 
@@ -1368,8 +1371,8 @@ print(p)
 
 ```{r, message = F, warning = F}
 cluster_summary <- HP_normal %>%
-  group_by(cluster) %>%
-  summarise(across(where(is.numeric), list(mean = mean, sd = sd), na.rm = TRUE))
+    group_by(cluster) %>%
+    summarise(across(where(is.numeric), list(mean = mean, sd = sd), na.rm = TRUE))
 
 print(cluster_summary, width = Inf)
 ```
@@ -1378,32 +1381,33 @@ print(cluster_summary, width = Inf)
 
 ```{r, message = F, warning = F}
 ggplot(HP_normal, aes(x = factor(cluster), y = SalePrice, fill = factor(cluster))) +
-  geom_boxplot() +
-  labs(title = "Distribuzione di SalePrice tra i Cluster", x = "Cluster", y = "SalePrice")
+    geom_boxplot() +
+    labs(title = "Distribuzione di SalePrice tra i Cluster", 
+         x = "Cluster", y = "SalePrice")
 ```
 
 ### Osservazioni
 
-Il metodo dell'Elbow ci indica che il numero ottimale di cluster è tra il 3 e il 4, Usando 4 cluster e 2 variabili emergono dei gruppi coerenti: 
+Il metodo dell'Elbow ci indica che il numero ottimale di cluster è tra il 3 e il 4, Usando 4 cluster e 2 variabili emergono dei gruppi coerenti:
 
-Cluster 1: 
+Cluster 1:
 
 Interpretazione:
 
 Comprende case di media qualità con prezzi e dimensioni del soggiorno nella media.
-Cluster 2: 
+Cluster 2:
 
 Interpretazione:
 
 Rappresenta case di qualità superiore con un prezzo e una dimensione del soggiorno maggiore rispetto al Cluster 1.
 
-Cluster 3: 
+Cluster 3:
 
 Interpretazione:
 
 Contiene case di alta qualità con prezzi di vendita e dimensioni del soggiorno molto alti.
 
-Cluster 4: 
+Cluster 4:
 
 Interpretazione:
 
@@ -1415,14 +1419,14 @@ L'analisi della silhouette mostra che il valore medio della silhouette è 0.33, 
 
 ## Passaggio a 3 cluster
 
-Considerando l'analisi della silhouette e la distribuzione dei dati, l'utilizzo di 3 cluster può migliorare il valore della silhouette, suggerendo una separazione più chiara tra i cluster. 
+Considerando l'analisi della silhouette e la distribuzione dei dati, l'utilizzo di 3 cluster può migliorare il valore della silhouette, suggerendo una separazione più chiara tra i cluster.
 
 ### Applicazione del clustering K-means con il numero ottimale di cluster (3)
 
 ```{r, message = F, warning = F}
 kmeans_result <- kmeans(scaled_data, centers = 3, nstart = 25)
 fviz_cluster(kmeans_result, data = scaled_data, ellipse.type = "convex") +
-  labs(title = "Clustering K-means", subtitle = "3 Cluster")
+    labs(title = "Clustering K-means", subtitle = "3 Cluster")
 ```
 
 ### Aggiunta delle Assegnazioni dei Cluster ai Dati Originali
@@ -1432,8 +1436,8 @@ HP_normal$cluster <- kmeans_result$cluster
 
 # Calcolo della media di ciascuna variabile selezionata per ciascun cluster
 centroids <- HP_normal %>%
-  group_by(cluster) %>%
-  summarise(across(all_of(topTwoNumericPredictors), mean, na.rm = TRUE))
+    group_by(cluster) %>%
+    summarise(across(all_of(topTwoNumericPredictors), mean, na.rm = TRUE))
 
 print(centroids)
 ```
@@ -1448,19 +1452,21 @@ print(table(HP_normal$cluster))
 
 ```{r, message = F, warning = F}
 sil <- silhouette(kmeans_result$cluster, dist(scaled_data))
-p <- fviz_silhouette(sil) + 
-  labs(title = "Silhouette Plot per K-means Clustering con Variabili Estese", subtitle = "3 Clusters")
-
+p <- fviz_silhouette(sil) +
+    labs(title = "Silhouette Plot per K-means Clustering con Variabili Estese", 
+         subtitle = "3 Clusters")
 
 summary_sil <- summary(sil)
 
-
-info_text <- paste("n =", length(sil[, 1]), "\n",
-                   "Average silhouette width:", round(summary_sil$avg.width, 2), "\n",
-                   paste("Cluster 1:", length(which(sil[, 1] == 1)), "|", round(summary_sil$clus.avg.widths[1], 2)), "\n",
-                   paste("Cluster 2:", length(which(sil[, 1] == 2)), "|", round(summary_sil$clus.avg.widths[2], 2)), "\n",
-                   paste("Cluster 3:", length(which(sil[, 1] == 3)), "|", round(summary_sil$clus.avg.widths[3], 2)))
-
+info_text <- paste(
+    "n =", length(sil[, 1]), "\n",
+    "Average silhouette width:", round(summary_sil$avg.width, 2), "\n",
+    paste("Cluster 1:", length(which(sil[, 1] == 1)), "|", 
+          round(summary_sil$clus.avg.widths[1], 2)), "\n",
+    paste("Cluster 2:", length(which(sil[, 1] == 2)), "|", 
+          round(summary_sil$clus.avg.widths[2], 2)), "\n",
+    paste("Cluster 3:", length(which(sil[, 1] == 3)), "|", 
+          round(summary_sil$clus.avg.widths[3], 2)))
 
 p <- p + annotate("text", x = -1, y = 1, label = info_text, hjust = 0, vjust = 1)
 
@@ -1471,8 +1477,8 @@ print(p)
 
 ```{r, message = F, warning = F}
 cluster_summary <- HP_normal %>%
-  group_by(cluster) %>%
-  summarise(across(where(is.numeric), list(mean = mean, sd = sd), na.rm = TRUE))
+    group_by(cluster) %>%
+    summarise(across(where(is.numeric), list(mean = mean, sd = sd), na.rm = TRUE))
 
 print(cluster_summary, width = Inf)
 ```
@@ -1481,8 +1487,9 @@ print(cluster_summary, width = Inf)
 
 ```{r, message = F, warning = F}
 ggplot(HP_normal, aes(x = factor(cluster), y = SalePrice, fill = factor(cluster))) +
-  geom_boxplot() +
-  labs(title = "Distribuzione di SalePrice tra i Cluster", x = "Cluster", y = "SalePrice")
+    geom_boxplot() +
+    labs(title = "Distribuzione di SalePrice tra i Cluster", 
+         x = "Cluster", y = "SalePrice")
 ```
 
 ### Osservazioni
@@ -1539,7 +1546,7 @@ additional_vars <- c("TotalBsmtSF", "GarageCars", "YearBuilt")
 
 # Creazione di un nuovo dataset con le variabili selezionate
 selected_data_extended <- HP_normal %>%
-  dplyr::select(SalePrice, OverallQual, GrLivArea, all_of(additional_vars))
+    dplyr::select(SalePrice, OverallQual, GrLivArea, all_of(additional_vars))
 
 # Standardizzazione del dataset esteso
 scaled_data_extended <- scale(selected_data_extended)
@@ -1549,8 +1556,9 @@ set.seed(123)
 kmeans_result_extended <- kmeans(scaled_data_extended, centers = 3, nstart = 25)
 
 # Visualizzazione del clustering K-means esteso
-fviz_cluster(kmeans_result_extended, data = scaled_data_extended, ellipse.type = "convex") +
-  labs(title = "Clustering K-means con Variabili Estese", subtitle = "3 Cluster")
+fviz_cluster(kmeans_result_extended, data = scaled_data_extended, 
+             ellipse.type = "convex") +
+    labs(title = "Clustering K-means con Variabili Estese", subtitle = "3 Cluster")
 ```
 
 ### Aggiunta delle assegnazioni dei Cluster ai dati originali
@@ -1560,8 +1568,8 @@ HP_normal$cluster_extended <- kmeans_result_extended$cluster
 
 # Calcolo della media di ciascuna variabile selezionata per ciascun cluster
 centroids_extended <- HP_normal %>%
-  group_by(cluster_extended) %>%
-  summarise(across(where(is.numeric), mean, na.rm = TRUE))
+    group_by(cluster_extended) %>%
+    summarise(across(where(is.numeric), mean, na.rm = TRUE))
 
 print(centroids_extended, width = Inf)
 ```
@@ -1576,19 +1584,21 @@ print(table(HP_normal$cluster_extended))
 
 ```{r, message = F, warning = F}
 sil_extended <- silhouette(kmeans_result_extended$cluster, dist(scaled_data_extended))
-p <- fviz_silhouette(sil) + 
-  labs(title = "Silhouette Plot per K-means Clustering con Variabili Estese", subtitle = "3 Clusters")
-
+p <- fviz_silhouette(sil) +
+    labs(title = "Silhouette Plot per K-means Clustering con Variabili Estese", 
+         subtitle = "3 Clusters")
 
 summary_sil <- summary(sil)
 
-
-info_text <- paste("n =", length(sil[, 1]), "\n",
-                   "Average silhouette width:", round(summary_sil$avg.width, 2), "\n",
-                   paste("Cluster 1:", length(which(sil[, 1] == 1)), "|", round(summary_sil$clus.avg.widths[1], 2)), "\n",
-                   paste("Cluster 2:", length(which(sil[, 1] == 2)), "|", round(summary_sil$clus.avg.widths[2], 2)), "\n",
-                   paste("Cluster 3:", length(which(sil[, 1] == 3)), "|", round(summary_sil$clus.avg.widths[3], 2)))
-
+info_text <- paste(
+    "n =", length(sil[, 1]), "\n",
+    "Average silhouette width:", round(summary_sil$avg.width, 2), "\n",
+    paste("Cluster 1:", length(which(sil[, 1] == 1)), "|", 
+          round(summary_sil$clus.avg.widths[1], 2)), "\n",
+    paste("Cluster 2:", length(which(sil[, 1] == 2)), "|", 
+          round(summary_sil$clus.avg.widths[2], 2)), "\n",
+    paste("Cluster 3:", length(which(sil[, 1] == 3)), "|", 
+          round(summary_sil$clus.avg.widths[3], 2)))
 
 p <- p + annotate("text", x = -1, y = 1, label = info_text, hjust = 0, vjust = 1)
 
@@ -1634,8 +1644,8 @@ cut_agnes1 <- cutree(hc_agnes1, k = 3)
 HP_normal$cluster_agnes1 <- cut_agnes1
 
 centroids_agnes1 <- HP_normal %>%
-  group_by(cluster_agnes1) %>%
-  summarise(across(where(is.numeric), mean, na.rm = TRUE))
+    group_by(cluster_agnes1) %>%
+    summarise(across(where(is.numeric), mean, na.rm = TRUE))
 
 print(centroids_agnes1, width = Inf)
 print(table(HP_normal$cluster_agnes1))
@@ -1676,13 +1686,13 @@ rect.hclust(as.hclust(dend2), k = 3, border = 2:4)
 
 cut_agnes2 <- cutree(hc_agnes2, k = 3)
 fviz_cluster(list(data = scaled_data_extended, cluster = cut_agnes2)) +
-  labs(title = "Hierarchical Clustering (Extended Variables)", subtitle = "3 Clusters")
+    labs(title = "Hierarchical Clustering (Extended Variables)", subtitle = "3 Clusters")
 
 HP_normal$cluster_agnes2 <- cut_agnes2
 
 centroids_agnes2 <- HP_normal %>%
-  group_by(cluster_agnes2) %>%
-  summarise(across(where(is.numeric), mean, na.rm = TRUE))
+    group_by(cluster_agnes2) %>%
+    summarise(across(where(is.numeric), mean, na.rm = TRUE))
 
 print(centroids_agnes2, width = Inf)
 print(table(HP_normal$cluster_agnes2))
@@ -1690,19 +1700,19 @@ print(table(HP_normal$cluster_agnes2))
 
 #### Osservazioni
 
-Cluster 1: 
+Cluster 1:
 
 Interpretazione:
 
 Case di medie dimensioni con qualità e condizione moderate, costruite principalmente negli anni '70 e '80. Queste case hanno un prezzo di vendita medio di circa 160,000 USD.
 
-Cluster 2: 
+Cluster 2:
 
 Interpretazione:
 
 Case di grandi dimensioni e di alta qualità, costruite principalmente negli anni '90. Queste case hanno un prezzo di vendita medio di circa 260,000 USD.
 
-Cluster 3: 
+Cluster 3:
 
 Interpretazione:
 
@@ -1717,13 +1727,14 @@ I cluster identificati possono essere utilizzati per comprendere meglio il merca
 ```{r, message = F, warning = F}
 dbscan_result1 <- dbscan(scaled_data, eps = 0.5, minPts = 10)
 fviz_cluster(dbscan_result1, data = scaled_data, geom = "point") +
-  labs(title = "DBSCAN Clustering (Top 2 Variables)", subtitle = "eps = 0.5, minPts = 10")
+    labs(title = "DBSCAN Clustering (Top 2 Variables)", 
+         subtitle = "eps = 0.5, minPts = 10")
 
 HP_normal$cluster_dbscan1 <- dbscan_result1$cluster
 
 dbscan_centroids1 <- HP_normal %>%
-  group_by(cluster_dbscan1) %>%
-  summarise(across(where(is.numeric), mean, na.rm = TRUE))
+    group_by(cluster_dbscan1) %>%
+    summarise(across(where(is.numeric), mean, na.rm = TRUE))
 
 print(dbscan_centroids1, width = Inf)
 print(table(HP_normal$cluster_dbscan1))
@@ -1731,7 +1742,7 @@ print(table(HP_normal$cluster_dbscan1))
 
 #### Osservazioni
 
-Cluster 0: 
+Cluster 0:
 
 Interpretazione:
 
@@ -1749,13 +1760,13 @@ Interpretazione:
 
 Case di qualità media con dimensioni ridotte. Costruite principalmente negli anni '60, queste case presentano prezzi di vendita moderati.
 
-Cluster 3: 
+Cluster 3:
 
 Interpretazione:
 
 Case di alta qualità con dimensioni moderate. Costruite principalmente negli anni '90, queste case hanno prezzi di vendita elevati.
 
-Cluster 4: 
+Cluster 4:
 
 Interpretazione:
 
@@ -1767,7 +1778,7 @@ Interpretazione:
 
 Case di bassa qualità con dimensioni molto ridotte. Costruite principalmente negli anni '50, queste case hanno i prezzi di vendita più bassi.
 
-Cluster 6: 
+Cluster 6:
 
 Interpretazione:
 
@@ -1790,13 +1801,14 @@ Questa segmentazione può aiutare a comprendere meglio il mercato immobiliare e 
 ```{r, message = F, warning = F}
 dbscan_result2 <- dbscan(scaled_data_extended, eps = 0.5, minPts = 10)
 fviz_cluster(dbscan_result2, data = scaled_data_extended, geom = "point") +
-  labs(title = "DBSCAN Clustering (Extended Variables)", subtitle = "eps = 0.5, minPts = 10")
+    labs(title = "DBSCAN Clustering (Extended Variables)", 
+         subtitle = "eps = 0.5, minPts = 10")
 
 HP_normal$cluster_dbscan2 <- dbscan_result2$cluster
 
 dbscan_centroids2 <- HP_normal %>%
-  group_by(cluster_dbscan2) %>%
-  summarise(across(where(is.numeric), mean, na.rm = TRUE))
+    group_by(cluster_dbscan2) %>%
+    summarise(across(where(is.numeric), mean, na.rm = TRUE))
 
 print(dbscan_centroids2, width = Inf)
 print(table(HP_normal$cluster_dbscan2))
@@ -1804,60 +1816,60 @@ print(table(HP_normal$cluster_dbscan2))
 
 #### Osservazioni
 
-Cluster 0: 
+Cluster 0:
 
 Interpretazione:
 
 Case di media qualità con dimensioni moderate, costruite principalmente negli anni '60. Prezzo di vendita medio.
 
-Cluster 1: 
+Cluster 1:
 
 Interpretazione:
 
 Case di alta qualità con dimensioni grandi, costruite principalmente negli anni 2000. Prezzo di vendita alto.
 
-Cluster 2: 
+Cluster 2:
 
 Interpretazione:
 
 Case di bassa qualità con dimensioni ridotte, costruite principalmente negli anni '60. Prezzo di vendita basso.
 
-Cluster 3: 
+Cluster 3:
 
 Interpretazione:
 
 Case di media qualità con ampi spazi seminterrati, costruite principalmente negli anni '70. Prezzo di vendita medio.
 
-Cluster 4: 
+Cluster 4:
 
-Interpretazione: 
+Interpretazione:
 
 Case di bassa qualità con lotti di dimensioni ridotte, costruite principalmente negli anni '60. Prezzo di vendita basso.
 
-Cluster 5: 
+Cluster 5:
 
 Interpretazione:
 
 Case di alta qualità con grandi dimensioni, costruite principalmente negli anni 2000. Prezzo di vendita molto alto.
 
-Cluster 6: 
+Cluster 6:
 
 Interpretazione:
 Case di media qualità con dimensioni moderate, costruite principalmente negli anni '80. Prezzo di vendita medio.
 
-Cluster 7: 
+Cluster 7:
 
 Interpretazione:
 
 Case di alta qualità con dimensioni ridotte, costruite principalmente negli anni 2000. Prezzo di vendita alto.
 
-Cluster 8: 
+Cluster 8:
 
 Interpretazione:
 
 Case di media qualità con lotti molto piccoli, costruite principalmente negli anni 2000. Prezzo di vendita medio-basso.
 
-Cluster 9: 
+Cluster 9:
 
 Interpretazione:
 
