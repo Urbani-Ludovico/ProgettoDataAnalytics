@@ -1076,6 +1076,8 @@ y <- encoded_data$SalePrice
 simple.model <- lm(y ~ ., data = X_selected)
 stepwise.model <-
     stepAIC(simple.model, direction = "both", trace = TRUE)
+```
+```{r, message = F, warning = F}
 summary(stepwise.model)
 ```
 
@@ -1120,7 +1122,6 @@ y_transformed <- log(y)
 simple.model <- lm(y_transformed ~ ., data = X_selected)
 stepwise.model <-
     stepAIC(simple.model, direction = "both", trace = TRUE)
-summary(stepwise.model)
 residuals <- resid(stepwise.model)
 fitted_values <- fitted(stepwise.model)
 
@@ -1140,6 +1141,9 @@ ggplot() +
 
 autoplot(stepwise.model, which = 1:6)
 dwtest(stepwise.model)
+```
+```{r, message = F, warning = F}
+summary(stepwise.model)
 ```
 
 In questo terzo tentativo di regressione abbiamo ottenuto un R^2 = 0.87, quindi siamo riusciti a spiegare l'87% della variabilità di y (salesprice), il che è un buon incremento rispetto a prima, infatti quando si controlla lo scatterplot dei residui, si nota che il pattern di prima è sparito, ci sono ancora alcune non linearita o outlier sulla coda sinistra, che si notano anche nel qq plot. La distanza di Crook e la leva mostrano che non ci sono parametri con un alta distanza di Crook con anche varia Leva sui paraemtri del modello, il che è un buon risoltato.
@@ -1186,6 +1190,8 @@ y <- encoded_data$SalePrice
 simple.model <- lm(y ~ ., data = X_selected)
 stepwise.model <-
     stepAIC(simple.model, direction = "both", trace = TRUE)
+```
+```{r, message = F, warning = F}
 summary(stepwise.model)
 ```
 
@@ -1228,7 +1234,6 @@ y_transformed <- log(y)
 simple.model <- lm(y_transformed ~ ., data = X_selected)
 stepwise.model <-
     stepAIC(simple.model, direction = "both", trace = TRUE)
-summary(stepwise.model)
 residuals <- resid(stepwise.model)
 fitted_values <- fitted(stepwise.model)
 
@@ -1249,6 +1254,8 @@ ggplot() +
 autoplot(stepwise.model, which = 1:6)
 dwtest(stepwise.model)
 ```
-
+```{r, message = F, warning = F}
+summary(stepwise.model)
+```
 
 Il modello performa ancora meglio, con un R^2 di 0.89, quindi un ottima accuratezza sui dati di training con salescondition "Normal".
