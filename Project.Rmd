@@ -992,6 +992,8 @@ y <- encoded_data$SalePrice
 ```{r, results = "hide", message = F, warning = F}
 simple.model <- lm(y ~ ., data = X_selected)
 stepwise.model <- stepAIC(simple.model, direction = "both", trace = TRUE)
+```
+```{r, message = F, warning = F}
 summary(stepwise.model)
 ```
 
